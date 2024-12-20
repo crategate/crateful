@@ -34,10 +34,24 @@ impl AppState {
 
     pub fn ui(&mut self, ui: &mut egui::Ui) {
         // Display current track information
-        self.ui.show_track_info(ui, &self.file_manager.get_current_track());
+        self.ui.show_track_info(ui, &self.file_manager.get_current_track().cloned());
 
         // Display next tracks
         let next_tracks = self.file_manager.get_next_tracks();
         self.ui.show_next_tracks(ui, &next_tracks);
+    }
+}
+impl Default for AppState {
+    fn default() -> Self {
+        let music_folder = PathBuf::new(); // You can provide a default path if needed
+        let file_manager = FileManager::new(music_folder);
+        let audio_player = AudioPlayer::new();
+        let ui = Ui::new();
+
+        Self {
+            file_manager,
+            audio_player,
+            ui,
+        }
     }
 }
