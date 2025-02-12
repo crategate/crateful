@@ -4,8 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-rodio = "0.17"  # Check for the latest version on crates.io
-eframe = { version = "0.24", features = ["default_fonts"]} # 0.24 is compatible with Egui 0.24
-rfd = "0.12"     # For the file dialog
-serde = { version = "1.0", features = ["derive"] } # For config file handling (if needed later)
+egui = "0.24.1"
+eframe = { version = "0.24.1", features = ["persistence"] }
+symphonia = { version = "0.5.3", features = ["mp3", "flac", "wav"] }
+playback-rs = "0.3.0"
 walkdir = "2.4"
+parking_lot = "0.12.1" # For thread-safe state management
+anyhow = "1.0.75"      # Error handling
