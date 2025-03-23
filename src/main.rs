@@ -1,41 +1,41 @@
+// src/main.rs
 use eframe::egui;
-use parking_lot::RwLock;
+use parking_lot::Mutex;
 use std::sync::Arc;
 use walkdir::WalkDir;
+use symphonia::core::io::MediaSourceStream;
+use symphonia::core::probe::Hint;
 
-struct AppState {
-    current_file_index: usize,
-    files: Vec<String>,
-    player: Option<playback_rs::Player>,
-    playback_status: PlaybackStatus,
-}
-
-#[derive(Clone, Copy, PartialEq)]
-enum PlaybackStatus {
-    Playing,
-    Paused,
-    Stopped,
+struct AudioState {
+    current_file: Option<String>,
+    playhead_seconds: f64,
+    duration_seconds: f64,
+    is_playing: bool,
 }
 
 struct CratefulApp {
-    state: Arc<RwLock<AppState>>,
+    files: Vec<String>,
+    audio_state: Arc<Mutex<AudioState>>,
+    audio_thread: Option<std::thread::JoinHandle<()>>,
 }
 
 impl CratefulApp {
     fn new() -> Self {
-        let state = Arc::new(RwLock::new(AppState {
-            current_file_index: 0,
+        Self {
             files: Vec::new(),
-            player: None,
-            playback_status: PlaybackStatus::Stopped,
-        }));
-        
-        Self { state }
+            audio_state: Arc::new(Mutex::new(AudioState {
+                current_file: None,
+                playhead_seconds: 0.0,
+                duration_seconds: 0.0,
+                is_playing: false,
+            })),
+            audio_thread: None,
+        }
     }
-    fn scan_directory(&self, path: &str) {
-        let mut state = self.state.write();
-        state.files.clear();
 
+    fn scan_directory(&mut self, path: &str) {
+        self.files.clear();
+        
         for entry in WalkDir::new(path)
             .into_iter()
             .filter_map(|e| e.ok())
@@ -44,7 +44,7 @@ impl CratefulApp {
             if let Some(ext) = entry.path().extension() {
                 let ext = ext.to_string_lossy().to_lowercase();
                 if ["mp3", "wav", "flac"].contains(&ext.as_str()) {
-                    state.files.push(entry.path().to_string_lossy().into_owned());
+                    self.files.push(entry.path().to_string_lossy().into_owned());
                 }
             }
         }
@@ -53,95 +53,50 @@ impl CratefulApp {
 
 impl eframe::App for CratefulApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        let state = self.state.read();
-        
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("Crateful - Audio Classifier");
             
-            // File list display
+            // File list
             ui.separator();
             ui.label("Track List:");
-            for (idx, file) in state.files.iter().enumerate() {
-                ui.horizontal(|ui| {
-                    if ui.selectable_label(idx == state.current_file_index, file).clicked() {
-                        // Handle file selection
-                    }
-                });
+            for file in &self.files {
+                ui.label(file);
             }
-            
+
             // Playback controls
             ui.separator();
-            ui.horizontal(|ui| {
-                if ui.button("Play/Pause (Space)").clicked() {
-                    // Implement play/pause
-                }
-                
-                // Will add more controls
-            });
+            let audio_state = self.audio_state.lock();
+            ui.label(format!(
+                "Status: {} | {:.1}/{:.1} seconds",
+                if audio_state.is_playing { "▶" } else { "⏸" },
+                audio_state.playhead_seconds,
+                audio_state.duration_seconds
+            ));
         });
 
-        self.handle_hotkeys(ctx);
-    }
-}
-// Hotkey handling implementation
-impl CratefulApp {
-    fn handle_hotkeys(&self, ctx: &egui::Context) {
-        let input = ctx.input();
-        let mut state = self.state.write();
-
-        if input.key_pressed(egui::Key::Space) {
-            self.toggle_playback();
-        }
-
-        // Number keys 1-9 for seeking
-        for (key, percentage) in (egui::Key::Num1..=egui::Key::Num9).enumerate() {
-            if input.key_pressed(percentage) {
-                self.seek_to_percentage((key + 1) as f32 * 0.1);
-            }
-        }
-    }
-
-    fn toggle_playback(&self) {
-        let mut state = self.state.write();
-        match state.playback_status {
-            PlaybackStatus::Playing => {
-                if let Some(player) = &mut state.player {
-                    player.pause();
-                }
-                state.playback_status = PlaybackStatus::Paused;
-            }
-            _ => {
-                if state.player.is_none() {
-                    // Initialize player with current file
-                    if let Some(file) = state.files.get(state.current_file_index) {
-                        let player = playback_rs::Player::new(file).unwrap();
-                        player.play();
-                        state.player = Some(player);
-                        state.playback_status = PlaybackStatus::Playing;
-                    }
-                } else if let Some(player) = &mut state.player {
-                    player.play();
-                    state.playback_status = PlaybackStatus::Playing;
-                }
-            }
-        }
-    }
-
-    fn seek_to_percentage(&self, percentage: f32) {
-        let mut state = self.state.write();
-        if let Some(player) = &mut state.player {
-            if let Some(duration) = player.duration() {
-                let target = duration.mul_f32(percentage);
-                player.seek(target).unwrap();
-            }
+        // Handle hotkeys
+        if ctx.input().key_pressed(egui::Key::Space) {
+            let mut audio_state = self.audio_state.lock();
+            audio_state.is_playing = !audio_state.is_playing;
         }
     }
 }
-fn main() {
+
+fn main() -> anyhow::Result<()> {
+    let mut app = CratefulApp::new();
+    
+    // Get directory from CLI args
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() > 1 {
+        app.scan_directory(&args[1]);
+    }
+
     let options = eframe::NativeOptions::default();
     eframe::run_native(
         "Crateful",
         options,
-        Box::new(|_cc| Box::new(CratefulApp::new())),
+        Box::new(|_cc| Box::new(app)),
     );
+
+    Ok(())
 }
