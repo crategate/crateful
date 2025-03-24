@@ -1,10 +1,9 @@
-// src/main.rs
 use eframe::egui;
 use parking_lot::Mutex;
 use std::sync::Arc;
 use walkdir::WalkDir;
-use symphonia::core::io::MediaSourceStream;
-use symphonia::core::probe::Hint;
+//use symphonia::core::io::MediaSourceStream;
+// use symphonia::core::probe::Hint;
 
 struct AudioState {
     current_file: Option<String>,
@@ -35,7 +34,7 @@ impl CratefulApp {
 
     fn scan_directory(&mut self, path: &str) {
         self.files.clear();
-        
+
         for entry in WalkDir::new(path)
             .into_iter()
             .filter_map(|e| e.ok())
@@ -55,7 +54,7 @@ impl eframe::App for CratefulApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("Crateful - Audio Classifier");
-            
+
             // File list
             ui.separator();
             ui.label("Track List:");
@@ -75,16 +74,16 @@ impl eframe::App for CratefulApp {
         });
 
         // Handle hotkeys
-        if ctx.input().key_pressed(egui::Key::Space) {
-            let mut audio_state = self.audio_state.lock();
-            audio_state.is_playing = !audio_state.is_playing;
-        }
+        //        if ctx.input().key_pressed(egui::Key::Space) {
+        //    let mut audio_state = self.audio_state.lock();
+        //    audio_state.is_playing = !audio_state.is_playing;
+        // }
     }
 }
 
 fn main() -> anyhow::Result<()> {
     let mut app = CratefulApp::new();
-    
+
     // Get directory from CLI args
     let args: Vec<String> = std::env::args().collect();
     if args.len() > 1 {
@@ -92,11 +91,7 @@ fn main() -> anyhow::Result<()> {
     }
 
     let options = eframe::NativeOptions::default();
-    eframe::run_native(
-        "Crateful",
-        options,
-        Box::new(|_cc| Box::new(app)),
-    );
+    eframe::run_native("Crateful", options, Box::new(|_cc| Box::new(app)));
 
     Ok(())
 }
