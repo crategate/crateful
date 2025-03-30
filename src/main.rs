@@ -1,5 +1,6 @@
 use eframe::egui;
 use parking_lot::Mutex;
+use std::ffi::OsStr;
 use std::path::Path;
 use std::sync::Arc;
 use walkdir::WalkDir;
@@ -88,7 +89,7 @@ fn main() -> anyhow::Result<()> {
     let args: Vec<String> = std::env::args().collect();
     println!("{:?}", args[1]);
 
-    assert!(!Path::new(args[1].to_string()).exists());
+    assert!(Path::new(&args[1].as_str()).exists());
     if args.len() > 1 {
         app.scan_directory(&args[1]);
     }
