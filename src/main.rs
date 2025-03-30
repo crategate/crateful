@@ -1,5 +1,6 @@
 use eframe::egui;
 use parking_lot::Mutex;
+use std::path::Path;
 use std::sync::Arc;
 use walkdir::WalkDir;
 //use symphonia::core::io::MediaSourceStream;
@@ -83,9 +84,11 @@ impl eframe::App for CratefulApp {
 
 fn main() -> anyhow::Result<()> {
     let mut app = CratefulApp::new();
-
     // Get directory from CLI args
     let args: Vec<String> = std::env::args().collect();
+    println!("{:?}", args[1]);
+
+    assert!(!Path::new(args[1].to_string()).exists());
     if args.len() > 1 {
         app.scan_directory(&args[1]);
     }
