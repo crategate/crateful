@@ -57,13 +57,6 @@ impl eframe::App for CratefulApp {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("Crateful - Audio Classifier");
 
-            // File list
-            ui.separator();
-            ui.label("Track List:");
-            for file in &self.files {
-                ui.label(file);
-            }
-
             // Playback controls
             ui.separator();
             let audio_state = self.audio_state.lock();
@@ -73,6 +66,12 @@ impl eframe::App for CratefulApp {
                 audio_state.playhead_seconds,
                 audio_state.duration_seconds
             ));
+            // File list
+            ui.separator();
+            ui.label("Track List:");
+            for file in &self.files {
+                ui.label(file);
+            }
         });
 
         // Handle hotkeys
