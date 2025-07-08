@@ -3,16 +3,18 @@ use ratatui::{
     DefaultTerminal,
     crossterm::event::{KeyCode, KeyEvent, KeyModifiers},
 };
-
+use std::path::Path;
 /// Application.
 #[derive(Debug)]
-pub struct App {
+pub struct App<'a> {
     /// Is the application running?
     pub running: bool,
     /// Counter.
     pub counter: u8,
     /// Event handler.
     pub events: EventHandler,
+    // incoming path
+    pub incoming: &'a Path,
 }
 
 impl Default for App {
@@ -21,6 +23,7 @@ impl Default for App {
             running: true,
             counter: 0,
             events: EventHandler::new(),
+            incoming: Path::new("~/Music/INCOMING/"),
         }
     }
 }
