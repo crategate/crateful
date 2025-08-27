@@ -17,7 +17,7 @@ pub struct App<'a> {
     pub incoming: &'a Path,
 }
 
-impl Default for App<'a> {
+impl Default for App<'_> {
     fn default() -> Self {
         Self {
             running: true,
@@ -28,7 +28,7 @@ impl Default for App<'a> {
     }
 }
 
-impl App<'a> {
+impl App<'_> {
     /// Constructs a new instance of [`App`].
     pub fn new() -> Self {
         Self::default()

@@ -7,7 +7,7 @@ use ratatui::{
 
 use crate::app::App;
 
-impl Widget for &App {
+impl Widget for &App<'_> {
     /// Renders the user interface widgets.
     ///
     // This is where you add new widgets.

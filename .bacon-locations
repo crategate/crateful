@@ -1,0 +1,78 @@
+error|:|src/app.rs|:|20|:|20|:|22|:|24|:|use of undeclared lifetime name `'a`|:|[0m[1m[38;5;9merror[E0261][0m[0m[1m: use of undeclared lifetime name `'a`[0m
+[0m  [0m[0m[1m[38;5;12m--> [0m[0msrc/app.rs:20:22[0m
+[0m   [0m[0m[1m[38;5;12m|[0m
+[0m[1m[38;5;12m20[0m[0m [0m[0m[1m[38;5;12m|[0m[0m [0m[0mimpl Default for App<'a> {[0m
+[0m   [0m[0m[1m[38;5;12m|[0m[0m                      [0m[0m[1m[38;5;9m^^[0m[0m [0m[0m[1m[38;5;9mundeclared lifetime[0m
+[0m   [0m[0m[1m[38;5;12m|[0m
+[0m[1m[38;5;14mhelp[0m[0m: consider introducing lifetime `'a` here[0m
+[0m   [0m[0m[1m[38;5;12m|[0m
+[0m[1m[38;5;12m20[0m[0m [0m[0m[1m[38;5;12m| [0m[0mimpl[0m[0m[38;5;10m<'a>[0m[0m Default for App<'a> {[0m
+[0m   [0m[0m[1m[38;5;12m|[0m[0m     [0m[0m[38;5;10m++++[0m
+
+|:|none
+help|:|src/app.rs|:|20|:|20|:|5|:|5|:|consider introducing lifetime `'a` here|:|none|:|<'a>
+error|:|src/app.rs|:|31|:|31|:|10|:|12|:|use of undeclared lifetime name `'a`|:|[0m[1m[38;5;9merror[E0261][0m[0m[1m: use of undeclared lifetime name `'a`[0m
+[0m  [0m[0m[1m[38;5;12m--> [0m[0msrc/app.rs:31:10[0m
+[0m   [0m[0m[1m[38;5;12m|[0m
+[0m[1m[38;5;12m31[0m[0m [0m[0m[1m[38;5;12m|[0m[0m [0m[0mimpl App<'a> {[0m
+[0m   [0m[0m[1m[38;5;12m|[0m[0m          [0m[0m[1m[38;5;9m^^[0m[0m [0m[0m[1m[38;5;9mundeclared lifetime[0m
+[0m   [0m[0m[1m[38;5;12m|[0m
+[0m[1m[38;5;14mhelp[0m[0m: consider introducing lifetime `'a` here[0m
+[0m   [0m[0m[1m[38;5;12m|[0m
+[0m[1m[38;5;12m31[0m[0m [0m[0m[1m[38;5;12m| [0m[0mimpl[0m[0m[38;5;10m<'a>[0m[0m App<'a> {[0m
+[0m   [0m[0m[1m[38;5;12m|[0m[0m     [0m[0m[38;5;10m++++[0m
+
+|:|none
+help|:|src/app.rs|:|31|:|31|:|5|:|5|:|consider introducing lifetime `'a` here|:|none|:|<'a>
+error|:|src/ui.rs|:|10|:|10|:|18|:|21|:|implicit elided lifetime not allowed here|:|[0m[1m[38;5;9merror[E0726][0m[0m[1m: implicit elided lifetime not allowed here[0m
+[0m  [0m[0m[1m[38;5;12m--> [0m[0msrc/ui.rs:10:18[0m
+[0m   [0m[0m[1m[38;5;12m|[0m
+[0m[1m[38;5;12m10[0m[0m [0m[0m[1m[38;5;12m|[0m[0m [0m[0mimpl Widget for &App {[0m
+[0m   [0m[0m[1m[38;5;12m|[0m[0m                  [0m[0m[1m[38;5;9m^^^[0m[0m [0m[0m[1m[38;5;9mexpected lifetime parameter[0m
+[0m   [0m[0m[1m[38;5;12m|[0m
+[0m[1m[38;5;14mhelp[0m[0m: indicate the anonymous lifetime[0m
+[0m   [0m[0m[1m[38;5;12m|[0m
+[0m[1m[38;5;12m10[0m[0m [0m[0m[1m[38;5;12m| [0m[0mimpl Widget for &App[0m[0m[38;5;10m<'_>[0m[0m {[0m
+[0m   [0m[0m[1m[38;5;12m|[0m[0m                     [0m[0m[38;5;10m++++[0m
+
+|:|none
+help|:|src/ui.rs|:|10|:|10|:|21|:|21|:|indicate the anonymous lifetime|:|none|:|<'_>
+error|:|src/app.rs|:|20|:|20|:|22|:|24|:|use of undeclared lifetime name `'a`|:|[0m[1m[38;5;9merror[E0261][0m[0m[1m: use of undeclared lifetime name `'a`[0m
+[0m  [0m[0m[1m[38;5;12m--> [0m[0msrc/app.rs:20:22[0m
+[0m   [0m[0m[1m[38;5;12m|[0m
+[0m[1m[38;5;12m20[0m[0m [0m[0m[1m[38;5;12m|[0m[0m [0m[0mimpl Default for App<'a> {[0m
+[0m   [0m[0m[1m[38;5;12m|[0m[0m                      [0m[0m[1m[38;5;9m^^[0m[0m [0m[0m[1m[38;5;9mundeclared lifetime[0m
+[0m   [0m[0m[1m[38;5;12m|[0m
+[0m[1m[38;5;14mhelp[0m[0m: consider introducing lifetime `'a` here[0m
+[0m   [0m[0m[1m[38;5;12m|[0m
+[0m[1m[38;5;12m20[0m[0m [0m[0m[1m[38;5;12m| [0m[0mimpl[0m[0m[38;5;10m<'a>[0m[0m Default for App<'a> {[0m
+[0m   [0m[0m[1m[38;5;12m|[0m[0m     [0m[0m[38;5;10m++++[0m
+
+|:|none
+help|:|src/app.rs|:|20|:|20|:|5|:|5|:|consider introducing lifetime `'a` here|:|none|:|<'a>
+error|:|src/app.rs|:|31|:|31|:|10|:|12|:|use of undeclared lifetime name `'a`|:|[0m[1m[38;5;9merror[E0261][0m[0m[1m: use of undeclared lifetime name `'a`[0m
+[0m  [0m[0m[1m[38;5;12m--> [0m[0msrc/app.rs:31:10[0m
+[0m   [0m[0m[1m[38;5;12m|[0m
+[0m[1m[38;5;12m31[0m[0m [0m[0m[1m[38;5;12m|[0m[0m [0m[0mimpl App<'a> {[0m
+[0m   [0m[0m[1m[38;5;12m|[0m[0m          [0m[0m[1m[38;5;9m^^[0m[0m [0m[0m[1m[38;5;9mundeclared lifetime[0m
+[0m   [0m[0m[1m[38;5;12m|[0m
+[0m[1m[38;5;14mhelp[0m[0m: consider introducing lifetime `'a` here[0m
+[0m   [0m[0m[1m[38;5;12m|[0m
+[0m[1m[38;5;12m31[0m[0m [0m[0m[1m[38;5;12m| [0m[0mimpl[0m[0m[38;5;10m<'a>[0m[0m App<'a> {[0m
+[0m   [0m[0m[1m[38;5;12m|[0m[0m     [0m[0m[38;5;10m++++[0m
+
+|:|none
+help|:|src/app.rs|:|31|:|31|:|5|:|5|:|consider introducing lifetime `'a` here|:|none|:|<'a>
+error|:|src/ui.rs|:|10|:|10|:|18|:|21|:|implicit elided lifetime not allowed here|:|[0m[1m[38;5;9merror[E0726][0m[0m[1m: implicit elided lifetime not allowed here[0m
+[0m  [0m[0m[1m[38;5;12m--> [0m[0msrc/ui.rs:10:18[0m
+[0m   [0m[0m[1m[38;5;12m|[0m
+[0m[1m[38;5;12m10[0m[0m [0m[0m[1m[38;5;12m|[0m[0m [0m[0mimpl Widget for &App {[0m
+[0m   [0m[0m[1m[38;5;12m|[0m[0m                  [0m[0m[1m[38;5;9m^^^[0m[0m [0m[0m[1m[38;5;9mexpected lifetime parameter[0m
+[0m   [0m[0m[1m[38;5;12m|[0m
+[0m[1m[38;5;14mhelp[0m[0m: indicate the anonymous lifetime[0m
+[0m   [0m[0m[1m[38;5;12m|[0m
+[0m[1m[38;5;12m10[0m[0m [0m[0m[1m[38;5;12m| [0m[0mimpl Widget for &App[0m[0m[38;5;10m<'_>[0m[0m {[0m
+[0m   [0m[0m[1m[38;5;12m|[0m[0m                     [0m[0m[38;5;10m++++[0m
+
+|:|none
+help|:|src/ui.rs|:|10|:|10|:|21|:|21|:|indicate the anonymous lifetime|:|none|:|<'_>
