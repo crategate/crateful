@@ -27,7 +27,6 @@ impl Default for App<'_> {
         }
     }
 }
-
 impl App<'_> {
     /// Constructs a new instance of [`App`].
     pub fn new() -> Self {

@@ -16,7 +16,7 @@ impl Widget for &App<'_> {
     // - https://github.com/ratatui/ratatui/tree/master/examples
     fn render(self, area: Rect, buf: &mut Buffer) {
         let block = Block::bordered()
-            .title("crateful")
+            .title("sort some tracks")
             .title_alignment(Alignment::Center)
             .border_type(BorderType::Rounded);
 
