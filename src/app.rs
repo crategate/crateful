@@ -1,7 +1,7 @@
 use crate::event::{AppEvent, Event, EventHandler};
 use ratatui::{
-    DefaultTerminal,
     crossterm::event::{KeyCode, KeyEvent, KeyModifiers},
+    DefaultTerminal,
 };
 use std::path::Path;
 /// Application.
@@ -46,6 +46,8 @@ impl App<'_> {
                 Event::App(app_event) => match app_event {
                     AppEvent::Increment => self.increment_counter(),
                     AppEvent::Decrement => self.decrement_counter(),
+                    AppEvent::SaveTrack => self.save_track(),
+                    AppEvent::DeleteTrack => self.delete_track(),
                     AppEvent::Quit => self.quit(),
                 },
             }
@@ -84,6 +86,13 @@ impl App<'_> {
     }
 
     pub fn decrement_counter(&mut self) {
+        self.counter = self.counter.saturating_sub(1);
+    }
+
+    pub fn save_track(&mut self) {
+        self.counter = self.counter.saturating_sub(1);
+    }
+    pub fn delete_track(&mut self) {
         self.counter = self.counter.saturating_sub(1);
     }
 }

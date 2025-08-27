@@ -36,6 +36,8 @@ pub enum AppEvent {
     /// Decrement the counter.
     Decrement,
     /// Quit the application.
+    SaveTrack,
+    DeleteTrack,
     Quit,
 }
 
