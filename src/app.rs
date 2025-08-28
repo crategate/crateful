@@ -15,6 +15,7 @@ pub struct App<'a> {
     pub events: EventHandler,
     // incoming path
     pub incoming: &'a Path,
+    pub playing: &'a Path,
 }
 
 impl Default for App<'_> {
@@ -24,6 +25,7 @@ impl Default for App<'_> {
             counter: 0,
             events: EventHandler::new(),
             incoming: Path::new("~/Music/INCOMING/"),
+            playing: Path::new(""),
         }
     }
 }
