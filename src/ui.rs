@@ -29,11 +29,14 @@ impl Widget for &App<'_> {
         );
 
         let paragraph = Paragraph::new(text)
-            .block(block)
             .fg(Color::Cyan)
             .bg(Color::Black)
             .centered();
-
+        let paragraph2 = Paragraph::new("try")
+            .fg(Color::Cyan)
+            .bg(Color::Black)
+            .centered();
         paragraph.render(area, buf);
+        paragraph2.render(area, buf);
     }
 }
