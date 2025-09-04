@@ -33,8 +33,8 @@ impl Widget for &App<'_> {
             .bg(Color::Black)
             .centered();
         let paragraph2 = Paragraph::new("try")
-            .fg(Color::Cyan)
-            .bg(Color::Black)
+            .fg(Color::Red)
+            .bg(Color::White)
             .centered();
         paragraph.render(area, buf);
         paragraph2.render(area, buf);

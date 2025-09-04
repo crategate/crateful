@@ -1,9 +1,11 @@
 use crate::event::{AppEvent, Event, EventHandler};
+use glob::glob;
 use ratatui::{
     crossterm::event::{KeyCode, KeyEvent, KeyModifiers},
     DefaultTerminal,
 };
-use std::path::{PathBuf, fs, Path};
+use std::fs;
+use std::path::{Path, PathBuf};
 /// Application.
 #[derive(Debug)]
 pub struct App<'a> {
@@ -26,7 +28,7 @@ impl Default for App<'_> {
             counter: 0,
             events: EventHandler::new(),
             incoming: Path::new("~/Music/INCOMING/"),
-            track_list: !Vec[],
+            track_list: &Vec::new::<PathBuf>,
             playing: &PathBuf::new(),
         }
     }
@@ -91,10 +93,6 @@ impl App<'_> {
 
     pub fn decrement_counter(&mut self) {
         self.counter = self.counter.saturating_sub(1);
-    }
-
-    pub fn load_tracks(&mut self) {
-        self.track_list = 
     }
 
     pub fn save_track(&mut self) {
