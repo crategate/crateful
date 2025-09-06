@@ -2,6 +2,7 @@ use ratatui::{
     buffer::Buffer,
     layout::{Alignment, Constraint, Layout, Rect},
     style::{Color, Stylize},
+    text::Line,
     widgets::{Block, BorderType, Paragraph, Widget},
 };
 
@@ -24,12 +25,10 @@ impl Widget for &App<'_> {
             Constraint::Length(3),
             Constraint::Min(1),
         ]);
-        let [playing, list, controls] = vertical.areas(*buf.area());
+        let [playing, list, controls] = vertical.areas(area);
 
         let text = format!(
             "This is a tui template.\n\
-                Press `Esc`, `Ctrl-C` or `q` to stop running.\n\
-                Press left and right to increment and decrement the counter respectively.\n\
                 Counter: {}",
             self.counter
         );
@@ -43,6 +42,7 @@ impl Widget for &App<'_> {
             .bg(Color::White)
             .centered();
         // paragraph.render(area, playing);
-        paragraph2.render(area, buf);
+        // paragraph2.render(area, buf);
+        Line::from("process overview.").bold().render(list, buf);
     }
 }
