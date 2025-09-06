@@ -40,9 +40,10 @@ impl Widget for &App<'_> {
         let paragraph2 = Paragraph::new("try")
             .fg(Color::Red)
             .bg(Color::White)
-            .centered();
+            .centered()
+            .block(block);
         // paragraph.render(area, playing);
-        // paragraph2.render(area, buf);
+        paragraph2.render(playing, buf);
         Line::from("process overview.").bold().render(list, buf);
     }
 }
