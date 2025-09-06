@@ -1,6 +1,6 @@
 use ratatui::{
     buffer::Buffer,
-    layout::{Alignment, Rect},
+    layout::{Alignment, Constraint, Layout, Rect},
     style::{Color, Stylize},
     widgets::{Block, BorderType, Paragraph, Widget},
 };
@@ -19,6 +19,12 @@ impl Widget for &App<'_> {
             .title("crateful")
             .title_alignment(Alignment::Center)
             .border_type(BorderType::Rounded);
+        let vertical = Layout::vertical([
+            Constraint::Length(1),
+            Constraint::Length(3),
+            Constraint::Min(1),
+        ]);
+        let [playing, list, controls] = vertical.areas(*buf.area());
 
         let text = format!(
             "This is a tui template.\n\
@@ -36,7 +42,7 @@ impl Widget for &App<'_> {
             .fg(Color::Red)
             .bg(Color::White)
             .centered();
-        paragraph.render(area, buf);
+        // paragraph.render(area, playing);
         paragraph2.render(area, buf);
     }
 }

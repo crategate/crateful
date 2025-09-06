@@ -96,7 +96,7 @@ impl App<'_> {
     }
 
     pub fn save_track(&mut self) {
-        self.counter = self.counter.saturating_sub(1);
+        // move track file. Play next track. Modify tracklist
     }
     pub fn delete_track(&mut self) {
         self.counter = self.counter.saturating_sub(1);
