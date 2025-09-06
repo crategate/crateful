@@ -4,8 +4,8 @@ use ratatui::{
     crossterm::event::{KeyCode, KeyEvent, KeyModifiers},
     DefaultTerminal,
 };
-use std::fs;
 use std::path::{Path, PathBuf};
+use std::{fs, vec};
 /// Application.
 #[derive(Debug)]
 pub struct App<'a> {
@@ -17,8 +17,8 @@ pub struct App<'a> {
     pub events: EventHandler,
     // incoming path
     pub incoming: &'a Path,
-    pub track_list: &'a Vec<PathBuf>,
-    pub playing: &'a PathBuf,
+    pub track_list: Vec<PathBuf>,
+    pub playing: PathBuf,
 }
 
 impl Default for App<'_> {
@@ -28,8 +28,8 @@ impl Default for App<'_> {
             counter: 0,
             events: EventHandler::new(),
             incoming: Path::new("~/Music/INCOMING/"),
-            track_list: &Vec::new::<PathBuf>,
-            playing: &PathBuf::new(),
+            track_list: Vec::new(),
+            playing: PathBuf::new(),
         }
     }
 }
