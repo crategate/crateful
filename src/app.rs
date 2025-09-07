@@ -95,6 +95,15 @@ impl App<'_> {
         self.counter = self.counter.saturating_sub(1);
     }
 
+    pub fn load_tracks(&mut self) {
+        /// enumerate and save track list with pathes
+        /// self.track_list = self.incoming
+        let init_tracks = fs::read_dir(self.incoming).unwrap();
+        for x in init_tracks {
+            self.track_list.push(x.unwrap().path())
+        }
+    }
+
     pub fn save_track(&mut self) {
         // move track file. Play next track. Modify tracklist
     }

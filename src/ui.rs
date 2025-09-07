@@ -21,7 +21,7 @@ impl Widget for &App<'_> {
             .title_alignment(Alignment::Center)
             .border_type(BorderType::Rounded);
         let vertical = Layout::vertical([
-            Constraint::Length(1),
+            Constraint::Length(4),
             Constraint::Length(3),
             Constraint::Min(1),
         ]);
@@ -35,7 +35,7 @@ impl Widget for &App<'_> {
 
         let paragraph = Paragraph::new(text)
             .fg(Color::Cyan)
-            .bg(Color::Black)
+            .bg(Color::Red)
             .centered();
         let paragraph2 = Paragraph::new("try")
             .fg(Color::Red)
@@ -43,7 +43,10 @@ impl Widget for &App<'_> {
             .centered()
             .block(block);
         // paragraph.render(area, playing);
-        paragraph2.render(playing, buf);
-        Line::from("process overview.").bold().render(list, buf);
+        paragraph.render(playing, buf);
+        Line::from("list some tracks here").bold().render(list, buf);
+        Line::from("footnote controls here")
+            .bold()
+            .render(controls, buf);
     }
 }
