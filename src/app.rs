@@ -96,12 +96,17 @@ impl App<'_> {
     }
 
     pub fn load_tracks(&mut self) {
-        /// enumerate and save track list with pathes
-        /// self.track_list = self.incoming
-        let init_tracks = fs::read_dir(self.incoming).unwrap();
-        for x in init_tracks {
-            self.track_list.push(x.unwrap().path())
-        }
+        // enumerate and save track list with pathes
+        // self.track_list = self.incoming
+        let init_tracks = fs::read_dir(self.incoming)
+            .unwrap()
+            .filter_map(|e| e.ok())
+            .map(|e| e.path())
+            .collect::<Vec<_>>();
+        println!("{:#?}", init_tracks)
+        //        for x in init_tracks {
+        //           self.track_list.push(x.unwrap().path())
+        //      }
     }
 
     pub fn save_track(&mut self) {
