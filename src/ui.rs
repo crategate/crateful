@@ -32,19 +32,20 @@ impl Widget for &App<'_> {
                 Counter: {}",
             self.counter
         );
+        let listformat = format!("{:?}", self.track_list);
 
         let paragraph = Paragraph::new(text)
             .fg(Color::Cyan)
             .bg(Color::Red)
             .centered();
-        let paragraph2 = Paragraph::new("try")
+        let paragraph2 = Paragraph::new(listformat)
             .fg(Color::Red)
             .bg(Color::White)
             .centered()
             .block(block);
         // paragraph.render(area, playing);
         paragraph.render(playing, buf);
-        Line::from("list some tracks here").bold().render(list, buf);
+        paragraph2.render(list, buf);
         Line::from("footnote controls here")
             .bold()
             .render(controls, buf);

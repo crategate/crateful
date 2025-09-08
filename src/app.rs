@@ -28,7 +28,11 @@ impl Default for App<'_> {
             counter: 0,
             events: EventHandler::new(),
             incoming: Path::new("~/Music/INCOMING/"),
-            track_list: Vec::new(),
+            track_list: fs::read_dir(".")
+                .unwrap()
+                .filter_map(|e| e.ok())
+                .map(|e| e.path())
+                .collect::<Vec<_>>(),
             playing: PathBuf::new(),
         }
     }
@@ -41,6 +45,7 @@ impl App<'_> {
 
     /// Run the application's main loop.
     pub async fn run(mut self, mut terminal: DefaultTerminal) -> color_eyre::Result<()> {
+        self.load_tracks();
         while self.running {
             terminal.draw(|frame| frame.render_widget(&self, frame.area()))?;
             match self.events.next().await? {
@@ -98,12 +103,6 @@ impl App<'_> {
     pub fn load_tracks(&mut self) {
         // enumerate and save track list with pathes
         // self.track_list = self.incoming
-        let init_tracks = fs::read_dir(self.incoming)
-            .unwrap()
-            .filter_map(|e| e.ok())
-            .map(|e| e.path())
-            .collect::<Vec<_>>();
-        println!("{:#?}", init_tracks)
         //        for x in init_tracks {
         //           self.track_list.push(x.unwrap().path())
         //      }
