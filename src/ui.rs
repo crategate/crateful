@@ -32,7 +32,7 @@ impl Widget for &App<'_> {
                 Counter: {}",
             self.counter
         );
-        let listformat = format!("{:?}", self.track_list);
+        let listformat = format!("{:#?}", self.track_list);
 
         let paragraph = Paragraph::new(text)
             .fg(Color::Cyan)
@@ -43,9 +43,9 @@ impl Widget for &App<'_> {
             .bg(Color::White)
             .centered()
             .block(block);
-        // paragraph.render(area, playing);
-        paragraph.render(playing, buf);
         paragraph2.render(list, buf);
+        paragraph.render(playing, buf);
+        Line::from("list some tracks here").bold().render(list, buf);
         Line::from("footnote controls here")
             .bold()
             .render(controls, buf);
