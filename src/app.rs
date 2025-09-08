@@ -5,7 +5,7 @@ use ratatui::{
     DefaultTerminal,
 };
 use std::path::{Path, PathBuf};
-use std::{fs, vec};
+use std::{env, fs};
 /// Application.
 #[derive(Debug)]
 pub struct App<'a> {
@@ -27,8 +27,8 @@ impl Default for App<'_> {
             running: true,
             counter: 0,
             events: EventHandler::new(),
-            incoming: Path::new("~/Music/INCOMING/"),
-            track_list: fs::read_dir(".")
+            incoming: Path::new("../../../Music/incoming/"),
+            track_list: fs::read_dir("../../Music/incoming")
                 .unwrap()
                 .filter_map(|e| e.ok())
                 .map(|e| e.path())
