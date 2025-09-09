@@ -22,7 +22,7 @@ impl Widget for &App<'_> {
             .border_type(BorderType::Rounded);
         let vertical = Layout::vertical([
             Constraint::Length(4),
-            Constraint::Length(3),
+            Constraint::Length(13),
             Constraint::Min(1),
         ]);
         let [playing, list, controls] = vertical.areas(area);
@@ -43,9 +43,8 @@ impl Widget for &App<'_> {
             .bg(Color::White)
             .centered()
             .block(block);
-        paragraph2.render(list, buf);
         paragraph.render(playing, buf);
-        Line::from("list some tracks here").bold().render(list, buf);
+        paragraph2.render(list, buf);
         Line::from("footnote controls here")
             .bold()
             .render(controls, buf);
