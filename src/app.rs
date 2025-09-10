@@ -4,9 +4,11 @@ use ratatui::{
     crossterm::event::{KeyCode, KeyEvent, KeyModifiers},
     DefaultTerminal,
 };
-use std::path::{Path, PathBuf};
-use std::{env, fs};
-/// Application.
+use rodio::{source::Source, Decoder, OutputStream};
+use std::fs;
+use std::fs::File;
+use std::io::BufReader;
+use std::path::{Path, PathBuf}; // Application.
 #[derive(Debug)]
 pub struct App<'a> {
     /// Is the application running?
@@ -45,7 +47,7 @@ impl App<'_> {
 
     /// Run the application's main loop.
     pub async fn run(mut self, mut terminal: DefaultTerminal) -> color_eyre::Result<()> {
-        self.load_tracks();
+        self.start_playback();
         while self.running {
             terminal.draw(|frame| frame.render_widget(&self, frame.area()))?;
             match self.events.next().await? {
@@ -106,6 +108,21 @@ impl App<'_> {
         //        for x in init_tracks {
         //           self.track_list.push(x.unwrap().path())
         //      }
+    }
+    pub fn start_playback(&mut self) {
+        // Get an output stream handle to the default physical sound device.
+        // Note that the playback stops when the stream_handle is dropped.
+        let stream_handle =
+            rodio::OutputStreamBuilder::open_default_stream().expect("open default audio stream");
+
+        // Load a sound from a file, using a path relative to Cargo.toml
+        let file = BufReader::new(File::open(&self.track_list[0]).unwrap());
+        // Note that the playback stops when the sink is dropped
+        let sink = rodio::play(&stream_handle.mixer(), file).unwrap();
+
+        // The sound plays in a separate audio thread,
+        // so we need to keep the main thread alive while it's playing.
+        std::thread::sleep(std::time::Duration::from_secs(5));
     }
 
     pub fn save_track(&mut self) {
