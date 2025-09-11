@@ -1,10 +1,10 @@
 use crate::event::{AppEvent, Event, EventHandler};
-use glob::glob;
 use ratatui::{
     crossterm::event::{KeyCode, KeyEvent, KeyModifiers},
     DefaultTerminal,
 };
-use rodio::{source::Source, Decoder, OutputStream};
+use rodio::source::{SineWave, Source};
+use rodio::{OutputStream, Sink};
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
@@ -116,13 +116,13 @@ impl App<'_> {
             rodio::OutputStreamBuilder::open_default_stream().expect("open default audio stream");
 
         // Load a sound from a file, using a path relative to Cargo.toml
-        let file = BufReader::new(File::open(&self.track_list[0]).unwrap());
+        let file = BufReader::new(File::open(&self.track_list[1]).unwrap());
         // Note that the playback stops when the sink is dropped
         let sink = rodio::play(&stream_handle.mixer(), file).unwrap();
 
         // The sound plays in a separate audio thread,
         // so we need to keep the main thread alive while it's playing.
-        std::thread::sleep(std::time::Duration::from_secs(5));
+        sink.sleep_until_end();
     }
 
     pub fn save_track(&mut self) {
