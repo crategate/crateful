@@ -9,7 +9,6 @@ use std::fs;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::{Path, PathBuf}; // Application.
-#[derive(Debug)]
 pub struct App<'a> {
     /// Is the application running?
     pub running: bool,
@@ -21,12 +20,17 @@ pub struct App<'a> {
     pub incoming: &'a Path,
     pub track_list: Vec<PathBuf>,
     pub playing: PathBuf,
-    pub music_player: Rodio::Sink,
+    pub music_player: rodio::Sink,
+    pub stream: rodio::OutputStream,
 }
 
 impl Default for App<'_> {
     fn default() -> Self {
-        Self {
+        let stream =
+            rodio::OutputStreamBuilder::open_default_stream().expect("open default audio stream");
+        let sink = rodio::Sink::connect_new(&stream.mixer());
+
+        return Self {
             running: true,
             counter: 0,
             events: EventHandler::new(),
@@ -37,8 +41,9 @@ impl Default for App<'_> {
                 .map(|e| e.path())
                 .collect::<Vec<_>>(),
             playing: PathBuf::new(),
-            music_player: rodio::Sink::connect_new(&stream_handle_mixer()),
-        }
+            music_player: sink,
+            stream: stream,
+        };
     }
 }
 impl App<'_> {
