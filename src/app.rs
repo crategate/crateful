@@ -21,6 +21,7 @@ pub struct App<'a> {
     pub incoming: &'a Path,
     pub track_list: Vec<PathBuf>,
     pub playing: PathBuf,
+    pub music_player: Rodio::Sink,
 }
 
 impl Default for App<'_> {
@@ -36,6 +37,7 @@ impl Default for App<'_> {
                 .map(|e| e.path())
                 .collect::<Vec<_>>(),
             playing: PathBuf::new(),
+            music_player: rodio::Sink::connect_new(&stream_handle_mixer()),
         }
     }
 }
@@ -118,7 +120,9 @@ impl App<'_> {
         // Load a sound from a file, using a path relative to Cargo.toml
         let file = BufReader::new(File::open(&self.track_list[1]).unwrap());
         // Note that the playback stops when the sink is dropped
-        let sink = rodio::play(&stream_handle.mixer(), file).unwrap();
+        let sink = rodio::Sink::connect_new(&stream_handle.mixer());
+
+        let source = rodio::play(&stream_handle.mixer(), file).unwrap();
 
         // The sound plays in a separate audio thread,
         // so we need to keep the main thread alive while it's playing.
