@@ -4,7 +4,7 @@ use ratatui::{
     DefaultTerminal,
 };
 use rodio::source::{SineWave, Source};
-use rodio::{OutputStream, Sink};
+use rodio::{Decoder, OutputStream, Sink};
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
@@ -118,19 +118,22 @@ impl App<'_> {
     }
     pub fn start_playback(&mut self) {
         // Get an output stream handle to the default physical sound device.
-        // Note that the playback stops when the stream_handle is dropped.
+        // let first = BufReader::new(File::open(&self.track_list[1]).unwrap());
+        // self.music_player.append(first);
+
+        //self.music_player.sleep_until_end();
+
         let stream_handle =
             rodio::OutputStreamBuilder::open_default_stream().expect("open default audio stream");
-
-        // Load a sound from a file, using a path relative to Cargo.toml
-        let file = BufReader::new(File::open(&self.track_list[1]).unwrap());
-        // Note that the playback stops when the sink is dropped
         let sink = rodio::Sink::connect_new(&stream_handle.mixer());
 
-        let source = rodio::play(&stream_handle.mixer(), file).unwrap();
+        // Add a dummy source of the sake of the example.
+        let file = BufReader::new(File::open(&self.track_list[1]).unwrap());
+        let coder = Decoder::new(file).unwrap();
+        sink.append(coder);
 
-        // The sound plays in a separate audio thread,
-        // so we need to keep the main thread alive while it's playing.
+        // The sound plays in a separate thread. This call will block the current thread until the sink
+        // has finished playing all its queued sounds.
         sink.sleep_until_end();
     }
 
