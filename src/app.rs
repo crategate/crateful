@@ -8,7 +8,9 @@ use rodio::{Decoder, OutputStream, Sink};
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
-use std::path::{Path, PathBuf}; // Application.
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
+use tokio::sync::{broadcast, Mutex};
 pub struct App<'a> {
     /// Is the application running?
     pub running: bool,
@@ -20,7 +22,7 @@ pub struct App<'a> {
     pub incoming: &'a Path,
     pub track_list: Vec<PathBuf>,
     pub playing: PathBuf,
-    pub music_player: rodio::Sink,
+    pub music_player: Arc<Mutex<rodio::Sink>>,
     pub stream: rodio::OutputStream,
 }
 
@@ -28,14 +30,14 @@ impl Default for App<'_> {
     fn default() -> Self {
         let stream =
             rodio::OutputStreamBuilder::open_default_stream().expect("open default audio stream");
-        let sink = rodio::Sink::connect_new(&stream.mixer());
+        let sink = Arc::new(Mutex::new(rodio::Sink::connect_new(&stream.mixer())));
 
         return Self {
             running: true,
             counter: 0,
             events: EventHandler::new(),
             incoming: Path::new("../../../Music/incoming/"),
-            track_list: fs::read_dir("../../Music/incoming")
+            track_list: fs::read_dir("../../../Music/incoming")
                 .unwrap()
                 .filter_map(|e| e.ok())
                 .map(|e| e.path())
@@ -103,6 +105,7 @@ impl App<'_> {
 
     pub fn increment_counter(&mut self) {
         self.counter = self.counter.saturating_add(1);
+        self.start_playback();
     }
 
     pub fn decrement_counter(&mut self) {
@@ -134,7 +137,7 @@ impl App<'_> {
 
         // The sound plays in a separate thread. This call will block the current thread until the sink
         // has finished playing all its queued sounds.
-        sink.sleep_until_end();
+        sink.play();
     }
 
     pub fn save_track(&mut self) {
