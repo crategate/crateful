@@ -32,7 +32,7 @@ impl Default for App<'_> {
             rodio::OutputStreamBuilder::open_default_stream().expect("open default audio stream");
         let sink = Arc::new(Mutex::new(rodio::Sink::connect_new(&stream.mixer())));
 
-        return Self {
+        Self {
             running: true,
             counter: 0,
             events: EventHandler::new(),
@@ -45,7 +45,7 @@ impl Default for App<'_> {
             playing: PathBuf::new(),
             music_player: sink,
             stream: stream,
-        };
+        }
     }
 }
 impl App<'_> {
@@ -53,7 +53,6 @@ impl App<'_> {
     pub fn new() -> Self {
         Self::default()
     }
-
     /// Run the application's main loop.
     pub async fn run(mut self, mut terminal: DefaultTerminal) -> color_eyre::Result<()> {
         self.start_playback();
