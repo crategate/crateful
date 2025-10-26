@@ -10,6 +10,9 @@ use std::fs::File;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
+use std::thread;
+// think we need regular mutex, as tokio yeilds lock of Mutex to the executing thread
+// meaning the track would play through instead of interrupt as we need.
 use tokio::sync::{broadcast, Mutex};
 pub struct App<'a> {
     /// Is the application running?
@@ -28,16 +31,18 @@ pub struct App<'a> {
 
 impl Default for App<'_> {
     fn default() -> Self {
-        let stream =
-            rodio::OutputStreamBuilder::open_default_stream().expect("open default audio stream");
-        let sink = Arc::new(Mutex::new(rodio::Sink::connect_new(&stream.mixer())));
+        thread::spawn(move || {
+            let stream = rodio::OutputStreamBuilder::open_default_stream()
+                .expect("open default audio stream");
+            let sink = Arc::new(Mutex::new(rodio::Sink::connect_new(&stream.mixer())));
+        });
 
         Self {
             running: true,
             counter: 0,
             events: EventHandler::new(),
-            incoming: Path::new("../../../Music/incoming/"),
-            track_list: fs::read_dir("../../../Music/incoming")
+            incoming: Path::new("../../Music/incoming/"),
+            track_list: fs::read_dir("../../Music/incoming")
                 .unwrap()
                 .filter_map(|e| e.ok())
                 .map(|e| e.path())
@@ -119,24 +124,9 @@ impl App<'_> {
         //      }
     }
     pub fn start_playback(&mut self) {
-        // Get an output stream handle to the default physical sound device.
-        // let first = BufReader::new(File::open(&self.track_list[1]).unwrap());
-        // self.music_player.append(first);
+        self.music_player.lock().append(coder);
 
-        //self.music_player.sleep_until_end();
-
-        let stream_handle =
-            rodio::OutputStreamBuilder::open_default_stream().expect("open default audio stream");
-        let sink = rodio::Sink::connect_new(&stream_handle.mixer());
-
-        // Add a dummy source of the sake of the example.
-        let file = BufReader::new(File::open(&self.track_list[1]).unwrap());
-        let coder = Decoder::new(file).unwrap();
-        sink.append(coder);
-
-        // The sound plays in a separate thread. This call will block the current thread until the sink
-        // has finished playing all its queued sounds.
-        sink.play();
+        self.music_player.lock().play();
     }
 
     pub fn save_track(&mut self) {
