@@ -25,17 +25,15 @@ pub struct App<'a> {
     pub incoming: &'a Path,
     pub track_list: Vec<PathBuf>,
     pub playing: PathBuf,
-    pub music_player: Arc<Mutex<rodio::Sink>>,
+    pub music_player: rodio::Sink,
     pub stream: rodio::OutputStream,
 }
 
 impl Default for App<'_> {
     fn default() -> Self {
-        thread::spawn(move || {
-            let stream = rodio::OutputStreamBuilder::open_default_stream()
-                .expect("open default audio stream");
-            let sink = Arc::new(Mutex::new(rodio::Sink::connect_new(&stream.mixer())));
-        });
+        let stream =
+            rodio::OutputStreamBuilder::open_default_stream().expect("open default audio stream");
+        let sink = rodio::Sink::connect_new(&stream.mixer());
 
         Self {
             running: true,
@@ -49,7 +47,7 @@ impl Default for App<'_> {
                 .collect::<Vec<_>>(),
             playing: PathBuf::new(),
             music_player: sink,
-            stream: stream,
+            stream,
         }
     }
 }
@@ -124,9 +122,9 @@ impl App<'_> {
         //      }
     }
     pub fn start_playback(&mut self) {
-        self.music_player.lock().append(coder);
+        self.music_player.append(coder);
 
-        self.music_player.lock().play();
+        self.music_player.play();
     }
 
     pub fn save_track(&mut self) {
