@@ -122,7 +122,7 @@ impl App<'_> {
         //      }
     }
     pub fn start_playback(&mut self) {
-        self.music_player.append(coder);
+        //self.music_player.append(coder);
 
         self.music_player.play();
     }
