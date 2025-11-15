@@ -9,11 +9,12 @@ use std::fs;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use std::thread;
 // think we need regular mutex, as tokio yeilds lock of Mutex to the executing thread
 // meaning the track would play through instead of interrupt as we need.
-use tokio::sync::{broadcast, Mutex};
+//use tokio::sync::{broadcast, Mutex};
+
 pub struct App<'a> {
     /// Is the application running?
     pub running: bool,
@@ -25,7 +26,7 @@ pub struct App<'a> {
     pub incoming: &'a Path,
     pub track_list: Vec<PathBuf>,
     pub playing: PathBuf,
-    pub music_player: rodio::Sink,
+    pub music_player: Arc<Mutex<rodio::Sink>>,
     pub stream: rodio::OutputStream,
 }
 
@@ -46,7 +47,7 @@ impl Default for App<'_> {
                 .map(|e| e.path())
                 .collect::<Vec<_>>(),
             playing: PathBuf::new(),
-            music_player: sink,
+            music_player: Arc::new(Mutex::new(sink)),
             stream,
         }
     }
@@ -116,15 +117,14 @@ impl App<'_> {
 
     pub fn load_tracks(&mut self) {
         // enumerate and save track list with pathes
-        // self.track_list = self.incoming
-        //        for x in init_tracks {
-        //           self.track_list.push(x.unwrap().path())
-        //      }
     }
     pub fn start_playback(&mut self) {
-        //self.music_player.append(coder);
-
-        self.music_player.play();
+        // let first = File::open(self.track_list.pop());
+        self.music_player
+            .lock()
+            .unwrap()
+            .append(rodio::Decoder::try_from(self.track_list.pop()));
+        self.music_player.lock().unwrap().play();
     }
 
     pub fn save_track(&mut self) {
