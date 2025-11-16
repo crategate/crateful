@@ -119,11 +119,9 @@ impl App<'_> {
         // enumerate and save track list with pathes
     }
     pub fn start_playback(&mut self) {
-        // let first = File::open(self.track_list.pop());
-        self.music_player
-            .lock()
-            .unwrap()
-            .append(rodio::Decoder::try_from(self.track_list.pop()));
+        let file = BufReader::new(File::open(self.track_list.pop().unwrap()).unwrap());
+        let source = Decoder::new(file).unwrap();
+        self.music_player.lock().unwrap().append(source);
         self.music_player.lock().unwrap().play();
     }
 
