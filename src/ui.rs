@@ -22,7 +22,7 @@ impl Widget for &App<'_> {
             .border_type(BorderType::Rounded);
         let vertical = Layout::vertical([
             Constraint::Length(4),
-            Constraint::Length(13),
+            Constraint::Length(33),
             Constraint::Min(1),
         ]);
         let [playing, list, controls] = vertical.areas(area);
