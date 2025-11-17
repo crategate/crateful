@@ -84,6 +84,7 @@ impl App<'_> {
     /// Handles the key events and updates the state of [`App`].
     pub fn handle_key_events(&mut self, key_event: KeyEvent) -> color_eyre::Result<()> {
         match key_event.code {
+            KeyCode::Char('s') => self.events.send(AppEvent::SaveTrack),
             KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
             KeyCode::Char('c' | 'C') if key_event.modifiers == KeyModifiers::CONTROL => {
                 self.events.send(AppEvent::Quit)
@@ -128,6 +129,10 @@ impl App<'_> {
 
     pub fn save_track(&mut self) {
         // move track file. Play next track. Modify tracklist
+        fs::rename(
+            self.track_list.get(0).unwrap(),
+            "../../Music/FUCKIN_SAVED.flac",
+        );
     }
     pub fn delete_track(&mut self) {
         self.counter = self.counter.saturating_sub(1);
