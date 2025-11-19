@@ -5,10 +5,11 @@ use ratatui::{
 };
 use rodio::source::{SineWave, Source};
 use rodio::{Decoder, OutputStream, Sink};
+use std::ffi::OsStr;
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
-use std::path::{Path, PathBuf};
+use std::path::{Component, Components, Path, PathBuf};
 use std::sync::{Arc, Mutex};
 
 pub struct App<'a> {
@@ -24,7 +25,6 @@ pub struct App<'a> {
     pub playing: PathBuf,
     pub music_player: Arc<Mutex<rodio::Sink>>,
     pub stream: rodio::OutputStream,
-    pub debug: &'a str,
 }
 
 impl Default for App<'_> {
@@ -47,7 +47,6 @@ impl Default for App<'_> {
             playing: PathBuf::new(),
             music_player: Arc::new(Mutex::new(sink)),
             stream,
-            debug: "",
         }
     }
 }
@@ -125,10 +124,11 @@ impl App<'_> {
 
     pub fn save_track(&mut self) {
         // move track file. Play next track. Modify tracklist
-        let newpath = self.track_list.first().unwrap();
-        self.debug = "how"
-        // fs::rename(self.track_list.first().unwrap(), "../../Music/another.flac");
+        let mut newpath = PathBuf::from("../../Music/saved/");
+        newpath.push(self.track_list.first().unwrap().file_name().unwrap());
+        fs::rename(self.track_list.first().unwrap(), newpath);
     }
+
     pub fn delete_track(&mut self) {
         self.counter = self.counter.saturating_sub(1);
     }

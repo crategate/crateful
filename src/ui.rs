@@ -33,7 +33,7 @@ impl Widget for &App<'_> {
             self.counter
         );
         let listformat = format!("{:#?}", self.track_list);
-        let trace = format!("{}", self.debug);
+        let trace = format!("{:#?}", self.playing);
 
         let paragraph = Paragraph::new(text)
             .fg(Color::Cyan)
