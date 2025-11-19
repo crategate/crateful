@@ -22,6 +22,7 @@ pub struct App<'a> {
     // incoming path
     pub incoming: &'a Path,
     pub track_list: Vec<PathBuf>,
+    pub index: usize,
     pub playing: PathBuf,
     pub music_player: Arc<Mutex<rodio::Sink>>,
     pub stream: rodio::OutputStream,
@@ -43,7 +44,7 @@ impl Default for App<'_> {
                 .filter_map(|e| e.ok())
                 .map(|e| e.path())
                 .collect::<Vec<_>>(),
-
+            index: 0,
             playing: PathBuf::new(),
             music_player: Arc::new(Mutex::new(sink)),
             stream,
@@ -116,17 +117,20 @@ impl App<'_> {
         // enumerate and save track list with pathes
     }
     pub fn start_playback(&mut self) {
-        let file = BufReader::new(File::open(self.track_list.get(0).unwrap()).unwrap());
+        let file = BufReader::new(File::open(self.track_list.get(self.index).unwrap()).unwrap());
         let source = Decoder::new(file).unwrap();
         self.music_player.lock().unwrap().append(source);
         self.music_player.lock().unwrap().play();
     }
 
     pub fn save_track(&mut self) {
-        // move track file. Play next track. Modify tracklist
+        // move track file. increment index. Play next track.
         let mut newpath = PathBuf::from("../../Music/saved/");
         newpath.push(self.track_list.first().unwrap().file_name().unwrap());
         fs::rename(self.track_list.first().unwrap(), newpath);
+        self.index += 1;
+        self.music_player.lock().unwrap().clear();
+        self.start_playback();
     }
 
     pub fn delete_track(&mut self) {
