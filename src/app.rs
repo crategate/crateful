@@ -15,8 +15,6 @@ use std::sync::{Arc, Mutex};
 pub struct App<'a> {
     /// Is the application running?
     pub running: bool,
-    /// Counter.
-    pub counter: u8,
     /// Event handler.
     pub events: EventHandler,
     // incoming path
@@ -36,7 +34,6 @@ impl Default for App<'_> {
 
         Self {
             running: true,
-            counter: 0,
             events: EventHandler::new(),
             incoming: Path::new("../../Music/incoming/"),
             track_list: fs::read_dir("../../Music/incoming")
@@ -83,6 +80,7 @@ impl App<'_> {
     pub fn handle_key_events(&mut self, key_event: KeyEvent) -> color_eyre::Result<()> {
         match key_event.code {
             KeyCode::Char('s') => self.events.send(AppEvent::SaveTrack),
+            KeyCode::Char('k') => self.events.send(AppEvent::DeleteTrack),
             KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
             KeyCode::Char('c' | 'C') if key_event.modifiers == KeyModifiers::CONTROL => {
                 self.events.send(AppEvent::Quit)
@@ -105,14 +103,6 @@ impl App<'_> {
         self.running = false;
     }
 
-    pub fn increment_counter(&mut self) {
-        self.counter = self.counter.saturating_add(1);
-    }
-
-    pub fn decrement_counter(&mut self) {
-        self.counter = self.counter.saturating_sub(1);
-    }
-
     pub fn load_tracks(&mut self) {
         // enumerate and save track list with pathes
     }
@@ -126,14 +116,24 @@ impl App<'_> {
     pub fn save_track(&mut self) {
         // move track file. increment index. Play next track.
         let mut newpath = PathBuf::from("../../Music/saved/");
-        newpath.push(self.track_list.first().unwrap().file_name().unwrap());
-        fs::rename(self.track_list.first().unwrap(), newpath);
+        newpath.push(
+            self.track_list
+                .get(self.index)
+                .unwrap()
+                .file_name()
+                .unwrap(),
+        );
+        fs::rename(self.track_list.get(self.index).unwrap(), newpath);
         self.index += 1;
         self.music_player.lock().unwrap().clear();
         self.start_playback();
     }
 
     pub fn delete_track(&mut self) {
-        self.counter = self.counter.saturating_sub(1);
+        // delete file. Increment index. Play next.
+        self.music_player.lock().unwrap().clear();
+        fs::remove_file(self.track_list.get(self.index).unwrap());
+        self.index += 1;
+        self.start_playback();
     }
 }
