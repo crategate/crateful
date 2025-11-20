@@ -3,13 +3,11 @@ use ratatui::{
     crossterm::event::{KeyCode, KeyEvent, KeyModifiers},
     DefaultTerminal,
 };
-use rodio::source::{SineWave, Source};
 use rodio::{Decoder, OutputStream, Sink};
-use std::ffi::OsStr;
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
-use std::path::{Component, Components, Path, PathBuf};
+use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 
 pub struct App<'a> {
@@ -65,8 +63,6 @@ impl App<'_> {
                     _ => {}
                 },
                 Event::App(app_event) => match app_event {
-                    AppEvent::Increment => self.increment_counter(),
-                    AppEvent::Decrement => self.decrement_counter(),
                     AppEvent::SaveTrack => self.save_track(),
                     AppEvent::DeleteTrack => self.delete_track(),
                     AppEvent::Quit => self.quit(),
@@ -85,8 +81,6 @@ impl App<'_> {
             KeyCode::Char('c' | 'C') if key_event.modifiers == KeyModifiers::CONTROL => {
                 self.events.send(AppEvent::Quit)
             }
-            KeyCode::Right => self.events.send(AppEvent::Increment),
-            KeyCode::Left => self.events.send(AppEvent::Decrement),
             // Other handlers you could add here.
             _ => {}
         }
@@ -111,6 +105,7 @@ impl App<'_> {
         let source = Decoder::new(file).unwrap();
         self.music_player.lock().unwrap().append(source);
         self.music_player.lock().unwrap().play();
+        self.playing = self.track_list.get(self.index).unwrap().to_path_buf();
     }
 
     pub fn save_track(&mut self) {

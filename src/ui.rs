@@ -28,9 +28,9 @@ impl Widget for &App<'_> {
         let [playing, list, controls] = vertical.areas(area);
 
         let text = format!(
-            "This is a tui template.\n\
-                Counter: {}",
-            self.counter
+            "Now Playing\n\
+                : {:?}",
+            self.playing
         );
         let listformat = format!("{:#?}", self.track_list);
         let trace = format!("{:#?}", self.playing);
