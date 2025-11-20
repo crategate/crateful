@@ -1,4 +1,5 @@
 use crate::event::{AppEvent, Event, EventHandler};
+use crate::metadata::MetaData;
 use ratatui::{
     crossterm::event::{KeyCode, KeyEvent, KeyModifiers},
     DefaultTerminal,
@@ -20,6 +21,7 @@ pub struct App<'a> {
     pub track_list: Vec<PathBuf>,
     pub index: usize,
     pub playing: PathBuf,
+    pub progress: usize,
     pub music_player: Arc<Mutex<rodio::Sink>>,
     pub stream: rodio::OutputStream,
 }
@@ -41,6 +43,7 @@ impl Default for App<'_> {
                 .collect::<Vec<_>>(),
             index: 0,
             playing: PathBuf::new(),
+            progress: 0,
             music_player: Arc::new(Mutex::new(sink)),
             stream,
         }
