@@ -1,31 +1,28 @@
 use crate::event::{AppEvent, Event, EventHandler};
+use crate::metadata::MetaData;
 use ratatui::{
     crossterm::event::{KeyCode, KeyEvent, KeyModifiers},
     DefaultTerminal,
 };
-use rodio::source::{SineWave, Source};
 use rodio::{Decoder, OutputStream, Sink};
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
-use std::thread;
-// think we need regular mutex, as tokio yeilds lock of Mutex to the executing thread
-// meaning the track would play through instead of interrupt as we need.
-use tokio::sync::{broadcast, Mutex};
+use std::sync::{Arc, Mutex};
+
 pub struct App<'a> {
     /// Is the application running?
     pub running: bool,
-    /// Counter.
-    pub counter: u8,
     /// Event handler.
     pub events: EventHandler,
     // incoming path
     pub incoming: &'a Path,
     pub track_list: Vec<PathBuf>,
+    pub index: usize,
     pub playing: PathBuf,
-    pub music_player: rodio::Sink,
+    pub progress: usize,
+    pub music_player: Arc<Mutex<rodio::Sink>>,
     pub stream: rodio::OutputStream,
 }
 
@@ -37,7 +34,6 @@ impl Default for App<'_> {
 
         Self {
             running: true,
-            counter: 0,
             events: EventHandler::new(),
             incoming: Path::new("../../Music/incoming/"),
             track_list: fs::read_dir("../../Music/incoming")
@@ -45,8 +41,10 @@ impl Default for App<'_> {
                 .filter_map(|e| e.ok())
                 .map(|e| e.path())
                 .collect::<Vec<_>>(),
+            index: 0,
             playing: PathBuf::new(),
-            music_player: sink,
+            progress: 0,
+            music_player: Arc::new(Mutex::new(sink)),
             stream,
         }
     }
@@ -68,8 +66,6 @@ impl App<'_> {
                     _ => {}
                 },
                 Event::App(app_event) => match app_event {
-                    AppEvent::Increment => self.increment_counter(),
-                    AppEvent::Decrement => self.decrement_counter(),
                     AppEvent::SaveTrack => self.save_track(),
                     AppEvent::DeleteTrack => self.delete_track(),
                     AppEvent::Quit => self.quit(),
@@ -82,12 +78,12 @@ impl App<'_> {
     /// Handles the key events and updates the state of [`App`].
     pub fn handle_key_events(&mut self, key_event: KeyEvent) -> color_eyre::Result<()> {
         match key_event.code {
+            KeyCode::Char('s') => self.events.send(AppEvent::SaveTrack),
+            KeyCode::Char('k') => self.events.send(AppEvent::DeleteTrack),
             KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
             KeyCode::Char('c' | 'C') if key_event.modifiers == KeyModifiers::CONTROL => {
                 self.events.send(AppEvent::Quit)
             }
-            KeyCode::Right => self.events.send(AppEvent::Increment),
-            KeyCode::Left => self.events.send(AppEvent::Decrement),
             // Other handlers you could add here.
             _ => {}
         }
@@ -95,7 +91,6 @@ impl App<'_> {
     }
 
     /// Handles the tick event of the terminal.
-    ///
     /// The tick event is where you can update the state of your application with any logic that
     /// needs to be updated at a fixed frame rate. E.g. polling a server, updating an animation.
     pub fn tick(&self) {}
@@ -105,32 +100,38 @@ impl App<'_> {
         self.running = false;
     }
 
-    pub fn increment_counter(&mut self) {
-        self.counter = self.counter.saturating_add(1);
-        self.start_playback();
-    }
-
-    pub fn decrement_counter(&mut self) {
-        self.counter = self.counter.saturating_sub(1);
-    }
-
     pub fn load_tracks(&mut self) {
         // enumerate and save track list with pathes
-        // self.track_list = self.incoming
-        //        for x in init_tracks {
-        //           self.track_list.push(x.unwrap().path())
-        //      }
     }
     pub fn start_playback(&mut self) {
-        //self.music_player.append(coder);
-
-        self.music_player.play();
+        let file = BufReader::new(File::open(self.track_list.get(self.index).unwrap()).unwrap());
+        let source = Decoder::new(file).unwrap();
+        self.music_player.lock().unwrap().append(source);
+        self.music_player.lock().unwrap().play();
+        self.playing = self.track_list.get(self.index).unwrap().to_path_buf();
     }
 
     pub fn save_track(&mut self) {
-        // move track file. Play next track. Modify tracklist
+        // move track file. increment index. Play next track.
+        let mut newpath = PathBuf::from("../../Music/saved/");
+        newpath.push(
+            self.track_list
+                .get(self.index)
+                .unwrap()
+                .file_name()
+                .unwrap(),
+        );
+        fs::rename(self.track_list.get(self.index).unwrap(), newpath);
+        self.index += 1;
+        self.music_player.lock().unwrap().clear();
+        self.start_playback();
     }
+
     pub fn delete_track(&mut self) {
-        self.counter = self.counter.saturating_sub(1);
+        // delete file. Increment index. Play next.
+        self.music_player.lock().unwrap().clear();
+        fs::remove_file(self.track_list.get(self.index).unwrap());
+        self.index += 1;
+        self.start_playback();
     }
 }

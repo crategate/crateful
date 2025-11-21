@@ -22,31 +22,30 @@ impl Widget for &App<'_> {
             .border_type(BorderType::Rounded);
         let vertical = Layout::vertical([
             Constraint::Length(4),
-            Constraint::Length(13),
+            Constraint::Length(33),
             Constraint::Min(1),
         ]);
         let [playing, list, controls] = vertical.areas(area);
 
         let text = format!(
-            "This is a tui template.\n\
-                Counter: {}",
-            self.counter
+            "Now Playing\n\
+                : {:?}",
+            self.playing
         );
         let listformat = format!("{:#?}", self.track_list);
+        let trace = format!("{:#?}", self.playing);
 
         let paragraph = Paragraph::new(text)
             .fg(Color::Cyan)
             .bg(Color::Red)
             .centered();
         let paragraph2 = Paragraph::new(listformat)
-            .fg(Color::Red)
+            .fg(Color::Blue)
             .bg(Color::White)
             .centered()
             .block(block);
         paragraph.render(playing, buf);
         paragraph2.render(list, buf);
-        Line::from("footnote controls here")
-            .bold()
-            .render(controls, buf);
+        Line::from(trace).bold().render(controls, buf);
     }
 }
