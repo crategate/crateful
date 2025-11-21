@@ -9,15 +9,21 @@ use symphonia::core::probe::Hint;
 
 pub struct MetaData {
     src: File,
-    mss: MediaSourceStream,
 }
 
 impl MetaData {
     pub fn new(song: PathBuf) -> Self {
         let songsrc = File::open(song).expect("needs clean song file...");
+        let mss = MediaSourceStream::new(Box::new(songsrc), Default::default());
+        let mut hint = Hint::new();
+        hint.with_extension("mp3");
+        let meta_opts: MetadataOptions = Default::default();
+        let fmt_opts: FormatOptions = Default::default();
+        let mut probed = symphonia::default::get_probe()
+            .format(&hint, mss, &fmt_opts, &meta_opts)
+            .expect("unsupported format");
         Self {
             src: songsrc.try_clone().expect("where file..."),
-            mss: MediaSourceStream::new(Box::new(songsrc), Default::default()),
         }
     }
 }

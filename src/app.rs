@@ -21,6 +21,7 @@ pub struct App<'a> {
     pub track_list: Vec<PathBuf>,
     pub index: usize,
     pub playing: PathBuf,
+    pub meta: Option<MetaData>,
     pub progress: usize,
     pub music_player: Arc<Mutex<rodio::Sink>>,
     pub stream: rodio::OutputStream,
@@ -43,6 +44,7 @@ impl Default for App<'_> {
                 .collect::<Vec<_>>(),
             index: 0,
             playing: PathBuf::new(),
+            meta: None,
             progress: 0,
             music_player: Arc::new(Mutex::new(sink)),
             stream,
@@ -105,6 +107,9 @@ impl App<'_> {
     }
     pub fn start_playback(&mut self) {
         let file = BufReader::new(File::open(self.track_list.get(self.index).unwrap()).unwrap());
+        self.meta = Some(MetaData::new(
+            self.track_list.get(self.index).unwrap().to_path_buf(),
+        ));
         let source = Decoder::new(file).unwrap();
         self.music_player.lock().unwrap().append(source);
         self.music_player.lock().unwrap().play();
