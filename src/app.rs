@@ -68,6 +68,7 @@ impl App<'_> {
                     _ => {}
                 },
                 Event::App(app_event) => match app_event {
+                    AppEvent::Seek(num) => self.seek(num),
                     AppEvent::SaveTrack => self.save_track(),
                     AppEvent::DeleteTrack => self.delete_track(),
                     AppEvent::Quit => self.quit(),

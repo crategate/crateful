@@ -13,6 +13,7 @@ impl App<'_> {
     /// Handles the key events and updates the state of [`App`].
     pub fn handle_key_events(&mut self, key_event: KeyEvent) -> color_eyre::Result<()> {
         match key_event.code {
+            KeyCode::Char('1') => self.events.send(AppEvent::Seek(1)),
             KeyCode::Char('s') => self.events.send(AppEvent::SaveTrack),
             KeyCode::Char('k') => self.events.send(AppEvent::DeleteTrack),
             KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
