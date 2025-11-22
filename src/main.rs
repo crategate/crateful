@@ -2,7 +2,7 @@ use crate::app::App;
 
 pub mod app;
 pub mod event;
-pub mod metadata;
+pub mod keys;
 pub mod ui;
 
 #[tokio::main]
