@@ -8,7 +8,7 @@ use symphonia::core::meta::MetadataOptions;
 use symphonia::core::probe::Hint;
 
 pub struct MetaData {
-    src: File,
+    track: String,
 }
 
 impl MetaData {
@@ -22,8 +22,9 @@ impl MetaData {
         let mut probed = symphonia::default::get_probe()
             .format(&hint, mss, &fmt_opts, &meta_opts)
             .expect("unsupported format");
+
         Self {
-            src: songsrc.try_clone().expect("where file..."),
+            track: "metadata".to_string(),
         }
     }
 }

@@ -4,12 +4,13 @@ use ratatui::{
     crossterm::event::{KeyCode, KeyEvent, KeyModifiers},
     DefaultTerminal,
 };
-use rodio::{Decoder, OutputStream, Sink};
+use rodio::{Decoder, OutputStream, Sink, Source};
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
+use std::time::Duration;
 
 pub struct App<'a> {
     /// Is the application running?
@@ -22,6 +23,7 @@ pub struct App<'a> {
     pub index: usize,
     pub playing: PathBuf,
     pub meta: Option<MetaData>,
+    pub length: Duration,
     pub progress: usize,
     pub music_player: Arc<Mutex<rodio::Sink>>,
     pub stream: rodio::OutputStream,
@@ -45,6 +47,7 @@ impl Default for App<'_> {
             index: 0,
             playing: PathBuf::new(),
             meta: None,
+            length: Duration::new(0, 0),
             progress: 0,
             music_player: Arc::new(Mutex::new(sink)),
             stream,
@@ -111,9 +114,14 @@ impl App<'_> {
             self.track_list.get(self.index).unwrap().to_path_buf(),
         ));
         let source = Decoder::new(file).unwrap();
+
+        self.length = source.total_duration().expect("length read fail");
         self.music_player.lock().unwrap().append(source);
         self.music_player.lock().unwrap().play();
         self.playing = self.track_list.get(self.index).unwrap().to_path_buf();
+    }
+    pub fn seek(&mut self, pos: u8) {
+        self.music_player.lock().unwrap()
     }
 
     pub fn save_track(&mut self) {
