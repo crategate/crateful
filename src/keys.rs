@@ -14,6 +14,14 @@ impl App<'_> {
     pub fn handle_key_events(&mut self, key_event: KeyEvent) -> color_eyre::Result<()> {
         match key_event.code {
             KeyCode::Char('1') => self.events.send(AppEvent::Seek(1)),
+            KeyCode::Char('2') => self.events.send(AppEvent::Seek(2)),
+            KeyCode::Char('3') => self.events.send(AppEvent::Seek(3)),
+            KeyCode::Char('4') => self.events.send(AppEvent::Seek(4)),
+            KeyCode::Char('5') => self.events.send(AppEvent::Seek(5)),
+            KeyCode::Char('6') => self.events.send(AppEvent::Seek(6)),
+            KeyCode::Char('7') => self.events.send(AppEvent::Seek(7)),
+            KeyCode::Char('8') => self.events.send(AppEvent::Seek(8)),
+            KeyCode::Char('9') => self.events.send(AppEvent::Seek(9)),
             KeyCode::Char('s') => self.events.send(AppEvent::SaveTrack),
             KeyCode::Char('k') => self.events.send(AppEvent::DeleteTrack),
             KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
@@ -48,11 +56,14 @@ impl App<'_> {
         self.music_player.lock().unwrap().play();
         self.playing = self.track_list.get(self.index).unwrap().to_path_buf();
     }
-    pub fn seek(&mut self, pos: u8) {
+    pub fn seek(&mut self, pos: u64) {
+        let percent = (pos as f64 / 10.0) * self.length.as_secs() as f64;
+        //* self.length.as_secs();
+        self.playing = PathBuf::from(percent.to_string());
         self.music_player
             .lock()
             .unwrap()
-            .try_seek(Duration::new(20, 0));
+            .try_seek(Duration::new(percent as u64, 0));
     }
 
     pub fn save_track(&mut self) {

@@ -31,7 +31,7 @@ pub enum Event {
 /// You can extend this enum with your own custom events.
 #[derive(Clone, Debug)]
 pub enum AppEvent {
-    Seek(u8),
+    Seek(u64),
     SaveTrack,
     DeleteTrack,
     Quit,
