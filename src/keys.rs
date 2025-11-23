@@ -56,11 +56,15 @@ impl App<'_> {
         self.music_player.lock().unwrap().play();
         self.playing = self.track_list.get(self.index).unwrap().to_path_buf();
     }
+
     pub fn seek(&mut self, pos: u64) {
         let percent = (pos as f64 / 10.0) * self.length.as_secs() as f64;
         //* self.length.as_secs();
         self.playing = PathBuf::from(percent.to_string());
-        self.music_player
+        self.music_player.lock().unwrap().clear();
+        self.start_playback();
+        let _ = self
+            .music_player
             .lock()
             .unwrap()
             .try_seek(Duration::new(percent as u64, 0));
