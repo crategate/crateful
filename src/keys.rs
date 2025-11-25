@@ -57,6 +57,19 @@ impl App<'_> {
         self.playing = self.track_list.get(self.index).unwrap().to_path_buf();
     }
 
+    pub fn list_write(&mut self) {
+        self.display_list = Vec::new();
+        self.track_list
+            .iter()
+            .enumerate()
+            .map(|(i, x)| {
+                if i >= self.index {
+                    self.display_list.push(x.to_str().unwrap().to_string())
+                }
+            })
+            .collect::<Vec<_>>();
+    }
+
     pub fn seek(&mut self, pos: u64) {
         let percent = ((pos as f64 / 10.0) * self.length.as_secs() as f64).round();
         // self.playing = PathBuf::from(percent.to_string());
@@ -82,6 +95,7 @@ impl App<'_> {
         );
         fs::rename(self.track_list.get(self.index).unwrap(), newpath);
         self.index += 1;
+        self.list_write();
         self.music_player.lock().unwrap().clear();
         self.start_playback();
     }
@@ -91,6 +105,7 @@ impl App<'_> {
         self.music_player.lock().unwrap().clear();
         fs::remove_file(self.track_list.get(self.index).unwrap());
         self.index += 1;
+        self.list_write();
         self.start_playback();
     }
 }

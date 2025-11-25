@@ -32,7 +32,7 @@ impl Widget for &App<'_> {
                 : {:?}... it's this long: {:?}",
             self.playing, self.length
         );
-        let listformat = format!("{:#?}", self.track_list);
+        let listformat = format!("{:#?}", self.display_list);
         let trace = format!("{:#?}", self.playing);
 
         let paragraph = Paragraph::new(text)

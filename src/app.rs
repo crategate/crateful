@@ -19,6 +19,7 @@ pub struct App<'a> {
     // incoming path
     pub incoming: &'a Path,
     pub track_list: Vec<PathBuf>,
+    pub display_list: Vec<String>,
     pub index: usize,
     pub playing: PathBuf,
     pub length: Duration,
@@ -42,6 +43,7 @@ impl Default for App<'_> {
                 .filter_map(|e| e.ok())
                 .map(|e| e.path())
                 .collect::<Vec<_>>(),
+            display_list: Vec::new(),
             index: 0,
             playing: PathBuf::new(),
             length: Duration::new(0, 0),
@@ -59,6 +61,7 @@ impl App<'_> {
     /// Run the application's main loop.
     pub async fn run(mut self, mut terminal: DefaultTerminal) -> color_eyre::Result<()> {
         self.start_playback();
+        self.list_write();
         while self.running {
             terminal.draw(|frame| frame.render_widget(&self, frame.area()))?;
             match self.events.next().await? {
