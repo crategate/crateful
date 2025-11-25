@@ -1,3 +1,4 @@
+use color_eyre::config::Frame;
 use ratatui::{
     buffer::Buffer,
     layout::{Alignment, Constraint, Layout, Rect},
@@ -54,7 +55,7 @@ impl Widget for &App<'_> {
             Constraint::Percentage(33),
             Constraint::Percentage(33),
         ]);
-        let popup_area = Rect::new(4, 5, 20, 20);
+        let popup_area = Rect::new(4, 5, buf.area.width - 9, buf.area.height - 12);
 
         let [playing, list, controls] = vertical.areas(area);
 
