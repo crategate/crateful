@@ -29,8 +29,8 @@ impl Widget for &App<'_> {
 
         let text = format!(
             "Now Playing\n\
-                : {:?}",
-            self.playing
+                : {:?}... it's this long: {:?}",
+            self.playing, self.length
         );
         let listformat = format!("{:#?}", self.track_list);
         let trace = format!("{:#?}", self.playing);
