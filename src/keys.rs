@@ -49,7 +49,7 @@ impl App<'_> {
     }
     pub fn start_playback(&mut self) {
         let file = BufReader::new(File::open(self.track_list.get(self.index).unwrap()).unwrap());
-        let source = Decoder::new(file).unwrap();
+        let source = Decoder::try_from(file).unwrap();
 
         self.length = source.total_duration().expect("length read fail");
         self.music_player.lock().unwrap().append(source);
@@ -58,9 +58,9 @@ impl App<'_> {
     }
 
     pub fn seek(&mut self, pos: u64) {
-        let percent = (pos as f64 / 10.0) * self.length.as_secs() as f64;
-        //* self.length.as_secs();
-        self.playing = PathBuf::from(percent.to_string());
+        let percent = ((pos as f64 / 10.0) * self.length.as_secs() as f64).round();
+        // self.playing = PathBuf::from(percent.to_string());
+        self.music_player.lock().unwrap().pause();
         self.music_player.lock().unwrap().clear();
         self.start_playback();
         let _ = self
