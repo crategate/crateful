@@ -64,7 +64,8 @@ impl App<'_> {
             .enumerate()
             .map(|(i, x)| {
                 if i >= self.index {
-                    self.display_list.push(x.to_str().unwrap().to_string())
+                    self.display_list
+                        .push(x.to_str().unwrap().to_string()[21..].to_string())
                 }
             })
             .collect::<Vec<_>>();

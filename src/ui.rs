@@ -1,12 +1,41 @@
 use ratatui::{
     buffer::Buffer,
     layout::{Alignment, Constraint, Layout, Rect},
-    style::{Color, Stylize},
-    text::Line,
-    widgets::{Block, BorderType, Paragraph, Widget},
+    style::{Color, Style, Stylize},
+    text::{Line, Text},
+    widgets::{Block, BorderType, Borders, Clear, Paragraph, Widget, Wrap},
 };
 
 use crate::app::App;
+use derive_setters::Setters;
+
+#[derive(Debug, Default, Setters)]
+struct Popup<'a> {
+    #[setters(into)]
+    title: Line<'a>,
+    #[setters(into)]
+    content: Text<'a>,
+    border_style: Style,
+    title_style: Style,
+    style: Style,
+}
+
+impl Widget for Popup<'_> {
+    fn render(self, area: Rect, buf: &mut Buffer) {
+        // ensure that all cells under the popup are cleared to avoid leaking content
+        Clear.render(area, buf);
+        let block = Block::new()
+            .title(self.title)
+            .title_style(self.title_style)
+            .borders(Borders::ALL)
+            .border_style(self.border_style);
+        Paragraph::new(self.content)
+            .wrap(Wrap { trim: true })
+            .style(self.style)
+            .block(block)
+            .render(area, buf);
+    }
+}
 
 impl Widget for &App<'_> {
     /// Renders the user interface widgets.
@@ -17,14 +46,16 @@ impl Widget for &App<'_> {
     // - https://github.com/ratatui/ratatui/tree/master/examples
     fn render(self, area: Rect, buf: &mut Buffer) {
         let block = Block::bordered()
-            .title("crateful")
             .title_alignment(Alignment::Center)
+            .title("Track to Sort")
             .border_type(BorderType::Rounded);
         let vertical = Layout::vertical([
-            Constraint::Length(4),
-            Constraint::Length(33),
-            Constraint::Min(1),
+            Constraint::Percentage(33),
+            Constraint::Percentage(33),
+            Constraint::Percentage(33),
         ]);
+        let popup_area = Rect::new(4, 5, 20, 20);
+
         let [playing, list, controls] = vertical.areas(area);
 
         let text = format!(
@@ -44,8 +75,21 @@ impl Widget for &App<'_> {
             .bg(Color::White)
             .centered()
             .block(block);
+        let para3 = Paragraph::new(trace)
+            .fg(Color::White)
+            .bg(Color::LightBlue)
+            .centered();
         paragraph.render(playing, buf);
         paragraph2.render(list, buf);
-        Line::from(trace).bold().render(controls, buf);
+        //        Line::from(trace).bold().render(controls, buf);
+        para3.render(controls, buf);
+
+        let popup = Popup::default()
+            .content("Hello world!")
+            .style(Style::new().yellow())
+            .title("With Clear")
+            .title_style(Style::new().white().bold())
+            .border_style(Style::new().red());
+        popup.render(popup_area, buf);
     }
 }
