@@ -24,6 +24,7 @@ impl App<'_> {
             KeyCode::Char('9') => self.events.send(AppEvent::Seek(9)),
             KeyCode::Char('s') => self.events.send(AppEvent::SaveTrack),
             KeyCode::Char('k') => self.events.send(AppEvent::DeleteTrack),
+            KeyCode::Char(' ') => self.events.send(AppEvent::Pause),
             KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
             KeyCode::Char('c' | 'C') if key_event.modifiers == KeyModifiers::CONTROL => {
                 self.events.send(AppEvent::Quit)
@@ -108,5 +109,8 @@ impl App<'_> {
         self.index += 1;
         self.list_write();
         self.start_playback();
+    }
+    pub fn pause(&mut self) {
+        self.paused = !self.paused
     }
 }

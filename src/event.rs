@@ -34,6 +34,7 @@ pub enum AppEvent {
     Seek(u64),
     SaveTrack,
     DeleteTrack,
+    Pause,
     Quit,
 }
 

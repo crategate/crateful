@@ -91,6 +91,8 @@ impl Widget for &App<'_> {
             .title("With Clear")
             .title_style(Style::new().white().bold())
             .border_style(Style::new().red());
-        popup.render(popup_area, buf);
+        if self.paused {
+            popup.render(popup_area, buf)
+        };
     }
 }

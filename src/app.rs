@@ -22,6 +22,7 @@ pub struct App<'a> {
     pub display_list: Vec<String>,
     pub index: usize,
     pub playing: PathBuf,
+    pub paused: bool,
     pub length: Duration,
     pub progress: usize,
     pub music_player: Arc<Mutex<rodio::Sink>>,
@@ -46,6 +47,7 @@ impl Default for App<'_> {
             display_list: Vec::new(),
             index: 0,
             playing: PathBuf::new(),
+            paused: false,
             length: Duration::new(0, 0),
             progress: 0,
             music_player: Arc::new(Mutex::new(sink)),
@@ -74,6 +76,7 @@ impl App<'_> {
                     AppEvent::Seek(num) => self.seek(num),
                     AppEvent::SaveTrack => self.save_track(),
                     AppEvent::DeleteTrack => self.delete_track(),
+                    AppEvent::Pause => self.pause(),
                     AppEvent::Quit => self.quit(),
                 },
             }
