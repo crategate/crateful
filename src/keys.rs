@@ -73,6 +73,9 @@ impl App<'_> {
     }
 
     pub fn seek(&mut self, pos: u64) {
+        if self.paused {
+            return;
+        }
         let percent = ((pos as f64 / 10.0) * self.length.as_secs() as f64).round();
         // self.playing = PathBuf::from(percent.to_string());
         self.music_player.lock().unwrap().pause();
@@ -111,6 +114,11 @@ impl App<'_> {
         self.start_playback();
     }
     pub fn pause(&mut self) {
-        self.paused = !self.paused
+        self.paused = !self.paused;
+        if self.music_player.lock().unwrap().is_paused() {
+            self.music_player.lock().unwrap().play();
+        } else {
+            self.music_player.lock().unwrap().pause();
+        };
     }
 }
