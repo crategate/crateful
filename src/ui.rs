@@ -8,42 +8,7 @@ use ratatui::{
 };
 
 use crate::app::App;
-use derive_setters::Setters;
-
-#[derive(Debug, Default, Setters)]
-struct Popup<'a> {
-    #[setters(into)]
-    title: Line<'a>,
-    #[setters(into)]
-    content: Text<'a>,
-    border_style: Style,
-    title_style: Style,
-    style: Style,
-}
-
-impl Widget for Popup<'_> {
-    fn render(self, area: Rect, buf: &mut Buffer) {
-        // ensure that all cells under the popup are cleared to avoid leaking content
-        Clear.render(area, buf);
-        let block = Block::new()
-            .title(self.title)
-            .title_style(self.title_style)
-            .borders(Borders::ALL)
-            .border_style(self.border_style);
-        let menus = Layout::horizontal([Constraint::Percentage(40)]);
-        Paragraph::new(self.content)
-            .wrap(Wrap { trim: true })
-            .style(self.style)
-            .block(block)
-            .render(area, buf);
-        //     Paragraph::new("asdffdsasdf")
-        //         .wrap(Wrap { trim: true })
-        //         .style(self.style)
-        //         .block(Block::new())
-        //         .render(area, buf);
-    }
-}
-
+use crate::pause;
 impl Widget for &App<'_> {
     /// Renders the user interface widgets.
     ///
@@ -62,7 +27,7 @@ impl Widget for &App<'_> {
             Constraint::Percentage(33),
         ]);
         let popup_area = Rect::new(4, 5, buf.area.width - 9, buf.area.height - 12);
-        let pop_per = Layout::horizontal([Constraint::Percentage(20)]);
+        let pop_per = Layout::horizontal([Constraint::Percentage(80)]).margin(5);
         let new_pop: [Rect; 1] = pop_per.areas(area);
 
         let [playing, list, controls] = vertical.areas(area);
@@ -93,10 +58,10 @@ impl Widget for &App<'_> {
         //        Line::from(trace).bold().render(controls, buf);
         para3.render(controls, buf);
 
-        let popup = Popup::default()
+        let popup = pause::Popup::default()
             .content("Hello world!")
             .style(Style::new().yellow())
-            .title("With Clear")
+            .title("Pause Menu... Press Space to Resume Sorting")
             .title_style(Style::new().white().bold())
             .border_style(Style::new().red());
         if self.paused {

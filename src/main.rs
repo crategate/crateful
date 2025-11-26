@@ -3,6 +3,7 @@ use crate::app::App;
 pub mod app;
 pub mod event;
 pub mod keys;
+pub mod pause;
 pub mod ui;
 
 #[tokio::main]
