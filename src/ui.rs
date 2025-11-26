@@ -30,11 +30,17 @@ impl Widget for Popup<'_> {
             .title_style(self.title_style)
             .borders(Borders::ALL)
             .border_style(self.border_style);
+        let menus = Layout::horizontal([Constraint::Percentage(40)]);
         Paragraph::new(self.content)
             .wrap(Wrap { trim: true })
             .style(self.style)
             .block(block)
             .render(area, buf);
+        //     Paragraph::new("asdffdsasdf")
+        //         .wrap(Wrap { trim: true })
+        //         .style(self.style)
+        //         .block(Block::new())
+        //         .render(area, buf);
     }
 }
 
@@ -56,6 +62,8 @@ impl Widget for &App<'_> {
             Constraint::Percentage(33),
         ]);
         let popup_area = Rect::new(4, 5, buf.area.width - 9, buf.area.height - 12);
+        let pop_per = Layout::horizontal([Constraint::Percentage(20)]);
+        let new_pop: [Rect; 1] = pop_per.areas(area);
 
         let [playing, list, controls] = vertical.areas(area);
 
@@ -92,7 +100,7 @@ impl Widget for &App<'_> {
             .title_style(Style::new().white().bold())
             .border_style(Style::new().red());
         if self.paused {
-            popup.render(popup_area, buf)
+            popup.render(new_pop[0], buf)
         };
     }
 }
