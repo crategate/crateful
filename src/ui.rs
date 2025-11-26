@@ -26,9 +26,6 @@ impl Widget for &App<'_> {
             Constraint::Percentage(33),
             Constraint::Percentage(33),
         ]);
-        let popup_area = Rect::new(4, 5, buf.area.width - 9, buf.area.height - 12);
-        let pop_per = Layout::horizontal([Constraint::Percentage(80)]).margin(5);
-        let new_pop: [Rect; 1] = pop_per.areas(area);
 
         let [playing, list, controls] = vertical.areas(area);
 
@@ -56,8 +53,8 @@ impl Widget for &App<'_> {
         paragraph.render(playing, buf);
         paragraph2.render(list, buf);
         //        Line::from(trace).bold().render(controls, buf);
-        para3.render(controls, buf);
 
+        para3.render(controls, buf);
         let popup = pause::Popup::default()
             .content("Hello world!")
             .style(Style::new().yellow())
@@ -65,7 +62,7 @@ impl Widget for &App<'_> {
             .title_style(Style::new().white().bold())
             .border_style(Style::new().red());
         if self.paused {
-            popup.render(new_pop[0], buf)
+            popup.render(area, buf)
         };
     }
 }

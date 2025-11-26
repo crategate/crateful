@@ -1,7 +1,7 @@
 use color_eyre::config::Frame;
 use ratatui::{
     buffer::Buffer,
-    layout::{Alignment, Constraint, Layout, Rect},
+    layout::{Alignment, Constraint, Layout, Offset, Rect},
     style::{Color, Style, Stylize},
     text::{Line, Text},
     widgets::{Block, BorderType, Borders, Clear, Paragraph, Widget, Wrap},
@@ -22,18 +22,36 @@ pub struct Popup<'a> {
 
 impl Widget for Popup<'_> {
     fn render(self, area: Rect, buf: &mut Buffer) {
+        let pop_per = Layout::vertical([Constraint::Percentage(80)]).margin(5);
+        let new_pop: [Rect; 1] = pop_per.areas(area);
+
+        let inner_menu = Layout::default()
+            .direction(ratatui::layout::Direction::Horizontal)
+            .constraints([
+                Constraint::Percentage(25),
+                Constraint::Percentage(25),
+                Constraint::Percentage(25),
+                Constraint::Percentage(25),
+            ])
+            .margin(1)
+            .split(new_pop[0]);
         // ensure that all cells under the popup are cleared to avoid leaking content
-        Clear.render(area, buf);
+        Clear.render(new_pop[0], buf);
         let block = Block::new()
             .title(self.title)
             .title_style(self.title_style)
             .borders(Borders::ALL)
             .border_style(self.border_style);
-        let menus = Layout::horizontal([Constraint::Percentage(40)]);
-        Paragraph::new(self.content)
+
+        Paragraph::new("asdfjdklsa;")
             .wrap(Wrap { trim: true })
             .style(self.style)
             .block(block)
-            .render(area, buf);
+            .render(new_pop[0], buf);
+
+        Block::new()
+            .title("one")
+            .borders(Borders::ALL)
+            .render(inner_menu[2].offset(Offset { x: 4, y: 5 }), buf)
     }
 }
