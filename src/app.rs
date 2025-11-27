@@ -3,6 +3,7 @@ use ratatui::{
     crossterm::event::{KeyCode, KeyEvent, KeyModifiers},
     DefaultTerminal,
 };
+use ratatui_explorer::{FileExplorer, Theme};
 use rodio::{Decoder, OutputStream, Sink, Source};
 use std::fs;
 use std::fs::File;
@@ -62,10 +63,16 @@ impl App<'_> {
     }
     /// Run the application's main loop.
     pub async fn run(mut self, mut terminal: DefaultTerminal) -> color_eyre::Result<()> {
+        let theme = Theme::default().add_default_title();
+        let mut file_explore = FileExplorer::with_theme(theme)?;
+
         self.start_playback();
         self.list_write();
         while self.running {
             terminal.draw(|frame| frame.render_widget(&self, frame.area()))?;
+            if self.paused {
+                //         terminal.draw(|frame| frame.render_widget(&file_explore.widget(), frame.area()))?;
+            }
             match self.events.next().await? {
                 Event::Tick => self.tick(),
                 Event::Crossterm(event) => match event {

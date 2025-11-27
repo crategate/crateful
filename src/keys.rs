@@ -29,7 +29,6 @@ impl App<'_> {
             KeyCode::Char('c' | 'C') if key_event.modifiers == KeyModifiers::CONTROL => {
                 self.events.send(AppEvent::Quit)
             }
-            // Other handlers you could add here.
             _ => {}
         }
         Ok(())
@@ -90,6 +89,9 @@ impl App<'_> {
 
     pub fn save_track(&mut self) {
         // move track file. increment index. Play next track.
+        if self.paused {
+            return;
+        }
         let mut newpath = PathBuf::from("../../Music/saved/");
         newpath.push(
             self.track_list
@@ -106,6 +108,9 @@ impl App<'_> {
     }
 
     pub fn delete_track(&mut self) {
+        if self.paused {
+            return;
+        }
         // delete file. Increment index. Play next.
         self.music_player.lock().unwrap().clear();
         fs::remove_file(self.track_list.get(self.index).unwrap());

@@ -8,6 +8,7 @@ use ratatui::{
 };
 
 use derive_setters::Setters;
+use ratatui_explorer::{FileExplorer, Theme};
 #[derive(Debug, Default, Setters)]
 
 pub struct Popup<'a> {
@@ -42,16 +43,32 @@ impl Widget for Popup<'_> {
             .title_style(self.title_style)
             .borders(Borders::ALL)
             .border_style(self.border_style);
-
         Paragraph::new("asdfjdklsa;")
             .wrap(Wrap { trim: true })
             .style(self.style)
             .block(block)
             .render(new_pop[0], buf);
+        let theme = Theme::default().add_default_title();
+        let mut file_explore = FileExplorer::new().unwrap();
+        file_explore
+            .widget()
+            .render(inner_menu[2].offset(Offset { x: 0, y: 5 }), buf);
 
         Block::new()
             .title("one")
             .borders(Borders::ALL)
-            .render(inner_menu[2].offset(Offset { x: 4, y: 5 }), buf)
+            .render(inner_menu[0].offset(Offset { x: 0, y: 0 }), buf);
+        Block::new()
+            .title("another")
+            .borders(Borders::ALL)
+            .render(inner_menu[1].offset(Offset { x: 0, y: 0 }), buf);
+        Block::new()
+            .title("this ")
+            .borders(Borders::ALL)
+            .render(inner_menu[2].offset(Offset { x: 0, y: 5 }), buf);
+        Block::new()
+            .title("final")
+            .borders(Borders::ALL)
+            .render(inner_menu[3].offset(Offset { x: 0, y: 0 }), buf);
     }
 }
