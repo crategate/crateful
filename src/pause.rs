@@ -1,10 +1,11 @@
+use crate::app::App;
 use color_eyre::config::Frame;
 use ratatui::{
     buffer::Buffer,
     layout::{Alignment, Constraint, Layout, Offset, Rect},
     style::{Color, Style, Stylize},
     text::{Line, Text},
-    widgets::{Block, BorderType, Borders, Clear, Paragraph, Widget, Wrap},
+    widgets::{Block, BorderType, Borders, Clear, Paragraph, Tabs, Widget, Wrap},
 };
 
 use derive_setters::Setters;
@@ -19,8 +20,14 @@ pub struct Popup<'a> {
     border_style: Style,
     title_style: Style,
     style: Style,
+    active_tab: u8,
 }
 
+impl Popup<'_> {
+    pub fn show(self, area: Rect, appState: &App, buf: &mut Buffer) {
+        self.render(area, buf)
+    }
+}
 impl Widget for Popup<'_> {
     fn render(self, area: Rect, buf: &mut Buffer) {
         let pop_per = Layout::vertical([Constraint::Percentage(80)]).margin(5);
@@ -38,6 +45,7 @@ impl Widget for Popup<'_> {
             .split(new_pop[0]);
         // ensure that all cells under the popup are cleared to avoid leaking content
         Clear.render(new_pop[0], buf);
+
         let block = Block::new()
             .title(self.title)
             .title_style(self.title_style)

@@ -9,6 +9,7 @@ use ratatui::{
 
 use crate::app::App;
 use crate::pause;
+use crate::pause::Popup;
 impl Widget for &App<'_> {
     /// Renders the user interface widgets.
     ///
@@ -62,7 +63,7 @@ impl Widget for &App<'_> {
             .title_style(Style::new().white().bold())
             .border_style(Style::new().red());
         if self.paused {
-            popup.render(area, buf)
+            popup.show(area, self, buf)
         };
     }
 }

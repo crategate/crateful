@@ -28,6 +28,7 @@ pub struct App<'a> {
     pub progress: usize,
     pub music_player: Arc<Mutex<rodio::Sink>>,
     pub stream: rodio::OutputStream,
+    pub volume: f32,
 }
 
 impl Default for App<'_> {
@@ -53,6 +54,7 @@ impl Default for App<'_> {
             progress: 0,
             music_player: Arc::new(Mutex::new(sink)),
             stream,
+            volume: 1.0,
         }
     }
 }
@@ -70,9 +72,6 @@ impl App<'_> {
         self.list_write();
         while self.running {
             terminal.draw(|frame| frame.render_widget(&self, frame.area()))?;
-            if self.paused {
-                //         terminal.draw(|frame| frame.render_widget(&file_explore.widget(), frame.area()))?;
-            }
             match self.events.next().await? {
                 Event::Tick => self.tick(),
                 Event::Crossterm(event) => match event {
