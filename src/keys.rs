@@ -112,7 +112,7 @@ impl App<'_> {
                 .file_name()
                 .unwrap(),
         );
-        fs::rename(self.track_list.get(self.index).unwrap(), newpath);
+        let _ = fs::rename(self.track_list.get(self.index).unwrap(), newpath);
         self.index += 1;
         self.list_write();
         self.music_player.lock().unwrap().clear();
@@ -125,13 +125,14 @@ impl App<'_> {
         }
         // delete file. Increment index. Play next.
         self.music_player.lock().unwrap().clear();
-        fs::remove_file(self.track_list.get(self.index).unwrap());
+        let _ = fs::remove_file(self.track_list.get(self.index).unwrap());
         self.index += 1;
         self.list_write();
         self.start_playback();
     }
     pub fn pause(&mut self) {
         self.pause_menu.select(Some(0));
+        self.pause_mode = 9;
         self.paused = !self.paused;
         if self.music_player.lock().unwrap().is_paused() {
             self.music_player.lock().unwrap().play();
@@ -145,5 +146,7 @@ impl App<'_> {
     pub fn down(&mut self) {
         self.pause_menu.select_next();
     }
-    pub fn select(&mut self) {}
+    pub fn select(&mut self) {
+        self.pause_mode = self.pause_menu.selected().unwrap();
+    }
 }

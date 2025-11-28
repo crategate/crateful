@@ -24,11 +24,13 @@ pub struct Popup<'a> {
     title_style: Style,
     style: Style,
     pause_menu: ListState,
+    pause_mode: usize,
 }
 
 impl Popup<'_> {
     pub fn show(mut self, area: Rect, app_state: &App, buf: &mut Buffer) {
         self.pause_menu = app_state.pause_menu.clone();
+        self.pause_mode = app_state.pause_mode.clone();
         self.render(area, buf);
     }
 }
@@ -62,10 +64,6 @@ impl Widget for Popup<'_> {
             .render(new_pop[0], buf);
         let theme = Theme::default().add_default_title();
         let mut file_explore = FileExplorer::new().unwrap();
-        file_explore
-            .widget()
-            .render(inner_menu[2].offset(Offset { x: 0, y: 5 }), buf);
-
         let selects = [
             "Select folder to sort",
             "Set save folders",
@@ -80,6 +78,11 @@ impl Widget for Popup<'_> {
                 buf,
                 &mut self.pause_menu,
             );
+        if self.pause_mode == 1 {
+            file_explore
+                .widget()
+                .render(inner_menu[2].offset(Offset { x: 0, y: 5 }), buf);
+        }
         Block::new()
             .title("another")
             .borders(Borders::ALL)
