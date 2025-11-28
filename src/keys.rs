@@ -12,24 +12,35 @@ use crate::event::{AppEvent, Event, EventHandler};
 impl App<'_> {
     /// Handles the key events and updates the state of [`App`].
     pub fn handle_key_events(&mut self, key_event: KeyEvent) -> color_eyre::Result<()> {
-        match key_event.code {
-            KeyCode::Char('1') => self.events.send(AppEvent::Seek(1)),
-            KeyCode::Char('2') => self.events.send(AppEvent::Seek(2)),
-            KeyCode::Char('3') => self.events.send(AppEvent::Seek(3)),
-            KeyCode::Char('4') => self.events.send(AppEvent::Seek(4)),
-            KeyCode::Char('5') => self.events.send(AppEvent::Seek(5)),
-            KeyCode::Char('6') => self.events.send(AppEvent::Seek(6)),
-            KeyCode::Char('7') => self.events.send(AppEvent::Seek(7)),
-            KeyCode::Char('8') => self.events.send(AppEvent::Seek(8)),
-            KeyCode::Char('9') => self.events.send(AppEvent::Seek(9)),
-            KeyCode::Char('s') => self.events.send(AppEvent::SaveTrack),
-            KeyCode::Char('k') => self.events.send(AppEvent::DeleteTrack),
-            KeyCode::Char(' ') => self.events.send(AppEvent::Pause),
-            KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
-            KeyCode::Char('c' | 'C') if key_event.modifiers == KeyModifiers::CONTROL => {
-                self.events.send(AppEvent::Quit)
+        if self.paused {
+            match key_event.code {
+                KeyCode::Char(' ') => self.events.send(AppEvent::Pause),
+                KeyCode::Enter => self.events.send(AppEvent::Select),
+                KeyCode::Up | KeyCode::Char('k') => self.events.send(AppEvent::Up),
+                KeyCode::Down | KeyCode::Char('j') => self.events.send(AppEvent::Down),
+                KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
+                _ => {}
             }
-            _ => {}
+        } else {
+            match key_event.code {
+                KeyCode::Char('1') => self.events.send(AppEvent::Seek(1)),
+                KeyCode::Char('2') => self.events.send(AppEvent::Seek(2)),
+                KeyCode::Char('3') => self.events.send(AppEvent::Seek(3)),
+                KeyCode::Char('4') => self.events.send(AppEvent::Seek(4)),
+                KeyCode::Char('5') => self.events.send(AppEvent::Seek(5)),
+                KeyCode::Char('6') => self.events.send(AppEvent::Seek(6)),
+                KeyCode::Char('7') => self.events.send(AppEvent::Seek(7)),
+                KeyCode::Char('8') => self.events.send(AppEvent::Seek(8)),
+                KeyCode::Char('9') => self.events.send(AppEvent::Seek(9)),
+                KeyCode::Char('s') => self.events.send(AppEvent::SaveTrack),
+                KeyCode::Char('k') => self.events.send(AppEvent::DeleteTrack),
+                KeyCode::Char(' ') => self.events.send(AppEvent::Pause),
+                KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
+                KeyCode::Char('c' | 'C') if key_event.modifiers == KeyModifiers::CONTROL => {
+                    self.events.send(AppEvent::Quit)
+                }
+                _ => {}
+            }
         }
         Ok(())
     }
@@ -59,7 +70,8 @@ impl App<'_> {
 
     pub fn list_write(&mut self) {
         self.display_list = Vec::new();
-        self.track_list
+        let _ = self
+            .track_list
             .iter()
             .enumerate()
             .map(|(i, x)| {
@@ -119,6 +131,7 @@ impl App<'_> {
         self.start_playback();
     }
     pub fn pause(&mut self) {
+        self.pause_menu.select(Some(0));
         self.paused = !self.paused;
         if self.music_player.lock().unwrap().is_paused() {
             self.music_player.lock().unwrap().play();
@@ -126,4 +139,11 @@ impl App<'_> {
             self.music_player.lock().unwrap().pause();
         };
     }
+    pub fn up(&mut self) {
+        self.pause_menu.select_previous();
+    }
+    pub fn down(&mut self) {
+        self.pause_menu.select_next();
+    }
+    pub fn select(&mut self) {}
 }

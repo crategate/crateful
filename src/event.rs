@@ -36,6 +36,9 @@ pub enum AppEvent {
     DeleteTrack,
     Pause,
     Quit,
+    Up,
+    Down,
+    Select,
 }
 
 /// Terminal event handler.

@@ -17,7 +17,7 @@ impl Widget for &App<'_> {
     // See the following resources:
     // - https://docs.rs/ratatui/latest/ratatui/widgets/index.html
     // - https://github.com/ratatui/ratatui/tree/master/examples
-    fn render(self, area: Rect, buf: &mut Buffer) {
+    fn render(mut self, area: Rect, buf: &mut Buffer) {
         let block = Block::bordered()
             .title_alignment(Alignment::Center)
             .title("Track to Sort")
@@ -39,7 +39,7 @@ impl Widget for &App<'_> {
         let trace = format!("{:#?}", self.playing);
 
         let paragraph = Paragraph::new(text)
-            .fg(Color::Cyan)
+            .fg(Color::Black)
             .bg(Color::Red)
             .centered();
         let paragraph2 = Paragraph::new(listformat)

@@ -5,7 +5,10 @@ use ratatui::{
     layout::{Alignment, Constraint, Layout, Offset, Rect},
     style::{Color, Style, Stylize},
     text::{Line, Text},
-    widgets::{Block, BorderType, Borders, Clear, Paragraph, Tabs, Widget, Wrap},
+    widgets::{
+        Block, BorderType, Borders, Clear, List, ListState, Paragraph, StatefulWidgetRef, Tabs,
+        Widget, Wrap,
+    },
 };
 
 use derive_setters::Setters;
@@ -20,16 +23,17 @@ pub struct Popup<'a> {
     border_style: Style,
     title_style: Style,
     style: Style,
-    active_tab: u8,
+    pause_menu: ListState,
 }
 
 impl Popup<'_> {
-    pub fn show(self, area: Rect, appState: &App, buf: &mut Buffer) {
-        self.render(area, buf)
+    pub fn show(mut self, area: Rect, app_state: &App, buf: &mut Buffer) {
+        self.pause_menu = app_state.pause_menu.clone();
+        self.render(area, buf);
     }
 }
 impl Widget for Popup<'_> {
-    fn render(self, area: Rect, buf: &mut Buffer) {
+    fn render(mut self, area: Rect, buf: &mut Buffer) {
         let pop_per = Layout::vertical([Constraint::Percentage(80)]).margin(5);
         let new_pop: [Rect; 1] = pop_per.areas(area);
 
@@ -62,10 +66,20 @@ impl Widget for Popup<'_> {
             .widget()
             .render(inner_menu[2].offset(Offset { x: 0, y: 5 }), buf);
 
-        Block::new()
-            .title("one")
-            .borders(Borders::ALL)
-            .render(inner_menu[0].offset(Offset { x: 0, y: 0 }), buf);
+        let selects = [
+            "Select folder to sort",
+            "Set save folders",
+            "Resume sorting (press Space)",
+        ];
+        List::new(selects)
+            .block(Block::bordered().title("options"))
+            .highlight_style(Style::new().white())
+            .highlight_symbol(">>")
+            .render_ref(
+                inner_menu[0].offset(Offset { x: 0, y: 0 }),
+                buf,
+                &mut self.pause_menu,
+            );
         Block::new()
             .title("another")
             .borders(Borders::ALL)

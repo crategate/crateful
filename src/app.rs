@@ -1,6 +1,7 @@
 use crate::event::{AppEvent, Event, EventHandler};
 use ratatui::{
     crossterm::event::{KeyCode, KeyEvent, KeyModifiers},
+    widgets::ListState,
     DefaultTerminal,
 };
 use ratatui_explorer::{FileExplorer, Theme};
@@ -24,6 +25,7 @@ pub struct App<'a> {
     pub index: usize,
     pub playing: PathBuf,
     pub paused: bool,
+    pub pause_menu: ListState,
     pub length: Duration,
     pub progress: usize,
     pub music_player: Arc<Mutex<rodio::Sink>>,
@@ -50,6 +52,7 @@ impl Default for App<'_> {
             index: 0,
             playing: PathBuf::new(),
             paused: false,
+            pause_menu: ListState::default().with_selected(Some(0)),
             length: Duration::new(0, 0),
             progress: 0,
             music_player: Arc::new(Mutex::new(sink)),
@@ -65,9 +68,6 @@ impl App<'_> {
     }
     /// Run the application's main loop.
     pub async fn run(mut self, mut terminal: DefaultTerminal) -> color_eyre::Result<()> {
-        let theme = Theme::default().add_default_title();
-        let mut file_explore = FileExplorer::with_theme(theme)?;
-
         self.start_playback();
         self.list_write();
         while self.running {
@@ -84,6 +84,9 @@ impl App<'_> {
                     AppEvent::DeleteTrack => self.delete_track(),
                     AppEvent::Pause => self.pause(),
                     AppEvent::Quit => self.quit(),
+                    AppEvent::Up => self.up(),
+                    AppEvent::Down => self.down(),
+                    AppEvent::Select => self.select(),
                 },
             }
         }
