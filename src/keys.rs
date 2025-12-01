@@ -159,7 +159,15 @@ impl App<'_> {
         };
     }
     pub fn set_pause_mode(&mut self, mode: PauseMode) {
-        self.pause_mode = PauseMode::NotPaused;
+        match self.pause_menu.selected().unwrap() {
+            0 => self.pause_mode = PauseMode::IncomingSelect,
+            1 => self.pause_mode = PauseMode::SaveSelect,
+            2 => {
+                self.pause_mode = PauseMode::NotPaused;
+                self.pause();
+            }
+            _ => {}
+        }
     }
     pub fn up(&mut self) {
         self.pause_menu.select_previous();
