@@ -24,7 +24,9 @@ impl App<'_> {
             },
             PauseMode::MainMenu => match key_event.code {
                 KeyCode::Char(' ') => self.events.send(AppEvent::Pause),
-                KeyCode::Enter => self.events.send(AppEvent::Select),
+                KeyCode::Enter => self
+                    .events
+                    .send(AppEvent::SetPauseMode(PauseMode::NotPaused)),
                 KeyCode::Up | KeyCode::Char('k') => self.events.send(AppEvent::Up),
                 KeyCode::Down | KeyCode::Char('j') => self.events.send(AppEvent::Down),
                 KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
@@ -156,11 +158,16 @@ impl App<'_> {
             self.music_player.lock().unwrap().pause();
         };
     }
+    pub fn set_pause_mode(&mut self, mode: PauseMode) {
+        self.pause_mode = PauseMode::NotPaused;
+    }
     pub fn up(&mut self) {
         self.pause_menu.select_previous();
     }
     pub fn down(&mut self) {
-        self.pause_menu.select_next();
+        if self.pause_menu.selected().unwrap() < 2 {
+            self.pause_menu.select_next();
+        }
     }
     pub fn select(&mut self) {
         //self.pause_mode = self.pause_menu.selected().unwrap();

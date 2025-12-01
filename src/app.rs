@@ -99,6 +99,7 @@ impl App<'_> {
                     AppEvent::SaveTrack => self.save_track(),
                     AppEvent::DeleteTrack => self.delete_track(),
                     AppEvent::Pause => self.pause(),
+                    AppEvent::SetPauseMode(mode) => self.set_pause_mode(mode),
                     AppEvent::Quit => self.quit(),
                     AppEvent::Up => self.up(),
                     AppEvent::Down => self.down(),

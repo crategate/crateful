@@ -4,6 +4,9 @@ use ratatui::crossterm::event::Event as CrosstermEvent;
 use std::time::Duration;
 use tokio::sync::mpsc;
 
+use crate::app;
+use crate::app::PauseMode;
+
 /// The frequency at which tick events are emitted.
 const TICK_FPS: f64 = 30.0;
 
@@ -35,6 +38,7 @@ pub enum AppEvent {
     SaveTrack,
     DeleteTrack,
     Pause,
+    SetPauseMode(PauseMode),
     Quit,
     Up,
     Down,
