@@ -31,8 +31,8 @@ impl Popup<'_> {
     pub fn show(mut self, area: Rect, mut app_state: &App, buf: &mut Buffer) {
         self.pause_menu = app_state.pause_menu.clone();
         self.pause_mode = app_state.pause_mode.clone();
-        self.explorer_path = app_state.incoming.clone().to_path_buf();
         self.explorer_index = app_state.explorer_index.clone();
+        self.explorer_path = app_state.explorer_path.clone();
         self.render(area, buf);
     }
 }
@@ -95,7 +95,7 @@ impl Widget for Popup<'_> {
             .split(pop_per[0]);
         match self.pause_mode {
             PauseMode::SaveSelect => {
-                file_explore.set_cwd("~");
+                file_explore.set_cwd(self.explorer_path);
                 file_explore.set_selected_idx(self.explorer_index);
                 file_explore
                     .widget()
