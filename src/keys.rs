@@ -7,15 +7,18 @@ use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 use crate::app::App;
+use crate::app::PauseMode;
 use crate::event::{AppEvent, Event, EventHandler};
 
 impl App<'_> {
     /// Handles the key events and updates the state of [`App`].
     pub fn handle_key_events(&mut self, key_event: KeyEvent) -> color_eyre::Result<()> {
-        if self.pause_mode == 0 {
+        if self.pause_mode == PauseMode::MainMenu {
             match key_event.code {
                 KeyCode::Up | KeyCode::Char('k') => self.events.send(AppEvent::PathUp),
                 KeyCode::Down | KeyCode::Char('j') => self.events.send(AppEvent::PathDown),
+                KeyCode::Left | KeyCode::Char('h') => self.events.send(AppEvent::PathUp),
+                KeyCode::Right | KeyCode::Char('l') => self.events.send(AppEvent::PathDown),
                 KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
                 _ => {}
             }
@@ -139,7 +142,7 @@ impl App<'_> {
     }
     pub fn pause(&mut self) {
         self.pause_menu.select(Some(0));
-        self.pause_mode = 9;
+        self.pause_mode = PauseMode::MainMenu;
         self.paused = !self.paused;
         if self.music_player.lock().unwrap().is_paused() {
             self.music_player.lock().unwrap().play();
@@ -154,7 +157,7 @@ impl App<'_> {
         self.pause_menu.select_next();
     }
     pub fn select(&mut self) {
-        self.pause_mode = self.pause_menu.selected().unwrap();
+        //self.pause_mode = self.pause_menu.selected().unwrap();
     }
 
     pub fn path_up(&mut self) {

@@ -27,13 +27,22 @@ pub struct App<'a> {
     pub playing: PathBuf,
     pub paused: bool,
     pub pause_menu: ListState,
-    pub pause_mode: usize,
+    pub pause_mode: PauseMode,
     pub explorer_index: usize,
     pub length: Duration,
     pub progress: usize,
     pub music_player: Arc<Mutex<rodio::Sink>>,
     pub stream: rodio::OutputStream,
     pub volume: f32,
+}
+
+#[derive(Clone, Default, Debug, PartialEq)]
+pub enum PauseMode {
+    #[default]
+    NotPaused,
+    MainMenu,
+    SaveSelect,
+    IncomingSelect,
 }
 
 impl Default for App<'_> {
@@ -56,7 +65,7 @@ impl Default for App<'_> {
             playing: PathBuf::new(),
             paused: false,
             pause_menu: ListState::default().with_selected(Some(0)),
-            pause_mode: 9,
+            pause_mode: PauseMode::NotPaused,
             explorer_index: 0,
             length: Duration::new(0, 0),
             progress: 0,
