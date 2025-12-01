@@ -38,6 +38,7 @@ pub struct Popup<'a> {
     pause_menu: ListState,
     pause_mode: usize,
     explorer_path: PathBuf,
+    explorer_index: usize,
 }
 
 impl Popup<'_> {
@@ -45,6 +46,7 @@ impl Popup<'_> {
         self.pause_menu = app_state.pause_menu.clone();
         self.pause_mode = app_state.pause_mode.clone();
         self.explorer_path = app_state.incoming.clone().to_path_buf();
+        self.explorer_index = app_state.explorer_index.clone();
         self.render(area, buf);
     }
 }
@@ -107,6 +109,7 @@ impl Widget for Popup<'_> {
             .split(pop_per[0]);
         if self.pause_mode == 0 {
             file_explore.set_cwd(self.explorer_path);
+            file_explore.set_selected_idx(self.explorer_index);
             file_explore
                 .widget()
                 .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
