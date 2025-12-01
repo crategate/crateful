@@ -28,6 +28,7 @@ pub struct App<'a> {
     pub paused: bool,
     pub pause_menu: ListState,
     pub pause_mode: PauseMode,
+    pub explorer_path: PathBuf,
     pub explorer_index: usize,
     pub length: Duration,
     pub progress: usize,
@@ -66,6 +67,7 @@ impl Default for App<'_> {
             paused: false,
             pause_menu: ListState::default().with_selected(Some(0)),
             pause_mode: PauseMode::NotPaused,
+            explorer_path: PathBuf::new(),
             explorer_index: 0,
             length: Duration::new(0, 0),
             progress: 0,
@@ -103,6 +105,8 @@ impl App<'_> {
                     AppEvent::Select => self.select(),
                     AppEvent::PathDown => self.path_down(),
                     AppEvent::PathUp => self.path_up(),
+                    AppEvent::PathParent => self.path_parent(),
+                    AppEvent::PathChild => self.path_child(),
                 },
             }
         }

@@ -41,6 +41,8 @@ pub enum AppEvent {
     Select,
     PathUp,
     PathDown,
+    PathParent,
+    PathChild,
 }
 
 /// Terminal event handler.
