@@ -160,7 +160,10 @@ impl App<'_> {
     }
     pub fn set_pause_mode(&mut self, mode: PauseMode) {
         match self.pause_menu.selected().unwrap() {
-            0 => self.pause_mode = PauseMode::IncomingSelect,
+            0 => {
+                self.pause_mode = PauseMode::IncomingSelect;
+                self.explorer_path = self.incoming.to_path_buf();
+            }
             1 => self.pause_mode = PauseMode::SaveSelect,
             2 => {
                 self.pause_mode = PauseMode::NotPaused;

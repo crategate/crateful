@@ -1,28 +1,13 @@
 use crate::app::PauseMode;
 use crate::App;
-use color_eyre::config::Frame;
 use ratatui::{
     buffer::Buffer,
-    layout::{Alignment, Constraint, Layout, Offset, Rect},
-    style::{Color, Style, Stylize},
+    layout::{Constraint, Layout, Offset, Rect},
+    style::{Style, Stylize},
     text::{Line, Text},
-    widgets::{
-        Block, BorderType, Borders, Clear, List, ListState, Paragraph, StatefulWidgetRef, Widget,
-        Wrap,
-    },
+    widgets::{Block, Borders, Clear, List, ListState, Paragraph, StatefulWidgetRef, Widget, Wrap},
 };
-use std::{
-    io::{self, stdout},
-    path::PathBuf,
-};
-
-use crossterm::{
-    event::{read, Event, KeyCode},
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
-    ExecutableCommand,
-};
-use ratatui::crossterm;
-use ratatui::prelude::*;
+use std::path::PathBuf;
 
 use derive_setters::Setters;
 use ratatui_explorer::{FileExplorer, Theme};
