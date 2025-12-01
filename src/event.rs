@@ -34,7 +34,13 @@ pub enum AppEvent {
     Seek(u64),
     SaveTrack,
     DeleteTrack,
+    Pause,
     Quit,
+    Up,
+    Down,
+    Select,
+    PathUp,
+    PathDown,
 }
 
 /// Terminal event handler.

@@ -1,8 +1,11 @@
 use crate::event::{AppEvent, Event, EventHandler};
 use ratatui::{
     crossterm::event::{KeyCode, KeyEvent, KeyModifiers},
+    layout::{Alignment, Constraint, Layout, Offset, Rect},
+    widgets::{Block, Borders, ListState},
     DefaultTerminal,
 };
+use ratatui_explorer::{FileExplorer, Theme};
 use rodio::{Decoder, OutputStream, Sink, Source};
 use std::fs;
 use std::fs::File;
@@ -22,10 +25,24 @@ pub struct App<'a> {
     pub display_list: Vec<String>,
     pub index: usize,
     pub playing: PathBuf,
+    pub paused: bool,
+    pub pause_menu: ListState,
+    pub pause_mode: PauseMode,
+    pub explorer_index: usize,
     pub length: Duration,
     pub progress: usize,
     pub music_player: Arc<Mutex<rodio::Sink>>,
     pub stream: rodio::OutputStream,
+    pub volume: f32,
+}
+
+#[derive(Clone, Default, Debug, PartialEq)]
+pub enum PauseMode {
+    #[default]
+    NotPaused,
+    MainMenu,
+    SaveSelect,
+    IncomingSelect,
 }
 
 impl Default for App<'_> {
@@ -46,10 +63,15 @@ impl Default for App<'_> {
             display_list: Vec::new(),
             index: 0,
             playing: PathBuf::new(),
+            paused: false,
+            pause_menu: ListState::default().with_selected(Some(0)),
+            pause_mode: PauseMode::NotPaused,
+            explorer_index: 0,
             length: Duration::new(0, 0),
             progress: 0,
             music_player: Arc::new(Mutex::new(sink)),
             stream,
+            volume: 1.0,
         }
     }
 }
@@ -74,7 +96,13 @@ impl App<'_> {
                     AppEvent::Seek(num) => self.seek(num),
                     AppEvent::SaveTrack => self.save_track(),
                     AppEvent::DeleteTrack => self.delete_track(),
+                    AppEvent::Pause => self.pause(),
                     AppEvent::Quit => self.quit(),
+                    AppEvent::Up => self.up(),
+                    AppEvent::Down => self.down(),
+                    AppEvent::Select => self.select(),
+                    AppEvent::PathDown => self.path_down(),
+                    AppEvent::PathUp => self.path_up(),
                 },
             }
         }
