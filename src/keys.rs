@@ -12,7 +12,14 @@ use crate::event::{AppEvent, Event, EventHandler};
 impl App<'_> {
     /// Handles the key events and updates the state of [`App`].
     pub fn handle_key_events(&mut self, key_event: KeyEvent) -> color_eyre::Result<()> {
-        if self.paused {
+        if self.pause_mode == 0 {
+            match key_event.code {
+                KeyCode::Up | KeyCode::Char('k') => self.events.send(AppEvent::PathUp),
+                KeyCode::Down | KeyCode::Char('j') => self.events.send(AppEvent::PathDown),
+                KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
+                _ => {}
+            }
+        } else if self.paused {
             match key_event.code {
                 KeyCode::Char(' ') => self.events.send(AppEvent::Pause),
                 KeyCode::Enter => self.events.send(AppEvent::Select),
@@ -148,5 +155,13 @@ impl App<'_> {
     }
     pub fn select(&mut self) {
         self.pause_mode = self.pause_menu.selected().unwrap();
+    }
+
+    pub fn path_up(&mut self) {
+        self.explorer_index -= 1;
+    }
+
+    pub fn path_down(&mut self) {
+        self.explorer_index += 1;
     }
 }

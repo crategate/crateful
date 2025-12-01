@@ -39,6 +39,8 @@ pub enum AppEvent {
     Up,
     Down,
     Select,
+    PathUp,
+    PathDown,
 }
 
 /// Terminal event handler.

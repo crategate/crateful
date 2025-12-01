@@ -1,7 +1,8 @@
 use crate::event::{AppEvent, Event, EventHandler};
 use ratatui::{
     crossterm::event::{KeyCode, KeyEvent, KeyModifiers},
-    widgets::ListState,
+    layout::{Alignment, Constraint, Layout, Offset, Rect},
+    widgets::{Block, Borders, ListState},
     DefaultTerminal,
 };
 use ratatui_explorer::{FileExplorer, Theme};
@@ -27,6 +28,7 @@ pub struct App<'a> {
     pub paused: bool,
     pub pause_menu: ListState,
     pub pause_mode: usize,
+    pub explorer_index: usize,
     pub length: Duration,
     pub progress: usize,
     pub music_player: Arc<Mutex<rodio::Sink>>,
@@ -55,6 +57,7 @@ impl Default for App<'_> {
             paused: false,
             pause_menu: ListState::default().with_selected(Some(0)),
             pause_mode: 9,
+            explorer_index: 0,
             length: Duration::new(0, 0),
             progress: 0,
             music_player: Arc::new(Mutex::new(sink)),
@@ -89,6 +92,8 @@ impl App<'_> {
                     AppEvent::Up => self.up(),
                     AppEvent::Down => self.down(),
                     AppEvent::Select => self.select(),
+                    AppEvent::PathDown => self.path_down(),
+                    AppEvent::PathUp => self.path_up(),
                 },
             }
         }
