@@ -164,7 +164,10 @@ impl App<'_> {
                 self.pause_mode = PauseMode::IncomingSelect;
                 self.explorer_path = self.incoming.to_path_buf();
             }
-            1 => self.pause_mode = PauseMode::SaveSelect,
+            1 => {
+                self.pause_mode = PauseMode::SaveSelect;
+                self.explorer_path = self.save_path_a.to_path_buf()
+            }
             2 => {
                 self.pause_mode = PauseMode::NotPaused;
                 self.pause();

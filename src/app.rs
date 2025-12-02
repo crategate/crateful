@@ -21,6 +21,7 @@ pub struct App<'a> {
     pub events: EventHandler,
     // incoming path
     pub incoming: &'a Path,
+    pub save_path_a: PathBuf,
     pub track_list: Vec<PathBuf>,
     pub display_list: Vec<String>,
     pub index: usize,
@@ -61,6 +62,7 @@ impl Default for App<'_> {
                 .filter_map(|e| e.ok())
                 .map(|e| e.path())
                 .collect::<Vec<_>>(),
+            save_path_a: Path::new("../../Music/saved").to_path_buf(),
             display_list: Vec::new(),
             index: 0,
             playing: PathBuf::new(),
