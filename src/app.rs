@@ -21,6 +21,7 @@ pub struct App<'a> {
     pub events: EventHandler,
     // incoming path
     pub incoming: &'a Path,
+    pub save_path_a: PathBuf,
     pub track_list: Vec<PathBuf>,
     pub display_list: Vec<String>,
     pub index: usize,
@@ -28,6 +29,7 @@ pub struct App<'a> {
     pub paused: bool,
     pub pause_menu: ListState,
     pub pause_mode: PauseMode,
+    pub explorer_path: PathBuf,
     pub explorer_index: usize,
     pub length: Duration,
     pub progress: usize,
@@ -60,12 +62,14 @@ impl Default for App<'_> {
                 .filter_map(|e| e.ok())
                 .map(|e| e.path())
                 .collect::<Vec<_>>(),
+            save_path_a: Path::new("../../Music/saved").to_path_buf(),
             display_list: Vec::new(),
             index: 0,
             playing: PathBuf::new(),
             paused: false,
             pause_menu: ListState::default().with_selected(Some(0)),
             pause_mode: PauseMode::NotPaused,
+            explorer_path: PathBuf::new(),
             explorer_index: 0,
             length: Duration::new(0, 0),
             progress: 0,
@@ -97,12 +101,15 @@ impl App<'_> {
                     AppEvent::SaveTrack => self.save_track(),
                     AppEvent::DeleteTrack => self.delete_track(),
                     AppEvent::Pause => self.pause(),
+                    AppEvent::SetPauseMode(mode) => self.set_pause_mode(mode),
                     AppEvent::Quit => self.quit(),
                     AppEvent::Up => self.up(),
                     AppEvent::Down => self.down(),
                     AppEvent::Select => self.select(),
                     AppEvent::PathDown => self.path_down(),
                     AppEvent::PathUp => self.path_up(),
+                    AppEvent::PathParent => self.path_parent(),
+                    AppEvent::PathChild => self.path_child(),
                 },
             }
         }

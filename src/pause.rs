@@ -1,28 +1,13 @@
 use crate::app::PauseMode;
 use crate::App;
-use color_eyre::config::Frame;
 use ratatui::{
     buffer::Buffer,
-    layout::{Alignment, Constraint, Layout, Offset, Rect},
-    style::{Color, Style, Stylize},
+    layout::{Constraint, Layout, Offset, Rect},
+    style::{Style, Stylize},
     text::{Line, Text},
-    widgets::{
-        Block, BorderType, Borders, Clear, List, ListState, Paragraph, StatefulWidgetRef, Widget,
-        Wrap,
-    },
+    widgets::{Block, Borders, Clear, List, ListState, Paragraph, StatefulWidgetRef, Widget, Wrap},
 };
-use std::{
-    io::{self, stdout},
-    path::PathBuf,
-};
-
-use crossterm::{
-    event::{read, Event, KeyCode},
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
-    ExecutableCommand,
-};
-use ratatui::crossterm;
-use ratatui::prelude::*;
+use std::path::PathBuf;
 
 use derive_setters::Setters;
 use ratatui_explorer::{FileExplorer, Theme};
@@ -46,8 +31,8 @@ impl Popup<'_> {
     pub fn show(mut self, area: Rect, mut app_state: &App, buf: &mut Buffer) {
         self.pause_menu = app_state.pause_menu.clone();
         self.pause_mode = app_state.pause_mode.clone();
-        self.explorer_path = app_state.incoming.clone().to_path_buf();
         self.explorer_index = app_state.explorer_index.clone();
+        self.explorer_path = app_state.explorer_path.clone();
         self.render(area, buf);
     }
 }
@@ -110,7 +95,7 @@ impl Widget for Popup<'_> {
             .split(pop_per[0]);
         match self.pause_mode {
             PauseMode::SaveSelect => {
-                file_explore.set_cwd("~");
+                file_explore.set_cwd(self.explorer_path);
                 file_explore.set_selected_idx(self.explorer_index);
                 file_explore
                     .widget()

@@ -13,26 +13,34 @@ use crate::event::{AppEvent, Event, EventHandler};
 impl App<'_> {
     /// Handles the key events and updates the state of [`App`].
     pub fn handle_key_events(&mut self, key_event: KeyEvent) -> color_eyre::Result<()> {
-        if self.pause_mode == PauseMode::MainMenu {
-            match key_event.code {
+        match self.pause_mode {
+            PauseMode::SaveSelect => match key_event.code {
                 KeyCode::Up | KeyCode::Char('k') => self.events.send(AppEvent::PathUp),
                 KeyCode::Down | KeyCode::Char('j') => self.events.send(AppEvent::PathDown),
-                KeyCode::Left | KeyCode::Char('h') => self.events.send(AppEvent::PathUp),
-                KeyCode::Right | KeyCode::Char('l') => self.events.send(AppEvent::PathDown),
+                KeyCode::Left | KeyCode::Char('h') => self.events.send(AppEvent::PathParent),
+                KeyCode::Right | KeyCode::Char('l') => self.events.send(AppEvent::PathChild),
                 KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
                 _ => {}
-            }
-        } else if self.paused {
-            match key_event.code {
+            },
+            PauseMode::MainMenu => match key_event.code {
                 KeyCode::Char(' ') => self.events.send(AppEvent::Pause),
-                KeyCode::Enter => self.events.send(AppEvent::Select),
+                KeyCode::Enter => self
+                    .events
+                    .send(AppEvent::SetPauseMode(PauseMode::NotPaused)),
                 KeyCode::Up | KeyCode::Char('k') => self.events.send(AppEvent::Up),
                 KeyCode::Down | KeyCode::Char('j') => self.events.send(AppEvent::Down),
                 KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
                 _ => {}
-            }
-        } else {
-            match key_event.code {
+            },
+            PauseMode::IncomingSelect => match key_event.code {
+                KeyCode::Up | KeyCode::Char('k') => self.events.send(AppEvent::PathUp),
+                KeyCode::Down | KeyCode::Char('j') => self.events.send(AppEvent::PathDown),
+                KeyCode::Left | KeyCode::Char('h') => self.events.send(AppEvent::PathParent),
+                KeyCode::Right | KeyCode::Char('l') => self.events.send(AppEvent::PathChild),
+                KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
+                _ => {}
+            },
+            PauseMode::NotPaused => match key_event.code {
                 KeyCode::Char('1') => self.events.send(AppEvent::Seek(1)),
                 KeyCode::Char('2') => self.events.send(AppEvent::Seek(2)),
                 KeyCode::Char('3') => self.events.send(AppEvent::Seek(3)),
@@ -50,7 +58,7 @@ impl App<'_> {
                     self.events.send(AppEvent::Quit)
                 }
                 _ => {}
-            }
+            },
         }
         Ok(())
     }
@@ -150,11 +158,30 @@ impl App<'_> {
             self.music_player.lock().unwrap().pause();
         };
     }
+    pub fn set_pause_mode(&mut self, mode: PauseMode) {
+        match self.pause_menu.selected().unwrap() {
+            0 => {
+                self.pause_mode = PauseMode::IncomingSelect;
+                self.explorer_path = self.incoming.to_path_buf();
+            }
+            1 => {
+                self.pause_mode = PauseMode::SaveSelect;
+                self.explorer_path = self.save_path_a.to_path_buf()
+            }
+            2 => {
+                self.pause_mode = PauseMode::NotPaused;
+                self.pause();
+            }
+            _ => {}
+        }
+    }
     pub fn up(&mut self) {
         self.pause_menu.select_previous();
     }
     pub fn down(&mut self) {
-        self.pause_menu.select_next();
+        if self.pause_menu.selected().unwrap() < 2 {
+            self.pause_menu.select_next();
+        }
     }
     pub fn select(&mut self) {
         //self.pause_mode = self.pause_menu.selected().unwrap();
@@ -166,5 +193,11 @@ impl App<'_> {
 
     pub fn path_down(&mut self) {
         self.explorer_index += 1;
+    }
+    pub fn path_parent(&mut self) {
+        self.explorer_path = self.explorer_path.parent().unwrap().to_path_buf();
+    }
+    pub fn path_child(&mut self) {
+        //self.explorer_path = self.explorer_path;
     }
 }
