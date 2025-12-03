@@ -195,9 +195,19 @@ impl App<'_> {
         self.explorer_index += 1;
     }
     pub fn path_parent(&mut self) {
-        self.explorer_path = self.explorer_path.parent().unwrap().to_path_buf();
+        let parent = self.explorer_path.parent();
+        if let Some(parent) = parent {
+            self.explorer_path = self.explorer_path.parent().unwrap().to_path_buf();
+        }
     }
     pub fn path_child(&mut self) {
+        let mut contents = Vec::new();
+        for entry in fs::read_dir(self.explorer_path.clone()).expect("failed to read") {
+            contents.push(entry.unwrap());
+        }
+        if contents[self.explorer_index].path().is_dir() {
+            self.quit();
+        }
         //self.explorer_path = self.explorer_path;
     }
 }
