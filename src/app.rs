@@ -1,9 +1,9 @@
 use crate::event::{AppEvent, Event, EventHandler};
 use ratatui::{
+    DefaultTerminal,
     crossterm::event::{KeyCode, KeyEvent, KeyModifiers},
     layout::{Alignment, Constraint, Layout, Offset, Rect},
     widgets::{Block, Borders, ListState},
-    DefaultTerminal,
 };
 use ratatui_explorer::{FileExplorer, Theme};
 use rodio::{Decoder, OutputStream, Sink, Source};
@@ -101,13 +101,14 @@ impl App<'_> {
                     AppEvent::SaveTrack => self.save_track(),
                     AppEvent::DeleteTrack => self.delete_track(),
                     AppEvent::Pause => self.pause(),
-                    AppEvent::SetPauseMode(mode) => self.set_pause_mode(mode),
+                    AppEvent::SetPauseMode => self.set_pause_mode(),
                     AppEvent::Quit => self.quit(),
                     AppEvent::Up => self.up(),
                     AppEvent::Down => self.down(),
                     AppEvent::Select => self.select(),
                     AppEvent::PathDown => self.path_down(),
                     AppEvent::PathUp => self.path_up(),
+                    AppEvent::SetPath => self.set_path(),
                     AppEvent::PathParent => self.path_parent(),
                     AppEvent::PathChild => self.path_child(),
                 },

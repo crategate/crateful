@@ -20,13 +20,12 @@ impl App<'_> {
                 KeyCode::Left | KeyCode::Char('h') => self.events.send(AppEvent::PathParent),
                 KeyCode::Right | KeyCode::Char('l') => self.events.send(AppEvent::PathChild),
                 KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
+                KeyCode::Enter => self.events.send(AppEvent::SetPath),
                 _ => {}
             },
             PauseMode::MainMenu => match key_event.code {
                 KeyCode::Char(' ') => self.events.send(AppEvent::Pause),
-                KeyCode::Enter => self
-                    .events
-                    .send(AppEvent::SetPauseMode(PauseMode::NotPaused)),
+                KeyCode::Enter => self.events.send(AppEvent::SetPauseMode),
                 KeyCode::Up | KeyCode::Char('k') => self.events.send(AppEvent::Up),
                 KeyCode::Down | KeyCode::Char('j') => self.events.send(AppEvent::Down),
                 KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
@@ -158,15 +157,17 @@ impl App<'_> {
             self.music_player.lock().unwrap().pause();
         };
     }
-    pub fn set_pause_mode(&mut self, mode: PauseMode) {
+    pub fn set_pause_mode(&mut self) {
         match self.pause_menu.selected().unwrap() {
             0 => {
                 self.pause_mode = PauseMode::IncomingSelect;
                 self.explorer_path = self.incoming.to_path_buf();
+                self.explorer_index = 0;
             }
             1 => {
                 self.pause_mode = PauseMode::SaveSelect;
-                self.explorer_path = self.save_path_a.to_path_buf()
+                self.explorer_path = self.save_path_a.to_path_buf();
+                self.explorer_index = 0
             }
             2 => {
                 self.pause_mode = PauseMode::NotPaused;
@@ -190,9 +191,15 @@ impl App<'_> {
     pub fn path_up(&mut self) {
         self.explorer_index -= 1;
     }
-
     pub fn path_down(&mut self) {
         self.explorer_index += 1;
+    }
+    pub fn set_path(&mut self) {
+        //        match self.pause_mode {
+        //            PauseMode::IncomingSelect => self.incoming = self.explorer_path,
+        //            PauseMode::SaveSelect => self.incoming = self.explorer_path,
+        //            _ => {}
+        //        }
     }
     pub fn path_parent(&mut self) {
         let parent = self.explorer_path.parent();
@@ -201,6 +208,7 @@ impl App<'_> {
         }
     }
     pub fn path_child(&mut self) {
+        dbg!(self.explorer_index);
         let mut contents = Vec::new();
         for entry in fs::read_dir(self.explorer_path.clone()).expect("failed to read") {
             contents.push(entry.unwrap());
