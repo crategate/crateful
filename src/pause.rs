@@ -1,5 +1,5 @@
-use crate::app::PauseMode;
 use crate::App;
+use crate::app::PauseMode;
 use ratatui::{
     buffer::Buffer,
     layout::{Constraint, Layout, Offset, Rect},

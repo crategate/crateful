@@ -206,7 +206,7 @@ impl App<'_> {
             contents.push(entry.unwrap());
         }
         if contents[self.explorer_index].path().is_dir() {
-            self.quit();
+            self.explorer_path = contents[self.explorer_index].path();
         }
         //self.explorer_path = self.explorer_path;
     }

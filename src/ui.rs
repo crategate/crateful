@@ -39,8 +39,8 @@ impl Widget for &App<'_> {
         let trace = format!("{:#?}", self.playing);
 
         let paragraph = Paragraph::new(text)
-            .fg(Color::Black)
-            .bg(Color::Red)
+            .fg(Color::White)
+            .bg(Color::DarkGray)
             .centered();
         let paragraph2 = Paragraph::new(listformat)
             .fg(Color::Blue)
