@@ -190,9 +190,11 @@ impl App<'_> {
 
     pub fn path_up(&mut self) {
         self.explorer_index -= 1;
+        dbg!(self.explorer_index);
     }
     pub fn path_down(&mut self) {
         self.explorer_index += 1;
+        dbg!(self.explorer_index);
     }
     pub fn set_path(&mut self) {
         //        match self.pause_mode {
@@ -206,16 +208,20 @@ impl App<'_> {
         if let Some(parent) = parent {
             self.explorer_path = self.explorer_path.parent().unwrap().to_path_buf();
         }
+        self.explorer_index = 0;
     }
     pub fn path_child(&mut self) {
-        dbg!(self.explorer_index);
         let mut contents = Vec::new();
         for entry in fs::read_dir(self.explorer_path.clone()).expect("failed to read") {
             contents.push(entry.unwrap());
         }
+        contents.sort_by_key(|dir| dir.path());
+        dbg!(&contents);
         if contents[self.explorer_index].path().is_dir() {
             self.explorer_path = contents[self.explorer_index].path();
+        } else {
         }
+        self.explorer_index = 0;
         //self.explorer_path = self.explorer_path;
     }
 }
