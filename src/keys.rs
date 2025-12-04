@@ -216,7 +216,7 @@ impl App<'_> {
             contents.push(entry.unwrap());
         }
         contents.sort_by_key(|dir| dir.path());
-        dbg!(&contents);
+        dbg!(&contents[self.explorer_index].path());
         if contents[self.explorer_index].path().is_dir() {
             self.explorer_path = contents[self.explorer_index].path();
         } else {

@@ -49,7 +49,7 @@ impl Widget for Popup<'_> {
                 Constraint::Percentage(25),
                 Constraint::Percentage(25),
             ])
-            .margin(1)
+            .margin(2)
             .split(new_pop[0]);
         // ensure that all cells under the popup are cleared to avoid leaking content
         Clear.render(new_pop[0], buf);
@@ -59,11 +59,7 @@ impl Widget for Popup<'_> {
             .title_style(self.title_style)
             .borders(Borders::ALL)
             .border_style(self.border_style);
-        Paragraph::new("asdfjdklsa;")
-            .wrap(Wrap { trim: true })
-            .style(self.style)
-            .block(block)
-            .render(new_pop[0], buf);
+
         let selects = [
             "Select folder to sort",
             "Set save folders",
@@ -84,15 +80,6 @@ impl Widget for Popup<'_> {
             .margin(5)
             .split(area);
 
-        let inner_menu = Layout::default()
-            .direction(ratatui::layout::Direction::Horizontal)
-            .constraints([
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
-            ])
-            .split(pop_per[0]);
         match self.pause_mode {
             PauseMode::SaveSelect => {
                 file_explore.set_cwd(self.explorer_path);
@@ -100,6 +87,13 @@ impl Widget for Popup<'_> {
                 file_explore
                     .widget()
                     .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
+                Paragraph::new(
+                    "Pick a Folder to store saved tracks. \r\n Use arrow keys (or hjkl) to navigate the explorer. \r\n Select a foler with Enter",
+                )
+                .wrap(Wrap { trim: true })
+                .style(self.style)
+                .block(block)
+                .render(inner_menu[1], buf);
             }
             PauseMode::IncomingSelect => {
                 file_explore.set_cwd(self.explorer_path);
@@ -107,6 +101,13 @@ impl Widget for Popup<'_> {
                 file_explore
                     .widget()
                     .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
+                Paragraph::new(
+                    "Use arrow keys (or hjkl) to navigate the explorer. Select a foler with Enter",
+                )
+                .wrap(Wrap { trim: true })
+                .style(self.style)
+                .block(block)
+                .render(inner_menu[1], buf);
             }
             _ => {}
         }
