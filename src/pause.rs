@@ -81,17 +81,8 @@ impl Widget for Popup<'_> {
             .split(area);
 
         Block::new()
-            .title("Select Folder (incoming tracks)")
+            .title("How to select:")
             .borders(Borders::ALL)
             .render(inner_menu[1].offset(Offset { x: 0, y: 0 }), buf);
-
-        Block::new()
-            .title("this ")
-            .borders(Borders::ALL)
-            .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
-        Block::new()
-            .title("final")
-            .borders(Borders::ALL)
-            .render(inner_menu[3].offset(Offset { x: 0, y: 0 }), buf);
     }
 }

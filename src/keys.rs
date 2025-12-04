@@ -189,12 +189,14 @@ impl App<'_> {
     }
 
     pub fn path_up(&mut self) {
-        self.explorer_index -= 1;
         dbg!(self.explorer_index);
+        self.explorer
+            .set_selected_idx(self.explorer.selected_idx() - 1);
     }
     pub fn path_down(&mut self) {
-        self.explorer_index += 1;
         dbg!(self.explorer_index);
+        self.explorer
+            .set_selected_idx(self.explorer.selected_idx() + 1);
     }
     pub fn set_path(&mut self) {
         //        match self.pause_mode {

@@ -1,7 +1,7 @@
 use color_eyre::config::Frame;
 use ratatui::{
     buffer::Buffer,
-    layout::{Alignment, Constraint, Layout, Offset, Rect},
+    layout::{Alignment, Constraint, Layout, Margin, Offset, Rect},
     style::{Color, Style, Stylize},
     text::{Line, Text},
     widgets::{Block, BorderType, Borders, Clear, Paragraph, Widget, Wrap},
@@ -39,7 +39,7 @@ impl Widget for &App<'_> {
                 Constraint::Percentage(25),
                 Constraint::Percentage(25),
             ])
-            .margin(2)
+            .margin(3)
             .split(new_pop[0]);
         let [playing, list, controls] = vertical.areas(area);
 
@@ -99,7 +99,7 @@ impl Widget for &App<'_> {
                     .widget()
                     .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
                 Paragraph::new(
-                    "Use arrow keys (or hjkl) to navigate the explorer. Select a foler with Enter",
+                    "Use arrow keys (or hjkl) \r\n to navigate the explorer. \r\n Select a foler with Enter",
                 )
                 .wrap(Wrap { trim: true })
                 .render(inner_menu[1], buf);
