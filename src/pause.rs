@@ -80,37 +80,6 @@ impl Widget for Popup<'_> {
             .margin(5)
             .split(area);
 
-        match self.pause_mode {
-            PauseMode::SaveSelect => {
-                file_explore.set_cwd(self.explorer_path);
-                file_explore.set_selected_idx(self.explorer_index);
-                file_explore
-                    .widget()
-                    .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
-                Paragraph::new(
-                    "Pick a Folder to store saved tracks. \r\n Use arrow keys (or hjkl) to navigate the explorer. \r\n Select a foler with Enter",
-                )
-                .wrap(Wrap { trim: true })
-                .style(self.style)
-                .block(block)
-                .render(inner_menu[1], buf);
-            }
-            PauseMode::IncomingSelect => {
-                file_explore.set_cwd(self.explorer_path);
-                file_explore.set_selected_idx(self.explorer_index);
-                file_explore
-                    .widget()
-                    .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
-                Paragraph::new(
-                    "Use arrow keys (or hjkl) to navigate the explorer. Select a foler with Enter",
-                )
-                .wrap(Wrap { trim: true })
-                .style(self.style)
-                .block(block)
-                .render(inner_menu[1], buf);
-            }
-            _ => {}
-        }
         Block::new()
             .title("Select Folder (incoming tracks)")
             .borders(Borders::ALL)
