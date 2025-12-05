@@ -229,6 +229,9 @@ impl App<'_> {
         self.explorer_index = 0;
     }
     pub fn path_child(&mut self) {
+        if self.explorer_index < 1 {
+            return;
+        }
         let mut contents = Vec::new();
         for entry in fs::read_dir(self.explorer_path.clone()).expect("failed to read") {
             contents.push(entry.unwrap());

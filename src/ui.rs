@@ -37,6 +37,12 @@ impl Widget for &App<'_> {
             .split(new_pop[0]);
         let [playing, list, controls] = vertical.areas(area);
 
+        let instruct = Layout::default()
+            .direction(ratatui::layout::Direction::Vertical)
+            .constraints([Constraint::Percentage(50)])
+            .margin(1)
+            .split(inner_menu[1]);
+
         let text = format!(
             "Now Playing\n\
                 : {:?}... it's this long: {:?}",
@@ -80,10 +86,10 @@ impl Widget for &App<'_> {
                     .widget()
                     .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
                 Paragraph::new(
-                    "Pick a Folder to store saved tracks. \r\n Use arrow keys (or hjkl) to navigate the explorer. \r\n Select a foler with Enter",
+                    "Pick a Folder to store saved tracks. \r\n\r\n Use arrow keys (or hjkl) to navigate the explorer. \r\n\r\n Select a foler with Enter",
                 )
                 .wrap(Wrap { trim: true })
-                .render(inner_menu[1], buf);
+                .render(instruct[0], buf);
             }
             PauseMode::IncomingSelect => {
                 //                self.explorer.set_cwd(self.explorer_path);
@@ -92,10 +98,10 @@ impl Widget for &App<'_> {
                     .widget()
                     .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
                 Paragraph::new(
-                    "Select a folder to sort \r\nUse arrow keys (or hjkl) \r\n to navigate the explorer. \r\n Select a foler with Enter",
+                    "Select a folder to sort \r\nUse arrow keys (or hjkl) \r\n\r\n to navigate the explorer. \r\n\r\n Select a foler with Enter",
                 )
                 .wrap(Wrap { trim: true })
-                .render(inner_menu[1], buf);
+                .render(instruct[0], buf);
             }
             _ => {}
         }
