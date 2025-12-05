@@ -169,6 +169,7 @@ impl App<'_> {
             1 => {
                 self.pause_mode = PauseMode::SaveSelect;
                 self.explorer_path = self.save_path_a.to_path_buf();
+                self.explorer.set_cwd(self.save_path_a.clone());
                 self.explorer_index = 0;
                 self.set_items();
             }
@@ -186,6 +187,7 @@ impl App<'_> {
         if self.pause_menu.selected().unwrap() < 2 {
             self.pause_menu.select_next();
         }
+        dbg!(self.save_path_a.clone());
     }
     pub fn select(&mut self) {
         //self.pause_mode = self.pause_menu.selected().unwrap();
@@ -196,11 +198,9 @@ impl App<'_> {
             self.explorer_index -= 1;
             self.explorer
                 .set_selected_idx(self.explorer.selected_idx() - 1);
-            dbg!(self.explorer_index);
         }
     }
     pub fn path_down(&mut self) {
-        dbg!(self.explorer_items.len());
         if self.explorer_index < self.explorer_items.len() {
             self.explorer
                 .set_selected_idx(self.explorer.selected_idx() + 1);
@@ -234,9 +234,9 @@ impl App<'_> {
             contents.push(entry.unwrap());
         }
         contents.sort_by_key(|dir| dir.path());
-        dbg!(&contents[self.explorer_index].path());
-        if contents[self.explorer_index].path().is_dir() {
-            self.explorer_path = contents[self.explorer_index].path();
+        dbg!(&contents[self.explorer_index - 1]);
+        if contents[self.explorer_index - 1].path().is_dir() {
+            self.explorer_path = contents[self.explorer_index - 1].path();
             self.explorer.set_cwd(self.explorer_path.to_path_buf());
             self.explorer_index = 0;
             self.set_items();

@@ -10,7 +10,7 @@ use rodio::{Decoder, OutputStream, Sink, Source};
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
-use std::path::{Path, PathBuf};
+use std::path::{self, Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
@@ -64,7 +64,7 @@ impl Default for App<'_> {
                 .filter_map(|e| e.ok())
                 .map(|e| e.path())
                 .collect::<Vec<_>>(),
-            save_path_a: Path::new("../../Music/saved").to_path_buf(),
+            save_path_a: fs::canonicalize(PathBuf::from("../../Music/saved")).unwrap(),
             display_list: Vec::new(),
             index: 0,
             playing: PathBuf::new(),
