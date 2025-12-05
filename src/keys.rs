@@ -162,12 +162,15 @@ impl App<'_> {
             0 => {
                 self.pause_mode = PauseMode::IncomingSelect;
                 self.explorer_path = self.incoming.to_path_buf();
+                self.explorer.set_cwd(self.incoming.to_path_buf());
                 self.explorer_index = 0;
+                self.set_items();
             }
             1 => {
                 self.pause_mode = PauseMode::SaveSelect;
                 self.explorer_path = self.save_path_a.to_path_buf();
-                self.explorer_index = 0
+                self.explorer_index = 0;
+                self.set_items();
             }
             2 => {
                 self.pause_mode = PauseMode::NotPaused;
@@ -189,26 +192,39 @@ impl App<'_> {
     }
 
     pub fn path_up(&mut self) {
-        dbg!(self.explorer_index);
-        self.explorer
-            .set_selected_idx(self.explorer.selected_idx() - 1);
+        if self.explorer_index > 0 {
+            self.explorer_index -= 1;
+            self.explorer
+                .set_selected_idx(self.explorer.selected_idx() - 1);
+            dbg!(self.explorer_index);
+        }
     }
     pub fn path_down(&mut self) {
-        dbg!(self.explorer_index);
-        self.explorer
-            .set_selected_idx(self.explorer.selected_idx() + 1);
+        dbg!(self.explorer_items.len());
+        if self.explorer_index < self.explorer_items.len() {
+            self.explorer
+                .set_selected_idx(self.explorer.selected_idx() + 1);
+            self.explorer_index += 1;
+        }
     }
-    pub fn set_path(&mut self) {
+    pub fn set_items(&mut self) {
         //        match self.pause_mode {
         //            PauseMode::IncomingSelect => self.incoming = self.explorer_path,
         //            PauseMode::SaveSelect => self.incoming = self.explorer_path,
         //            _ => {}
         //        }
+        let mut items = Vec::new();
+        for entry in fs::read_dir(self.explorer_path.clone()).expect("read failure") {
+            items.push(entry.unwrap())
+        }
+        self.explorer_items = items;
     }
     pub fn path_parent(&mut self) {
         let parent = self.explorer_path.parent();
         if let Some(parent) = parent {
             self.explorer_path = self.explorer_path.parent().unwrap().to_path_buf();
+            self.explorer.set_cwd(self.explorer_path.to_path_buf());
+            self.set_items();
         }
         self.explorer_index = 0;
     }
@@ -221,9 +237,11 @@ impl App<'_> {
         dbg!(&contents[self.explorer_index].path());
         if contents[self.explorer_index].path().is_dir() {
             self.explorer_path = contents[self.explorer_index].path();
+            self.explorer.set_cwd(self.explorer_path.to_path_buf());
+            self.explorer_index = 0;
+            self.set_items();
         } else {
         }
-        self.explorer_index = 0;
         //self.explorer_path = self.explorer_path;
     }
 }

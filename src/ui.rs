@@ -12,12 +12,6 @@ use crate::app::PauseMode;
 use crate::pause;
 use crate::pause::Popup;
 impl Widget for &App<'_> {
-    /// Renders the user interface widgets.
-    ///
-    // This is where you add new widgets.
-    // See the following resources:
-    // - https://docs.rs/ratatui/latest/ratatui/widgets/index.html
-    // - https://github.com/ratatui/ratatui/tree/master/examples
     fn render(mut self, area: Rect, buf: &mut Buffer) {
         let block = Block::bordered()
             .title_alignment(Alignment::Center)
@@ -79,10 +73,9 @@ impl Widget for &App<'_> {
         if self.paused {
             popup.show(area, self, buf)
         };
+
         match self.pause_mode {
             PauseMode::SaveSelect => {
-                //                self.explorer.set_cwd(self.explorer_path);
-                //                self.explorer.set_selected_idx(self.explorer_index);
                 self.explorer
                     .widget()
                     .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
@@ -99,7 +92,7 @@ impl Widget for &App<'_> {
                     .widget()
                     .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
                 Paragraph::new(
-                    "Use arrow keys (or hjkl) \r\n to navigate the explorer. \r\n Select a foler with Enter",
+                    "Select a folder to sort \r\nUse arrow keys (or hjkl) \r\n to navigate the explorer. \r\n Select a foler with Enter",
                 )
                 .wrap(Wrap { trim: true })
                 .render(inner_menu[1], buf);
