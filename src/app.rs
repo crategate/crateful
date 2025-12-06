@@ -1,26 +1,26 @@
 use crate::event::{AppEvent, Event, EventHandler};
 use ratatui::{
+    DefaultTerminal,
     crossterm::event::{KeyCode, KeyEvent, KeyModifiers},
     layout::{Alignment, Constraint, Layout, Offset, Rect},
     widgets::{Block, Borders, ListState},
-    DefaultTerminal,
 };
 use ratatui_explorer::{FileExplorer, Theme};
 use rodio::{Decoder, OutputStream, Sink, Source};
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
-use std::path::{Path, PathBuf};
+use std::path::{self, Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
-pub struct App<'a> {
+pub struct App {
     /// Is the application running?
     pub running: bool,
     /// Event handler.
     pub events: EventHandler,
     // incoming path
-    pub incoming: &'a Path,
+    pub incoming: PathBuf,
     pub save_path_a: PathBuf,
     pub track_list: Vec<PathBuf>,
     pub display_list: Vec<String>,
@@ -29,8 +29,10 @@ pub struct App<'a> {
     pub paused: bool,
     pub pause_menu: ListState,
     pub pause_mode: PauseMode,
+    pub explorer: FileExplorer,
     pub explorer_path: PathBuf,
     pub explorer_index: usize,
+    pub explorer_items: Vec<std::fs::DirEntry>,
     pub length: Duration,
     pub progress: usize,
     pub music_player: Arc<Mutex<rodio::Sink>>,
@@ -47,7 +49,7 @@ pub enum PauseMode {
     IncomingSelect,
 }
 
-impl Default for App<'_> {
+impl Default for App {
     fn default() -> Self {
         let stream =
             rodio::OutputStreamBuilder::open_default_stream().expect("open default audio stream");
@@ -56,20 +58,22 @@ impl Default for App<'_> {
         Self {
             running: true,
             events: EventHandler::new(),
-            incoming: Path::new("../../Music/incoming/"),
+            incoming: fs::canonicalize(PathBuf::from("../../Music/incoming/")).unwrap(),
             track_list: fs::read_dir("../../Music/incoming")
                 .unwrap()
                 .filter_map(|e| e.ok())
                 .map(|e| e.path())
                 .collect::<Vec<_>>(),
-            save_path_a: Path::new("../../Music/saved").to_path_buf(),
+            save_path_a: fs::canonicalize(PathBuf::from("../../Music/saved")).unwrap(),
             display_list: Vec::new(),
             index: 0,
             playing: PathBuf::new(),
             paused: false,
             pause_menu: ListState::default().with_selected(Some(0)),
             pause_mode: PauseMode::NotPaused,
+            explorer: FileExplorer::new().unwrap(),
             explorer_path: PathBuf::new(),
+            explorer_items: Vec::new(),
             explorer_index: 0,
             length: Duration::new(0, 0),
             progress: 0,
@@ -79,7 +83,7 @@ impl Default for App<'_> {
         }
     }
 }
-impl App<'_> {
+impl App {
     /// Constructs a new instance of [`App`].
     pub fn new() -> Self {
         Self::default()
@@ -101,15 +105,12 @@ impl App<'_> {
                     AppEvent::SaveTrack => self.save_track(),
                     AppEvent::DeleteTrack => self.delete_track(),
                     AppEvent::Pause => self.pause(),
-                    AppEvent::SetPauseMode(mode) => self.set_pause_mode(mode),
+                    AppEvent::SetPauseMode => self.set_pause_mode(),
                     AppEvent::Quit => self.quit(),
                     AppEvent::Up => self.up(),
                     AppEvent::Down => self.down(),
                     AppEvent::Select => self.select(),
-                    AppEvent::PathDown => self.path_down(),
-                    AppEvent::PathUp => self.path_up(),
-                    AppEvent::PathParent => self.path_parent(),
-                    AppEvent::PathChild => self.path_child(),
+                    AppEvent::SetPath(which) => self.set_path(which),
                 },
             }
         }

@@ -31,6 +31,13 @@ pub enum Event {
 
 /// Application events.
 ///
+#[derive(Clone, Debug)]
+pub enum WhichPath {
+    PathA,
+    PathD,
+    PathG,
+    PathIncoming,
+}
 /// You can extend this enum with your own custom events.
 #[derive(Clone, Debug)]
 pub enum AppEvent {
@@ -38,15 +45,12 @@ pub enum AppEvent {
     SaveTrack,
     DeleteTrack,
     Pause,
-    SetPauseMode(PauseMode),
+    SetPauseMode,
     Quit,
     Up,
     Down,
     Select,
-    PathUp,
-    PathDown,
-    PathParent,
-    PathChild,
+    SetPath(WhichPath),
 }
 
 /// Terminal event handler.

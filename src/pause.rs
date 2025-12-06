@@ -1,5 +1,5 @@
-use crate::app::PauseMode;
 use crate::App;
+use crate::app::PauseMode;
 use ratatui::{
     buffer::Buffer,
     layout::{Constraint, Layout, Offset, Rect},
@@ -44,12 +44,11 @@ impl Widget for Popup<'_> {
         let inner_menu = Layout::default()
             .direction(ratatui::layout::Direction::Horizontal)
             .constraints([
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
+                Constraint::Percentage(33),
+                Constraint::Percentage(33),
+                Constraint::Percentage(33),
             ])
-            .margin(1)
+            .margin(2)
             .split(new_pop[0]);
         // ensure that all cells under the popup are cleared to avoid leaking content
         Clear.render(new_pop[0], buf);
@@ -59,11 +58,7 @@ impl Widget for Popup<'_> {
             .title_style(self.title_style)
             .borders(Borders::ALL)
             .border_style(self.border_style);
-        Paragraph::new("asdfjdklsa;")
-            .wrap(Wrap { trim: true })
-            .style(self.style)
-            .block(block)
-            .render(new_pop[0], buf);
+
         let selects = [
             "Select folder to sort",
             "Set save folders",
@@ -83,45 +78,5 @@ impl Widget for Popup<'_> {
         let pop_per = Layout::vertical([Constraint::Percentage(80)])
             .margin(5)
             .split(area);
-
-        let inner_menu = Layout::default()
-            .direction(ratatui::layout::Direction::Horizontal)
-            .constraints([
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
-            ])
-            .split(pop_per[0]);
-        match self.pause_mode {
-            PauseMode::SaveSelect => {
-                file_explore.set_cwd(self.explorer_path);
-                file_explore.set_selected_idx(self.explorer_index);
-                file_explore
-                    .widget()
-                    .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
-            }
-            PauseMode::IncomingSelect => {
-                file_explore.set_cwd(self.explorer_path);
-                file_explore.set_selected_idx(self.explorer_index);
-                file_explore
-                    .widget()
-                    .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
-            }
-            _ => {}
-        }
-        Block::new()
-            .title("Select Folder (incoming tracks)")
-            .borders(Borders::ALL)
-            .render(inner_menu[1].offset(Offset { x: 0, y: 0 }), buf);
-
-        Block::new()
-            .title("this ")
-            .borders(Borders::ALL)
-            .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
-        Block::new()
-            .title("final")
-            .borders(Borders::ALL)
-            .render(inner_menu[3].offset(Offset { x: 0, y: 0 }), buf);
     }
 }
