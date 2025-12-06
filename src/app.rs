@@ -110,11 +110,7 @@ impl App<'_> {
                     AppEvent::Up => self.up(),
                     AppEvent::Down => self.down(),
                     AppEvent::Select => self.select(),
-                    AppEvent::PathDown => self.path_down(),
-                    AppEvent::PathUp => self.path_up(),
                     AppEvent::SetPath(which) => self.set_path(which),
-                    AppEvent::PathParent => self.path_parent(),
-                    AppEvent::PathChild => self.path_child(),
                 },
             }
         }
