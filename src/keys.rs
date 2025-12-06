@@ -195,11 +195,7 @@ impl App<'_> {
     }
 
     pub fn path_up(&mut self) {
-        if self.explorer_index > 0 {
-            self.explorer_index -= 1;
-            self.explorer
-                .set_selected_idx(self.explorer.selected_idx() - 1);
-        }
+        self.explorer.handle(Input::Up).unwrap();
     }
     pub fn path_down(&mut self) {
         //if self.explorer_index < self.explorer_items.len() {
@@ -286,32 +282,35 @@ impl App<'_> {
         //   self.explorer_items = items;
     }
     pub fn path_parent(&mut self) {
-        let parent = self.explorer_path.parent();
-
-        if let Some(parent) = parent {
-            self.explorer_path = self.explorer_path.parent().unwrap().to_path_buf();
-            self.explorer.set_cwd(self.explorer_path.to_path_buf());
-            self.set_items();
-        }
-        self.explorer_index = 0;
+        self.explorer.handle(Input::Left).unwrap();
+        //        let parent = self.explorer_path.parent();
+        //
+        //        if let Some(parent) = parent {
+        //            self.explorer_path = self.explorer_path.parent().unwrap().to_path_buf();
+        //            self.explorer.set_cwd(self.explorer_path.to_path_buf());
+        //            self.set_items();
+        //        }
+        //        self.explorer_index = 0;
     }
     pub fn path_child(&mut self) {
-        if self.explorer_index < 1 {
-            return;
-        }
-        let mut contents = Vec::new();
-        for entry in fs::read_dir(self.explorer_path.clone()).expect("failed to read") {
-            contents.push(entry.unwrap());
-        }
-        contents.sort_by_key(|dir| dir.path());
-        dbg!(&contents[self.explorer_index - 1]);
-        if contents[self.explorer_index - 1].path().is_dir() {
-            self.explorer_path = contents[self.explorer_index - 1].path();
-            self.explorer.set_cwd(self.explorer_path.to_path_buf());
-            self.explorer_index = 0;
-            self.set_items();
-        } else {
-        }
+        self.explorer.handle(Input::Right).unwrap();
+
+        //if self.explorer_index < 1 {
+        //    return;
+        //}
+        //let mut contents = Vec::new();
+        //for entry in fs::read_dir(self.explorer_path.clone()).expect("failed to read") {
+        //    contents.push(entry.unwrap());
+        //}
+        //contents.sort_by_key(|dir| dir.path());
+        //dbg!(&contents[self.explorer_index - 1]);
+        //if contents[self.explorer_index - 1].path().is_dir() {
+        //    self.explorer_path = contents[self.explorer_index - 1].path();
+        //    self.explorer.set_cwd(self.explorer_path.to_path_buf());
+        //    self.explorer_index = 0;
+        //    self.set_items();
+        //} else {
+        //}
         //self.explorer_path = self.explorer_path;
     }
     pub fn set_path(&mut self, which: WhichPath) {
