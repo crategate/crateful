@@ -11,7 +11,7 @@ use crate::app::PauseMode;
 use crate::event::{AppEvent, Event, EventHandler, WhichPath};
 use ratatui_explorer::Input;
 
-impl App<'_> {
+impl App {
     /// Handles the key events and updates the state of [`App`].
     pub fn handle_key_events(&mut self, key_event: KeyEvent) -> color_eyre::Result<()> {
         match self.pause_mode {
@@ -21,7 +21,7 @@ impl App<'_> {
                 KeyCode::Left | KeyCode::Char('h') => self.explorer.handle(Input::Left).unwrap(),
                 KeyCode::Right | KeyCode::Char('l') => self.explorer.handle(Input::Right).unwrap(),
                 KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
-                KeyCode::Enter => self.events.send(AppEvent::SetPath(WhichPath::PathA)),
+                KeyCode::Enter => self.events.send(AppEvent::Select),
                 _ => {}
             },
             PauseMode::MainMenu => match key_event.code {
@@ -38,6 +38,7 @@ impl App<'_> {
                 KeyCode::Down | KeyCode::Char('j') => self.explorer.handle(Input::Down).unwrap(),
                 KeyCode::Left | KeyCode::Char('h') => self.explorer.handle(Input::Left).unwrap(),
                 KeyCode::Right | KeyCode::Char('l') => self.explorer.handle(Input::Right).unwrap(),
+                KeyCode::Enter => self.events.send(AppEvent::Select),
                 _ => {}
             },
             PauseMode::NotPaused => match key_event.code {
@@ -75,7 +76,13 @@ impl App<'_> {
 
     pub fn load_tracks(&mut self) {
         // enumerate and save track list with pathes
+        self.track_list = fs::read_dir(self.incoming.clone())
+            .unwrap()
+            .filter_map(|e| e.ok())
+            .map(|e| e.path())
+            .collect::<Vec<_>>();
     }
+
     pub fn start_playback(&mut self) {
         let file = BufReader::new(File::open(self.track_list.get(self.index).unwrap()).unwrap());
         let source = Decoder::try_from(file).unwrap();
@@ -165,14 +172,12 @@ impl App<'_> {
                 self.explorer_path = self.incoming.to_path_buf();
                 self.explorer.set_cwd(self.incoming.to_path_buf());
                 self.explorer_index = 0;
-                self.set_items();
             }
             1 => {
                 self.pause_mode = PauseMode::SaveSelect;
                 self.explorer_path = self.save_path_a.to_path_buf();
                 self.explorer.set_cwd(self.save_path_a.clone());
                 self.explorer_index = 0;
-                self.set_items();
             }
             2 => {
                 self.pause_mode = PauseMode::NotPaused;
@@ -188,10 +193,25 @@ impl App<'_> {
         if self.pause_menu.selected().unwrap() < 2 {
             self.pause_menu.select_next();
         }
-        dbg!(self.save_path_a.clone());
     }
     pub fn select(&mut self) {
         //self.pause_mode = self.pause_menu.selected().unwrap();
+        dbg!(self.explorer.current().path().to_path_buf());
+        match self.pause_mode {
+            PauseMode::IncomingSelect => {
+                self.incoming = self.explorer.current().path().to_path_buf();
+                self.music_player.lock().unwrap().clear();
+                self.paused = false;
+                self.load_tracks();
+                self.start_playback();
+                self.pause_mode = PauseMode::MainMenu;
+            }
+            PauseMode::SaveSelect => {
+                self.save_path_a = self.explorer.current().path().to_path_buf()
+            }
+            _ => {}
+        }
+        self.paused = false;
     }
 
     pub fn set_items(&mut self) {}

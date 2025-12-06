@@ -14,13 +14,13 @@ use std::path::{self, Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
-pub struct App<'a> {
+pub struct App {
     /// Is the application running?
     pub running: bool,
     /// Event handler.
     pub events: EventHandler,
     // incoming path
-    pub incoming: &'a Path,
+    pub incoming: PathBuf,
     pub save_path_a: PathBuf,
     pub track_list: Vec<PathBuf>,
     pub display_list: Vec<String>,
@@ -49,7 +49,7 @@ pub enum PauseMode {
     IncomingSelect,
 }
 
-impl Default for App<'_> {
+impl Default for App {
     fn default() -> Self {
         let stream =
             rodio::OutputStreamBuilder::open_default_stream().expect("open default audio stream");
@@ -58,7 +58,7 @@ impl Default for App<'_> {
         Self {
             running: true,
             events: EventHandler::new(),
-            incoming: Path::new("../../Music/incoming/"),
+            incoming: fs::canonicalize(PathBuf::from("../../Music/incoming/")).unwrap(),
             track_list: fs::read_dir("../../Music/incoming")
                 .unwrap()
                 .filter_map(|e| e.ok())
@@ -83,7 +83,7 @@ impl Default for App<'_> {
         }
     }
 }
-impl App<'_> {
+impl App {
     /// Constructs a new instance of [`App`].
     pub fn new() -> Self {
         Self::default()

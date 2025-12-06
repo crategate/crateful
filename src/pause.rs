@@ -44,10 +44,9 @@ impl Widget for Popup<'_> {
         let inner_menu = Layout::default()
             .direction(ratatui::layout::Direction::Horizontal)
             .constraints([
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
+                Constraint::Percentage(33),
+                Constraint::Percentage(33),
+                Constraint::Percentage(33),
             ])
             .margin(2)
             .split(new_pop[0]);
@@ -79,10 +78,5 @@ impl Widget for Popup<'_> {
         let pop_per = Layout::vertical([Constraint::Percentage(80)])
             .margin(5)
             .split(area);
-
-        Block::new()
-            .title("How to select:")
-            .borders(Borders::ALL)
-            .render(inner_menu[1].offset(Offset { x: 0, y: 0 }), buf);
     }
 }

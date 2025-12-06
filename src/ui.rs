@@ -11,7 +11,7 @@ use crate::app::App;
 use crate::app::PauseMode;
 use crate::pause;
 use crate::pause::Popup;
-impl Widget for &App<'_> {
+impl Widget for &App {
     fn render(mut self, area: Rect, buf: &mut Buffer) {
         let block = Block::bordered()
             .title_alignment(Alignment::Center)
@@ -28,12 +28,11 @@ impl Widget for &App<'_> {
         let inner_menu = Layout::default()
             .direction(ratatui::layout::Direction::Horizontal)
             .constraints([
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
-                Constraint::Percentage(25),
+                Constraint::Percentage(33),
+                Constraint::Percentage(33),
+                Constraint::Percentage(33),
             ])
-            .margin(3)
+            .margin(2)
             .split(new_pop[0]);
         let [playing, list, controls] = vertical.areas(area);
 
