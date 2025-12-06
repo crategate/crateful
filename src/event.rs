@@ -31,6 +31,13 @@ pub enum Event {
 
 /// Application events.
 ///
+#[derive(Clone, Debug)]
+pub enum WhichPath {
+    PathA,
+    PathD,
+    PathG,
+    PathIncoming,
+}
 /// You can extend this enum with your own custom events.
 #[derive(Clone, Debug)]
 pub enum AppEvent {
@@ -45,7 +52,7 @@ pub enum AppEvent {
     Select,
     PathUp,
     PathDown,
-    SetPath,
+    SetPath(WhichPath),
     PathParent,
     PathChild,
 }

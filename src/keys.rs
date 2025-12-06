@@ -8,7 +8,8 @@ use std::time::Duration;
 
 use crate::app::App;
 use crate::app::PauseMode;
-use crate::event::{AppEvent, Event, EventHandler};
+use crate::event::{AppEvent, Event, EventHandler, WhichPath};
+use ratatui_explorer::Input;
 
 impl App<'_> {
     /// Handles the key events and updates the state of [`App`].
@@ -20,7 +21,7 @@ impl App<'_> {
                 KeyCode::Left | KeyCode::Char('h') => self.events.send(AppEvent::PathParent),
                 KeyCode::Right | KeyCode::Char('l') => self.events.send(AppEvent::PathChild),
                 KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
-                KeyCode::Enter => self.events.send(AppEvent::SetPath),
+                KeyCode::Enter => self.events.send(AppEvent::SetPath(WhichPath::PathA)),
                 _ => {}
             },
             PauseMode::MainMenu => match key_event.code {
@@ -201,26 +202,92 @@ impl App<'_> {
         }
     }
     pub fn path_down(&mut self) {
-        if self.explorer_index < self.explorer_items.len() {
-            self.explorer
-                .set_selected_idx(self.explorer.selected_idx() + 1);
-            self.explorer_index += 1;
-        }
+        //if self.explorer_index < self.explorer_items.len() {
+        //    self.explorer
+        //        .set_selected_idx(self.explorer.selected_idx() + 1);
+        //    self.explorer_index += 1;
+        //}
+        self.explorer.handle(Input::Down).unwrap();
     }
     pub fn set_items(&mut self) {
-        //        match self.pause_mode {
-        //            PauseMode::IncomingSelect => self.incoming = self.explorer_path,
-        //            PauseMode::SaveSelect => self.incoming = self.explorer_path,
-        //            _ => {}
-        //        }
-        let mut items = Vec::new();
-        for entry in fs::read_dir(self.explorer_path.clone()).expect("read failure") {
-            items.push(entry.unwrap())
-        }
-        self.explorer_items = items;
+        //     let (mut dirs, mut none_dirs): (Vec<_>, Vec<_>) = std::fs::read_dir(&self.explorer_path)?
+        //         .filter_map(|entry| {
+        //             let entry = entry.ok()?;
+        //             let path = entry.path();
+        //             let metadata = path.metadata().ok();
+        //             let file_type = metadata.as_ref().map(|f| f.file_type());
+        //             let is_dir = file_type.is_some_and(|f| f.is_dir());
+
+        //             let name = entry.file_name().to_string_lossy().into_owned();
+        //             let name = if is_dir { format!("{}/", name) } else { name };
+
+        //             let is_hidden = {
+        //                 #[cfg(unix)]
+        //                 {
+        //                     name.starts_with('.')
+        //                 }
+
+        //                 #[cfg(windows)]
+        //                 {
+        //                     use std::os::windows::fs::MetadataExt;
+        //                     const FILE_ATTRIBUTE_HIDDEN: u32 = 0x2;
+        //                     metadata.is_some_and(|f| f.file_attributes() & FILE_ATTRIBUTE_HIDDEN != 0)
+        //                 }
+        //             };
+
+        //             let file = AFile {
+        //                 name,
+        //                 path,
+        //                 is_dir,
+        //                 is_hidden,
+        //                 file_type,
+        //             };
+        //             if !self.show_hidden && file.is_hidden() {
+        //                 None
+        //             } else {
+        //                 Some(file)
+        //             }
+        //         })
+        //         .partition(AFile::is_dir);
+
+        //     dirs.sort_unstable_by(|f1, f2| f1.name.cmp(&f2.name));
+        //     none_dirs.sort_unstable_by(|f1, f2| f1.name.cmp(&f2.name));
+
+        //     if let Some(parent) = self.cwd.parent() {
+        //         let mut files = Vec::with_capacity(1 + dirs.len() + none_dirs.len());
+
+        //         files.push(AFile {
+        //             name: "../".to_owned(),
+        //             path: parent.to_path_buf(),
+        //             is_dir: true,
+        //             is_hidden: false,
+        //             file_type: None,
+        //         });
+
+        //         files.extend(dirs);
+        //         files.extend(none_dirs);
+
+        //         self.explorer.files = files;
+        //     } else {
+        //         let mut files = Vec::with_capacity(dirs.len() + none_dirs.len());
+
+        //         files.extend(dirs);
+        //         files.extend(none_dirs);
+
+        //         self.files = files;
+        //     };
+
+        //     Ok(())
+        //   let mut items = Vec::new();
+        //   for entry in fs::read_dir(self.explorer_path.clone()).expect("read failure") {
+        //       items.push(entry.unwrap())
+        //   }
+        //   items.sort_by_key(|dir| dir.path());
+        //   self.explorer_items = items;
     }
     pub fn path_parent(&mut self) {
         let parent = self.explorer_path.parent();
+
         if let Some(parent) = parent {
             self.explorer_path = self.explorer_path.parent().unwrap().to_path_buf();
             self.explorer.set_cwd(self.explorer_path.to_path_buf());
@@ -246,5 +313,10 @@ impl App<'_> {
         } else {
         }
         //self.explorer_path = self.explorer_path;
+    }
+    pub fn set_path(&mut self, which: WhichPath) {
+        // check if directory before setting
+        dbg!("PUSH");
+        // match which {WhichPath::PathA => }
     }
 }

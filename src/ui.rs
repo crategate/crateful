@@ -66,7 +66,6 @@ impl Widget for &App<'_> {
             .centered();
         paragraph.render(playing, buf);
         paragraph2.render(list, buf);
-        //        Line::from(trace).bold().render(controls, buf);
 
         para3.render(controls, buf);
         let popup = pause::Popup::default()
@@ -92,8 +91,6 @@ impl Widget for &App<'_> {
                 .render(instruct[0], buf);
             }
             PauseMode::IncomingSelect => {
-                //                self.explorer.set_cwd(self.explorer_path);
-                //                self.explorer.set_selected_idx(self.explorer_index);
                 self.explorer
                     .widget()
                     .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);

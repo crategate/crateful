@@ -112,7 +112,7 @@ impl App<'_> {
                     AppEvent::Select => self.select(),
                     AppEvent::PathDown => self.path_down(),
                     AppEvent::PathUp => self.path_up(),
-                    AppEvent::SetPath => self.set_items(),
+                    AppEvent::SetPath(which) => self.set_path(which),
                     AppEvent::PathParent => self.path_parent(),
                     AppEvent::PathChild => self.path_child(),
                 },
