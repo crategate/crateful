@@ -84,7 +84,7 @@ impl Widget for &App {
                     .widget()
                     .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
                 Paragraph::new(
-                    "Pick a Folder to store saved tracks. \r\n\r\n Use arrow keys (or hjkl) to navigate the explorer. \r\n\r\n Select a foler with Enter",
+                    "Pick a Folder to store saved tracks. \r\n Use arrow keys (or hjkl) to navigate the explorer. \r\n\r\n Select a foler with Enter.",
                 )
                 .wrap(Wrap { trim: true })
                 .render(instruct[0], buf);
@@ -94,7 +94,7 @@ impl Widget for &App {
                     .widget()
                     .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
                 Paragraph::new(
-                    "Select a folder to sort \r\nUse arrow keys (or hjkl) \r\n\r\n to navigate the explorer. \r\n\r\n Select a foler with Enter",
+                    "Select a folder to sort! \r\n\r\nUse arrow keys (or hjkl) \r\n to navigate the explorer. \r\n\r\n Select a foler with Enter \r\n\r\n Select one with ONLY wav, flac, & mp3 files... the program crashes otherwise!",
                 )
                 .wrap(Wrap { trim: true })
                 .render(instruct[0], buf);

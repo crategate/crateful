@@ -81,6 +81,7 @@ impl App {
             .filter_map(|e| e.ok())
             .map(|e| e.path())
             .collect::<Vec<_>>();
+        self.index = 0;
     }
 
     pub fn start_playback(&mut self) {
@@ -204,6 +205,7 @@ impl App {
                 self.paused = false;
                 self.load_tracks();
                 self.start_playback();
+                self.list_write();
                 self.pause_mode = PauseMode::MainMenu;
             }
             PauseMode::SaveSelect => {
