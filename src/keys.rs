@@ -8,36 +8,37 @@ use std::time::Duration;
 
 use crate::app::App;
 use crate::app::PauseMode;
-use crate::event::{AppEvent, Event, EventHandler};
+use crate::event::{AppEvent, Event, EventHandler, WhichPath};
+use ratatui_explorer::Input;
 
-impl App<'_> {
+impl App {
     /// Handles the key events and updates the state of [`App`].
     pub fn handle_key_events(&mut self, key_event: KeyEvent) -> color_eyre::Result<()> {
         match self.pause_mode {
             PauseMode::SaveSelect => match key_event.code {
-                KeyCode::Up | KeyCode::Char('k') => self.events.send(AppEvent::PathUp),
-                KeyCode::Down | KeyCode::Char('j') => self.events.send(AppEvent::PathDown),
-                KeyCode::Left | KeyCode::Char('h') => self.events.send(AppEvent::PathParent),
-                KeyCode::Right | KeyCode::Char('l') => self.events.send(AppEvent::PathChild),
+                KeyCode::Up | KeyCode::Char('k') => self.explorer.handle(Input::Up).unwrap(),
+                KeyCode::Down | KeyCode::Char('j') => self.explorer.handle(Input::Down).unwrap(),
+                KeyCode::Left | KeyCode::Char('h') => self.explorer.handle(Input::Left).unwrap(),
+                KeyCode::Right | KeyCode::Char('l') => self.explorer.handle(Input::Right).unwrap(),
                 KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
+                KeyCode::Enter => self.events.send(AppEvent::Select),
                 _ => {}
             },
             PauseMode::MainMenu => match key_event.code {
                 KeyCode::Char(' ') => self.events.send(AppEvent::Pause),
-                KeyCode::Enter => self
-                    .events
-                    .send(AppEvent::SetPauseMode(PauseMode::NotPaused)),
+                KeyCode::Enter => self.events.send(AppEvent::SetPauseMode),
                 KeyCode::Up | KeyCode::Char('k') => self.events.send(AppEvent::Up),
                 KeyCode::Down | KeyCode::Char('j') => self.events.send(AppEvent::Down),
                 KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
                 _ => {}
             },
             PauseMode::IncomingSelect => match key_event.code {
-                KeyCode::Up | KeyCode::Char('k') => self.events.send(AppEvent::PathUp),
-                KeyCode::Down | KeyCode::Char('j') => self.events.send(AppEvent::PathDown),
-                KeyCode::Left | KeyCode::Char('h') => self.events.send(AppEvent::PathParent),
-                KeyCode::Right | KeyCode::Char('l') => self.events.send(AppEvent::PathChild),
                 KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
+                KeyCode::Up | KeyCode::Char('k') => self.explorer.handle(Input::Up).unwrap(),
+                KeyCode::Down | KeyCode::Char('j') => self.explorer.handle(Input::Down).unwrap(),
+                KeyCode::Left | KeyCode::Char('h') => self.explorer.handle(Input::Left).unwrap(),
+                KeyCode::Right | KeyCode::Char('l') => self.explorer.handle(Input::Right).unwrap(),
+                KeyCode::Enter => self.events.send(AppEvent::Select),
                 _ => {}
             },
             PauseMode::NotPaused => match key_event.code {
@@ -75,7 +76,14 @@ impl App<'_> {
 
     pub fn load_tracks(&mut self) {
         // enumerate and save track list with pathes
+        self.track_list = fs::read_dir(self.incoming.clone())
+            .unwrap()
+            .filter_map(|e| e.ok())
+            .map(|e| e.path())
+            .collect::<Vec<_>>();
+        self.index = 0;
     }
+
     pub fn start_playback(&mut self) {
         let file = BufReader::new(File::open(self.track_list.get(self.index).unwrap()).unwrap());
         let source = Decoder::try_from(file).unwrap();
@@ -158,15 +166,19 @@ impl App<'_> {
             self.music_player.lock().unwrap().pause();
         };
     }
-    pub fn set_pause_mode(&mut self, mode: PauseMode) {
+    pub fn set_pause_mode(&mut self) {
         match self.pause_menu.selected().unwrap() {
             0 => {
                 self.pause_mode = PauseMode::IncomingSelect;
                 self.explorer_path = self.incoming.to_path_buf();
+                self.explorer.set_cwd(self.incoming.to_path_buf());
+                self.explorer_index = 0;
             }
             1 => {
                 self.pause_mode = PauseMode::SaveSelect;
-                self.explorer_path = self.save_path_a.to_path_buf()
+                self.explorer_path = self.save_path_a.to_path_buf();
+                self.explorer.set_cwd(self.save_path_a.clone());
+                self.explorer_index = 0;
             }
             2 => {
                 self.pause_mode = PauseMode::NotPaused;
@@ -185,19 +197,30 @@ impl App<'_> {
     }
     pub fn select(&mut self) {
         //self.pause_mode = self.pause_menu.selected().unwrap();
+        dbg!(self.explorer.current().path().to_path_buf());
+        match self.pause_mode {
+            PauseMode::IncomingSelect => {
+                self.incoming = self.explorer.current().path().to_path_buf();
+                self.music_player.lock().unwrap().clear();
+                self.paused = false;
+                self.load_tracks();
+                self.start_playback();
+                self.list_write();
+                self.pause_mode = PauseMode::MainMenu;
+            }
+            PauseMode::SaveSelect => {
+                self.save_path_a = self.explorer.current().path().to_path_buf()
+            }
+            _ => {}
+        }
+        self.paused = false;
     }
 
-    pub fn path_up(&mut self) {
-        self.explorer_index -= 1;
-    }
+    pub fn set_items(&mut self) {}
 
-    pub fn path_down(&mut self) {
-        self.explorer_index += 1;
-    }
-    pub fn path_parent(&mut self) {
-        self.explorer_path = self.explorer_path.parent().unwrap().to_path_buf();
-    }
-    pub fn path_child(&mut self) {
-        //self.explorer_path = self.explorer_path;
+    pub fn set_path(&mut self, which: WhichPath) {
+        // check if directory before setting
+        dbg!("PUSH");
+        // match which {WhichPath::PathA => }
     }
 }
