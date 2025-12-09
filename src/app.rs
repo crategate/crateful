@@ -1,3 +1,5 @@
+use crate::env::Envs;
+
 use crate::event::{AppEvent, Event, EventHandler};
 use ratatui::{
     DefaultTerminal,

@@ -8,6 +8,7 @@ use std::time::Duration;
 
 use crate::app::App;
 use crate::app::PauseMode;
+use crate::env::Envs;
 use crate::event::{AppEvent, Event, EventHandler, WhichPath};
 use ratatui_explorer::Input;
 
@@ -157,6 +158,8 @@ impl App {
         self.start_playback();
     }
     pub fn pause(&mut self) {
+        Envs::read_from_env();
+        Envs::read_env_paths();
         self.pause_menu.select(Some(0));
         self.pause_mode = PauseMode::MainMenu;
         self.paused = !self.paused;
