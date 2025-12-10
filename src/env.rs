@@ -11,7 +11,7 @@ pub struct Envs {
 }
 
 impl Envs {
-    pub fn read_from_env() {
+    pub fn load_envs() {
         dotenv::dotenv().ok();
     }
 

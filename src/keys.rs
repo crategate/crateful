@@ -131,7 +131,7 @@ impl App {
         if self.paused {
             return;
         }
-        let mut newpath = PathBuf::from("../../Music/saved/");
+        let mut newpath = self.save_path_a.clone();
         newpath.push(
             self.track_list
                 .get(self.index)
@@ -158,13 +158,14 @@ impl App {
         self.start_playback();
     }
     pub fn pause(&mut self) {
-        Envs::read_from_env();
+        Envs::load_envs();
         Envs::read_env_paths();
         self.pause_menu.select(Some(0));
         self.pause_mode = PauseMode::MainMenu;
         self.paused = !self.paused;
         if self.music_player.lock().unwrap().is_paused() {
             self.music_player.lock().unwrap().play();
+            self.pause_mode = PauseMode::NotPaused;
         } else {
             self.music_player.lock().unwrap().pause();
         };
@@ -200,7 +201,6 @@ impl App {
     }
     pub fn select(&mut self) {
         //self.pause_mode = self.pause_menu.selected().unwrap();
-        dbg!(self.explorer.current().path().to_path_buf());
         match self.pause_mode {
             PauseMode::IncomingSelect => {
                 self.incoming = self.explorer.current().path().to_path_buf();
@@ -209,10 +209,13 @@ impl App {
                 self.load_tracks();
                 self.start_playback();
                 self.list_write();
-                self.pause_mode = PauseMode::MainMenu;
+                self.pause_mode = PauseMode::NotPaused;
             }
             PauseMode::SaveSelect => {
-                self.save_path_a = self.explorer.current().path().to_path_buf()
+                self.save_path_a = self.explorer.current().path().to_path_buf();
+                self.paused = false;
+                self.pause_mode = PauseMode::NotPaused;
+                self.music_player.lock().unwrap().play();
             }
             _ => {}
         }
