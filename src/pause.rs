@@ -52,13 +52,6 @@ impl Widget for Popup<'_> {
             .split(new_pop[0]);
         // ensure that all cells under the popup are cleared to avoid leaking content
         Clear.render(new_pop[0], buf);
-
-        let block = Block::new()
-            .title(self.title)
-            .title_style(self.title_style)
-            .borders(Borders::ALL)
-            .border_style(self.border_style);
-
         let selects = [
             "Select folder to sort",
             "Set save folders",
@@ -73,10 +66,26 @@ impl Widget for Popup<'_> {
                 buf,
                 &mut self.pause_menu,
             );
-        let theme = Theme::default().add_default_title();
-        let mut file_explore = FileExplorer::new().unwrap();
-        let pop_per = Layout::vertical([Constraint::Percentage(80)])
-            .margin(5)
-            .split(area);
+
+        let select_error_area_big = Layout::vertical([Constraint::Percentage(55)]).margin(9);
+        let select_error_rect: [Rect; 1] = select_error_area_big.areas(area);
+        let select_error_area = Layout::default()
+            .direction(ratatui::layout::Direction::Horizontal)
+            .constraints([Constraint::Percentage(33)])
+            .split(select_error_rect[0]);
+        let error_para = Paragraph::new(
+            "You must select a FOLDER with enter, \r\nDon't select a file!\r\n\r\n\r\nPress esc, space, or exit to try again",
+        );
+        let error_block = Block::new()
+            .title("You Fucked up.")
+            .title_style(self.title_style)
+            .borders(Borders::ALL)
+            .border_style(self.border_style);
+
+        if self.pause_mode == PauseMode::SelectError {
+            Clear.render(select_error_area[0], buf);
+            error_block.render(select_error_area[0], buf);
+            error_para.render(select_error_area[0].offset(Offset { x: 1, y: 1 }), buf);
+        }
     }
 }

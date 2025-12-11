@@ -1,3 +1,5 @@
+use crate::env::Envs;
+
 use crate::event::{AppEvent, Event, EventHandler};
 use ratatui::{
     DefaultTerminal,
@@ -47,6 +49,7 @@ pub enum PauseMode {
     MainMenu,
     SaveSelect,
     IncomingSelect,
+    SelectError,
 }
 
 impl Default for App {
@@ -111,6 +114,7 @@ impl App {
                     AppEvent::Down => self.down(),
                     AppEvent::Select => self.select(),
                     AppEvent::SetPath(which) => self.set_path(which),
+                    AppEvent::AcceptError => self.accept_erorr(),
                 },
             }
         }

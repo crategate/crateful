@@ -8,6 +8,7 @@ use std::time::Duration;
 
 use crate::app::App;
 use crate::app::PauseMode;
+use crate::env::Envs;
 use crate::event::{AppEvent, Event, EventHandler, WhichPath};
 use ratatui_explorer::Input;
 
@@ -57,6 +58,12 @@ impl App {
                 KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
                 KeyCode::Char('c' | 'C') if key_event.modifiers == KeyModifiers::CONTROL => {
                     self.events.send(AppEvent::Quit)
+                }
+                _ => {}
+            },
+            PauseMode::SelectError => match key_event.code {
+                KeyCode::Char(' ') | KeyCode::Esc | KeyCode::Enter => {
+                    self.events.send(AppEvent::AcceptError)
                 }
                 _ => {}
             },
@@ -130,7 +137,7 @@ impl App {
         if self.paused {
             return;
         }
-        let mut newpath = PathBuf::from("../../Music/saved/");
+        let mut newpath = self.save_path_a.clone();
         newpath.push(
             self.track_list
                 .get(self.index)
@@ -157,11 +164,14 @@ impl App {
         self.start_playback();
     }
     pub fn pause(&mut self) {
+        Envs::load_envs();
+        Envs::read_env_paths();
         self.pause_menu.select(Some(0));
         self.pause_mode = PauseMode::MainMenu;
         self.paused = !self.paused;
         if self.music_player.lock().unwrap().is_paused() {
             self.music_player.lock().unwrap().play();
+            self.pause_mode = PauseMode::NotPaused;
         } else {
             self.music_player.lock().unwrap().pause();
         };
@@ -196,8 +206,11 @@ impl App {
         }
     }
     pub fn select(&mut self) {
-        //self.pause_mode = self.pause_menu.selected().unwrap();
-        dbg!(self.explorer.current().path().to_path_buf());
+        // check if selection is a directory, reject choice, display error message, & return if not
+        if self.explorer.current().is_file() {
+            self.pause_mode = PauseMode::SelectError;
+            return;
+        }
         match self.pause_mode {
             PauseMode::IncomingSelect => {
                 self.incoming = self.explorer.current().path().to_path_buf();
@@ -206,10 +219,13 @@ impl App {
                 self.load_tracks();
                 self.start_playback();
                 self.list_write();
-                self.pause_mode = PauseMode::MainMenu;
+                self.pause_mode = PauseMode::NotPaused;
             }
             PauseMode::SaveSelect => {
-                self.save_path_a = self.explorer.current().path().to_path_buf()
+                self.save_path_a = self.explorer.current().path().to_path_buf();
+                self.paused = false;
+                self.pause_mode = PauseMode::NotPaused;
+                self.music_player.lock().unwrap().play();
             }
             _ => {}
         }
@@ -217,6 +233,10 @@ impl App {
     }
 
     pub fn set_items(&mut self) {}
+
+    pub fn accept_erorr(&mut self) {
+        self.pause_mode = PauseMode::MainMenu;
+    }
 
     pub fn set_path(&mut self, which: WhichPath) {
         // check if directory before setting

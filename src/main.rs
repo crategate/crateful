@@ -2,6 +2,7 @@ use crate::app::App;
 use cli_log::*;
 
 pub mod app;
+pub mod env;
 pub mod event;
 pub mod keys;
 pub mod pause;

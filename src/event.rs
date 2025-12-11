@@ -4,9 +4,6 @@ use ratatui::crossterm::event::Event as CrosstermEvent;
 use std::time::Duration;
 use tokio::sync::mpsc;
 
-use crate::app;
-use crate::app::PauseMode;
-
 /// The frequency at which tick events are emitted.
 const TICK_FPS: f64 = 30.0;
 
@@ -14,10 +11,6 @@ const TICK_FPS: f64 = 30.0;
 #[derive(Clone, Debug)]
 pub enum Event {
     /// An event that is emitted on a regular schedule.
-    ///
-    /// Use this event to run any code which has to run outside of being a direct response to a user
-    /// event. e.g. polling exernal systems, updating animations, or rendering the UI based on a
-    /// fixed frame rate.
     Tick,
     /// Crossterm events.
     ///
@@ -51,6 +44,7 @@ pub enum AppEvent {
     Down,
     Select,
     SetPath(WhichPath),
+    AcceptError,
 }
 
 /// Terminal event handler.
