@@ -89,6 +89,7 @@ impl Default for App {
 impl App {
     /// Constructs a new instance of [`App`].
     pub fn new() -> Self {
+        Envs::load_envs();
         Self::default()
     }
     /// Run the application's main loop.

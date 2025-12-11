@@ -1,7 +1,8 @@
 use dotenv;
-use std::env;
+use std::env::{self, VarError};
 use std::path::PathBuf;
 
+use crate::env::dotenv::Error;
 use config::Config;
 
 #[derive(Debug)]
@@ -16,10 +17,7 @@ impl Envs {
     }
 
     //        unsafe { env::set_var("INCOMING_PATH", path) }
-    pub fn read_env_paths() {
-        match env::var("INCOMING_PATH") {
-            Ok(value) => dbg!("{}", value),
-            Err(e) => dbg!("{}", "Fatal Error Reading Env Vars".to_string()),
-        };
+    pub fn read_incoming_path() -> Result<String, VarError> {
+        env::var("INCOMING_PATH")
     }
 }
