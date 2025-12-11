@@ -61,6 +61,12 @@ impl App {
                 }
                 _ => {}
             },
+            PauseMode::SelectError => match key_event.code {
+                KeyCode::Char(' ') | KeyCode::Esc | KeyCode::Enter => {
+                    self.events.send(AppEvent::AcceptError)
+                }
+                _ => {}
+            },
         }
         Ok(())
     }
@@ -200,7 +206,11 @@ impl App {
         }
     }
     pub fn select(&mut self) {
-        //self.pause_mode = self.pause_menu.selected().unwrap();
+        // check if selection is a directory, reject choice, display error message, & return if not
+        if self.explorer.current().is_file() {
+            self.pause_mode = PauseMode::SelectError;
+            return;
+        }
         match self.pause_mode {
             PauseMode::IncomingSelect => {
                 self.incoming = self.explorer.current().path().to_path_buf();
@@ -223,6 +233,8 @@ impl App {
     }
 
     pub fn set_items(&mut self) {}
+
+    pub fn accept_erorr(&mut self) {}
 
     pub fn set_path(&mut self, which: WhichPath) {
         // check if directory before setting

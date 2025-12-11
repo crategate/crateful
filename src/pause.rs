@@ -54,7 +54,7 @@ impl Widget for Popup<'_> {
         Clear.render(new_pop[0], buf);
 
         let block = Block::new()
-            .title(self.title)
+            .title("You Fucked up.")
             .title_style(self.title_style)
             .borders(Borders::ALL)
             .border_style(self.border_style);
@@ -76,7 +76,15 @@ impl Widget for Popup<'_> {
         let theme = Theme::default().add_default_title();
         let mut file_explore = FileExplorer::new().unwrap();
         let pop_per = Layout::vertical([Constraint::Percentage(80)])
-            .margin(5)
+            .margin(7)
             .split(area);
+
+        let select_error_area = Layout::vertical([Constraint::Percentage(55)]).margin(9);
+        let select_error_rect: [Rect; 1] = select_error_area.areas(area);
+
+        if self.pause_mode == PauseMode::SelectError {
+            Clear.render(select_error_rect[0], buf);
+            block.render(select_error_rect[0], buf);
+        }
     }
 }

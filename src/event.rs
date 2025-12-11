@@ -44,6 +44,7 @@ pub enum AppEvent {
     Down,
     Select,
     SetPath(WhichPath),
+    AcceptError,
 }
 
 /// Terminal event handler.
