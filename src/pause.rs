@@ -67,8 +67,12 @@ impl Widget for Popup<'_> {
                 &mut self.pause_menu,
             );
 
-        let select_error_area = Layout::vertical([Constraint::Percentage(55)]).margin(9);
-        let select_error_rect: [Rect; 1] = select_error_area.areas(area);
+        let select_error_area_big = Layout::vertical([Constraint::Percentage(55)]).margin(9);
+        let select_error_rect: [Rect; 1] = select_error_area_big.areas(area);
+        let select_error_area = Layout::default()
+            .direction(ratatui::layout::Direction::Horizontal)
+            .constraints([Constraint::Percentage(33)])
+            .split(select_error_rect[0]);
         let error_para = Paragraph::new(
             "You must select a FOLDER with enter, \r\nDon't select a file!\r\n\r\n\r\nPress esc, space, or exit to try again",
         );
@@ -79,9 +83,9 @@ impl Widget for Popup<'_> {
             .border_style(self.border_style);
 
         if self.pause_mode == PauseMode::SelectError {
-            Clear.render(select_error_rect[0], buf);
-            error_block.render(select_error_rect[0], buf);
-            error_para.render(select_error_rect[0].offset(Offset { x: 1, y: 1 }), buf);
+            Clear.render(select_error_area[0], buf);
+            error_block.render(select_error_area[0], buf);
+            error_para.render(select_error_area[0].offset(Offset { x: 1, y: 1 }), buf);
         }
     }
 }
