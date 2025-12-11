@@ -234,7 +234,9 @@ impl App {
 
     pub fn set_items(&mut self) {}
 
-    pub fn accept_erorr(&mut self) {}
+    pub fn accept_erorr(&mut self) {
+        self.pause_mode = PauseMode::MainMenu;
+    }
 
     pub fn set_path(&mut self, which: WhichPath) {
         // check if directory before setting
