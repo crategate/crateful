@@ -17,9 +17,9 @@ impl Widget for &App {
             .title("Tracks to Sort")
             .border_type(BorderType::Rounded);
         let vertical = Layout::vertical([
-            Constraint::Percentage(33),
-            Constraint::Percentage(34),
-            Constraint::Percentage(33),
+            Constraint::Percentage(20),
+            Constraint::Percentage(50),
+            Constraint::Percentage(30),
         ]);
         let pop_per = Layout::vertical([Constraint::Percentage(80)]).margin(5);
         let new_pop: [Rect; 1] = pop_per.areas(area);
@@ -48,9 +48,11 @@ impl Widget for &App {
         let save_a_block = Block::bordered()
             .border_type(BorderType::Rounded)
             .title_bottom("'a' save")
-            .title_alignment(Alignment::Center)
+            .title_alignment(Alignment::Center);
+        Paragraph::new(format!("Press a\r\nto save to\r\n{:?}", self.save_path_a))
+            .block(save_a_block)
+            .centered()
             .render(save_a, buf);
-
         let instruct = Layout::default()
             .direction(ratatui::layout::Direction::Vertical)
             .constraints([Constraint::Percentage(50)])
