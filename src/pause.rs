@@ -50,7 +50,6 @@ impl Widget for Popup<'_> {
             ])
             .margin(2)
             .split(new_pop[0]);
-        // ensure that all cells under the popup are cleared to avoid leaking content
         Clear.render(new_pop[0], buf);
         let selects = [
             "Select folder to sort",
