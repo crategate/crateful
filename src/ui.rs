@@ -8,8 +8,9 @@ use ratatui::{
 
 use crate::app::App;
 use crate::app::PauseMode;
+use crate::instructs;
 use crate::pause;
-use crate::pause::Popup;
+
 impl Widget for &App {
     fn render(mut self, area: Rect, buf: &mut Buffer) {
         let block = Block::bordered()
@@ -49,10 +50,16 @@ impl Widget for &App {
             .border_type(BorderType::Rounded)
             .title_bottom("'a' save")
             .title_alignment(Alignment::Center);
-        Paragraph::new(format!("Press a\r\nto save to\r\n{:?}", self.save_path_a))
-            .block(save_a_block)
-            .centered()
-            .render(save_a, buf);
+        Paragraph::new(format!(
+            "Press a\r\nto save to\r\n\r\n{:?}",
+            self.save_path_a
+        ))
+        .block(save_a_block)
+        .centered()
+        .fg(Color::White)
+        .bg(Color::LightBlue)
+        .wrap(Wrap { trim: true })
+        .render(save_a, buf);
         let instruct = Layout::default()
             .direction(ratatui::layout::Direction::Vertical)
             .constraints([Constraint::Percentage(50)])
@@ -77,13 +84,12 @@ impl Widget for &App {
             .centered()
             .block(block);
         let para3 = Paragraph::new(trace)
-            .fg(Color::White)
+            .fg(Color::DarkGray)
             .bg(Color::LightBlue)
             .centered();
 
         paragraph.render(playing, buf);
         paragraph2.render(list, buf);
-        para3.render(controls, buf);
 
         let popup = pause::Popup::default()
             .content("Hello world!")
