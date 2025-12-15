@@ -5,14 +5,12 @@ use ratatui::{
     layout::{Constraint, Layout, Offset, Rect},
     style::{Style, Stylize},
     text::{Line, Text},
-    widgets::{Block, Borders, Clear, List, ListState, Paragraph, StatefulWidgetRef, Widget, Wrap},
+    widgets::{Block, Borders, Clear, List, ListState, Paragraph, StatefulWidgetRef, Widget},
 };
 use std::path::PathBuf;
 
 use derive_setters::Setters;
-use ratatui_explorer::{FileExplorer, Theme};
 #[derive(Debug, Default, Setters)]
-
 pub struct Popup<'a> {
     #[setters(into)]
     title: Line<'a>,

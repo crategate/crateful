@@ -1,9 +1,11 @@
+use crate::app::App;
 use std::path::PathBuf;
 
 use ratatui::{
-    layout::Rect,
+    layout::{Alignment, Constraint, Layout, Rect},
     prelude::Buffer,
-    widgets::{StatefulWidget, StatefulWidgetRef},
+    style::{Color, Stylize},
+    widgets::{Block, BorderType, Paragraph, Widget, Wrap},
 };
 
 pub struct PathStates {
@@ -15,10 +17,33 @@ pub struct Instructs {
     state: PathStates,
 }
 impl Instructs {}
+impl PathStates {}
 
-impl StatefulWidget for Instructs {
-    type State: PathStates;
-    fn render(self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
-        StatefulWidgetRef::render_ref(&self, area, buf, state);
+impl Widget for Instructs {
+    fn render(self, area: Rect, buf: &mut Buffer) {
+        let controls_split = Layout::horizontal([
+            Constraint::Percentage(20),
+            Constraint::Percentage(20),
+            Constraint::Percentage(20),
+            Constraint::Percentage(20),
+            Constraint::Percentage(20),
+        ]);
+
+        let [save_a, save_d, save_g, scrub, delete] = controls_split.areas(area);
+
+        let save_a_block = Block::bordered()
+            .border_type(BorderType::Rounded)
+            .title_bottom("'a' save")
+            .title_alignment(Alignment::Center);
+        Paragraph::new(format!(
+            "Press a\r\nto save to\r\n\r\n{:?}",
+            self.save_path_a
+        ))
+        .block(save_a_block)
+        .centered()
+        .fg(Color::White)
+        .bg(Color::LightBlue)
+        .wrap(Wrap { trim: true })
+        .render(save_a, buf);
     }
 }

@@ -36,31 +36,7 @@ impl Widget for &App {
             .split(new_pop[0]);
         let [playing, list, controls] = vertical.areas(area);
 
-        let controls_split = Layout::horizontal([
-            Constraint::Percentage(20),
-            Constraint::Percentage(20),
-            Constraint::Percentage(20),
-            Constraint::Percentage(20),
-            Constraint::Percentage(20),
-        ]);
-
-        let [save_a, save_d, save_g, scrub, delete] = controls_split.areas(controls);
-
-        let save_a_block = Block::bordered()
-            .border_type(BorderType::Rounded)
-            .title_bottom("'a' save")
-            .title_alignment(Alignment::Center);
-        Paragraph::new(format!(
-            "Press a\r\nto save to\r\n\r\n{:?}",
-            self.save_path_a
-        ))
-        .block(save_a_block)
-        .centered()
-        .fg(Color::White)
-        .bg(Color::LightBlue)
-        .wrap(Wrap { trim: true })
-        .render(save_a, buf);
-        let instruct = Layout::default()
+        let pause_instruct = Layout::default()
             .direction(ratatui::layout::Direction::Vertical)
             .constraints([Constraint::Percentage(50)])
             .margin(1)
@@ -83,13 +59,10 @@ impl Widget for &App {
             .bg(Color::White)
             .centered()
             .block(block);
-        let para3 = Paragraph::new(trace)
-            .fg(Color::DarkGray)
-            .bg(Color::LightBlue)
-            .centered();
-
         paragraph.render(playing, buf);
         paragraph2.render(list, buf);
+
+        instructs::Instructs::render(self, controls, buf);
 
         let popup = pause::Popup::default()
             .content("Hello world!")
@@ -111,7 +84,7 @@ impl Widget for &App {
                     "Pick a Folder to store saved tracks. \r\n Use arrow keys (or hjkl) to navigate the explorer. \r\n\r\n Select a foler with Enter.",
                 )
                 .wrap(Wrap { trim: true })
-                .render(instruct[0], buf);
+                .render(pause_instruct[0], buf);
             }
             PauseMode::IncomingSelect => {
                 self.explorer
@@ -121,7 +94,7 @@ impl Widget for &App {
                     "Select a folder to sort! \r\n\r\nUse arrow keys (or hjkl) \r\n to navigate the explorer. \r\n\r\n Select a foler with Enter \r\n\r\n Select one with ONLY wav, flac, & mp3 files... the program crashes otherwise!",
                 )
                 .wrap(Wrap { trim: true })
-                .render(instruct[0], buf);
+                .render(pause_instruct[0], buf);
             }
             _ => {}
         }
