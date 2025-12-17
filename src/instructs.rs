@@ -59,5 +59,33 @@ impl Widget for Instructs {
         .bg(Color::LightBlue)
         .wrap(Wrap { trim: true })
         .render(save_a, buf);
+        let save_d_block = Block::bordered()
+            .border_type(BorderType::Rounded)
+            .title_bottom("'d' save")
+            .title_alignment(Alignment::Center);
+        Paragraph::new(format!(
+            "Press a\r\nto save to\r\n\r\n{:?}",
+            self.state.save_a
+        ))
+        .block(save_d_block)
+        .centered()
+        .fg(Color::White)
+        .bg(Color::Cyan)
+        .wrap(Wrap { trim: true })
+        .render(save_d, buf);
+        let save_g_block = Block::bordered()
+            .border_type(BorderType::Rounded)
+            .title_bottom("'g' save")
+            .title_alignment(Alignment::Center);
+        Paragraph::new(format!(
+            "Press a\r\nto save to\r\n\r\n{:?}",
+            self.state.save_a
+        ))
+        .block(save_g_block)
+        .centered()
+        .fg(Color::White)
+        .bg(Color::LightBlue)
+        .wrap(Wrap { trim: true })
+        .render(save_g, buf);
     }
 }
