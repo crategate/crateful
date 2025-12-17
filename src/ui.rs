@@ -1,26 +1,26 @@
-use color_eyre::config::Frame;
 use ratatui::{
     buffer::Buffer,
-    layout::{Alignment, Constraint, Layout, Margin, Offset, Rect},
+    layout::{Alignment, Constraint, Flex, Layout, Margin, Offset, Rect},
     style::{Color, Style, Stylize},
     text::{Line, Text},
-    widgets::{Block, BorderType, Borders, Clear, Paragraph, Widget, Wrap},
+    widgets::{Block, BorderType, Borders, Clear, Padding, Paragraph, Widget, Wrap},
 };
 
 use crate::app::App;
 use crate::app::PauseMode;
+use crate::instructs;
 use crate::pause;
-use crate::pause::Popup;
+
 impl Widget for &App {
     fn render(mut self, area: Rect, buf: &mut Buffer) {
         let block = Block::bordered()
             .title_alignment(Alignment::Center)
-            .title("Track to Sort")
+            .title("Tracks to Sort")
             .border_type(BorderType::Rounded);
         let vertical = Layout::vertical([
-            Constraint::Percentage(33),
-            Constraint::Percentage(33),
-            Constraint::Percentage(33),
+            Constraint::Percentage(20),
+            Constraint::Percentage(50),
+            Constraint::Percentage(30),
         ]);
         let pop_per = Layout::vertical([Constraint::Percentage(80)]).margin(5);
         let new_pop: [Rect; 1] = pop_per.areas(area);
@@ -36,7 +36,9 @@ impl Widget for &App {
             .split(new_pop[0]);
         let [playing, list, controls] = vertical.areas(area);
 
-        let instruct = Layout::default()
+        let playblock = Block::new().padding(Padding::vertical(playing.height / 4));
+
+        let pause_instruct = Layout::default()
             .direction(ratatui::layout::Direction::Vertical)
             .constraints([Constraint::Percentage(50)])
             .margin(1)
@@ -50,23 +52,22 @@ impl Widget for &App {
         let listformat = format!("{:#?}", self.display_list);
         let trace = format!("{:#?}", self.playing);
 
-        let paragraph = Paragraph::new(text)
+        let now_playing = Paragraph::new(text)
             .fg(Color::White)
+            .block(playblock)
             .bg(Color::DarkGray)
             .centered();
         let paragraph2 = Paragraph::new(listformat)
             .fg(Color::Blue)
-            .bg(Color::White)
+            .bg(Color::Gray)
             .centered()
             .block(block);
-        let para3 = Paragraph::new(trace)
-            .fg(Color::White)
-            .bg(Color::LightBlue)
-            .centered();
-        paragraph.render(playing, buf);
+        now_playing.render(playing, buf);
         paragraph2.render(list, buf);
 
-        para3.render(controls, buf);
+        let bottom_section = instructs::Instructs::new(controls, self, buf);
+        instructs::Instructs::display(bottom_section, controls, buf);
+
         let popup = pause::Popup::default()
             .content("Hello world!")
             .style(Style::new().yellow())
@@ -87,7 +88,7 @@ impl Widget for &App {
                     "Pick a Folder to store saved tracks. \r\n Use arrow keys (or hjkl) to navigate the explorer. \r\n\r\n Select a foler with Enter.",
                 )
                 .wrap(Wrap { trim: true })
-                .render(instruct[0], buf);
+                .render(pause_instruct[0], buf);
             }
             PauseMode::IncomingSelect => {
                 self.explorer
@@ -97,7 +98,7 @@ impl Widget for &App {
                     "Select a folder to sort! \r\n\r\nUse arrow keys (or hjkl) \r\n to navigate the explorer. \r\n\r\n Select a foler with Enter \r\n\r\n Select one with ONLY wav, flac, & mp3 files... the program crashes otherwise!",
                 )
                 .wrap(Wrap { trim: true })
-                .render(instruct[0], buf);
+                .render(pause_instruct[0], buf);
             }
             _ => {}
         }

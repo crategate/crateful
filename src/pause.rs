@@ -5,14 +5,12 @@ use ratatui::{
     layout::{Constraint, Layout, Offset, Rect},
     style::{Style, Stylize},
     text::{Line, Text},
-    widgets::{Block, Borders, Clear, List, ListState, Paragraph, StatefulWidgetRef, Widget, Wrap},
+    widgets::{Block, Borders, Clear, List, ListState, Paragraph, StatefulWidgetRef, Widget},
 };
 use std::path::PathBuf;
 
 use derive_setters::Setters;
-use ratatui_explorer::{FileExplorer, Theme};
 #[derive(Debug, Default, Setters)]
-
 pub struct Popup<'a> {
     #[setters(into)]
     title: Line<'a>,
@@ -50,7 +48,6 @@ impl Widget for Popup<'_> {
             ])
             .margin(2)
             .split(new_pop[0]);
-        // ensure that all cells under the popup are cleared to avoid leaking content
         Clear.render(new_pop[0], buf);
         let selects = [
             "Select folder to sort",

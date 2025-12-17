@@ -4,6 +4,7 @@ use cli_log::*;
 pub mod app;
 pub mod env;
 pub mod event;
+pub mod instructs;
 pub mod keys;
 pub mod pause;
 pub mod ui;
