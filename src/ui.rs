@@ -59,7 +59,7 @@ impl Widget for &App {
             .centered();
         let paragraph2 = Paragraph::new(listformat)
             .fg(Color::Blue)
-            .bg(Color::White)
+            .bg(Color::Gray)
             .centered()
             .block(block);
         now_playing.render(playing, buf);

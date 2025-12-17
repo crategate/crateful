@@ -64,8 +64,8 @@ impl Widget for Instructs {
             .title_bottom("'d' save")
             .title_alignment(Alignment::Center);
         Paragraph::new(format!(
-            "Press a\r\nto save to\r\n\r\n{:?}",
-            self.state.save_a
+            "Press d\r\nto save to\r\n\r\n{:?}",
+            self.state.save_d
         ))
         .block(save_d_block)
         .centered()
@@ -78,8 +78,8 @@ impl Widget for Instructs {
             .title_bottom("'g' save")
             .title_alignment(Alignment::Center);
         Paragraph::new(format!(
-            "Press a\r\nto save to\r\n\r\n{:?}",
-            self.state.save_a
+            "Press g\r\nto save to\r\n\r\n{:?}",
+            self.state.save_g
         ))
         .block(save_g_block)
         .centered()
