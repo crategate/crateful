@@ -16,9 +16,23 @@ pub struct PathStates {
 pub struct Instructs {
     state: PathStates,
 }
-impl Instructs {}
 impl PathStates {}
 
+impl Instructs {
+    pub fn display(mut self, area: Rect, buf: &mut Buffer) {
+        //        self.state.save_a = app_state.save_path_a.clone();
+        self.render(area, buf);
+    }
+    pub fn new(area: Rect, app_state: &App, buf: &mut Buffer) {
+        Instructs {
+            state: PathStates {
+                save_a: app_state.save_path_a,
+                save_d: app_state.save_path_d,
+                save_g: app_state.save_path_g,
+            },
+        };
+    }
+}
 impl Widget for Instructs {
     fn render(self, area: Rect, buf: &mut Buffer) {
         let controls_split = Layout::horizontal([
@@ -37,7 +51,7 @@ impl Widget for Instructs {
             .title_alignment(Alignment::Center);
         Paragraph::new(format!(
             "Press a\r\nto save to\r\n\r\n{:?}",
-            self.save_path_a
+            self.state.save_a
         ))
         .block(save_a_block)
         .centered()

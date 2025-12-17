@@ -1,17 +1,10 @@
 use crate::env::Envs;
 
 use crate::event::{AppEvent, Event, EventHandler};
-use ratatui::{
-    DefaultTerminal,
-    crossterm::event::{KeyCode, KeyEvent, KeyModifiers},
-    layout::{Alignment, Constraint, Layout, Offset, Rect},
-    widgets::{Block, Borders, ListState},
-};
+use ratatui::{DefaultTerminal, widgets::ListState};
 use ratatui_explorer::{FileExplorer, Theme};
 use rodio::{Decoder, OutputStream, Sink, Source};
 use std::fs;
-use std::fs::File;
-use std::io::BufReader;
 use std::path::{self, Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -24,6 +17,8 @@ pub struct App {
     // incoming path
     pub incoming: PathBuf,
     pub save_path_a: PathBuf,
+    pub save_path_d: PathBuf,
+    pub save_path_g: PathBuf,
     pub track_list: Vec<PathBuf>,
     pub display_list: Vec<String>,
     pub index: usize,
@@ -68,6 +63,8 @@ impl Default for App {
                 .map(|e| e.path())
                 .collect::<Vec<_>>(),
             save_path_a: fs::canonicalize(PathBuf::from("../../Music/saved")).unwrap(),
+            save_path_d: fs::canonicalize(PathBuf::new()).unwrap(),
+            save_path_g: fs::canonicalize(PathBuf::new()).unwrap(),
             display_list: Vec::new(),
             index: 0,
             playing: PathBuf::new(),
