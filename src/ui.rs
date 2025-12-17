@@ -62,8 +62,8 @@ impl Widget for &App {
         paragraph.render(playing, buf);
         paragraph2.render(list, buf);
 
-        //let bottom_section = instructs::Instructs::default();
-        instructs::Instructs::display(self, controls, buf);
+        let bottom_section = instructs::Instructs::new(controls, self, buf);
+        instructs::Instructs::display(bottom_section, controls, buf);
 
         let popup = pause::Popup::default()
             .content("Hello world!")

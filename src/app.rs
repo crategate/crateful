@@ -17,8 +17,8 @@ pub struct App {
     // incoming path
     pub incoming: PathBuf,
     pub save_path_a: PathBuf,
-    pub save_path_d: PathBuf,
-    pub save_path_g: PathBuf,
+    pub save_path_d: Option<PathBuf>,
+    pub save_path_g: Option<PathBuf>,
     pub track_list: Vec<PathBuf>,
     pub display_list: Vec<String>,
     pub index: usize,
@@ -63,8 +63,8 @@ impl Default for App {
                 .map(|e| e.path())
                 .collect::<Vec<_>>(),
             save_path_a: fs::canonicalize(PathBuf::from("../../Music/saved")).unwrap(),
-            save_path_d: fs::canonicalize(PathBuf::new()).unwrap(),
-            save_path_g: fs::canonicalize(PathBuf::new()).unwrap(),
+            save_path_d: None,
+            save_path_g: None,
             display_list: Vec::new(),
             index: 0,
             playing: PathBuf::new(),

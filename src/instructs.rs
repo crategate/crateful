@@ -10,8 +10,8 @@ use ratatui::{
 
 pub struct PathStates {
     save_a: PathBuf,
-    save_d: PathBuf,
-    save_g: PathBuf,
+    save_d: Option<PathBuf>,
+    save_g: Option<PathBuf>,
 }
 pub struct Instructs {
     state: PathStates,
@@ -23,14 +23,14 @@ impl Instructs {
         //        self.state.save_a = app_state.save_path_a.clone();
         self.render(area, buf);
     }
-    pub fn new(area: Rect, app_state: &App, buf: &mut Buffer) {
+    pub fn new(area: Rect, app_state: &App, buf: &mut Buffer) -> Instructs {
         Instructs {
             state: PathStates {
-                save_a: app_state.save_path_a,
-                save_d: app_state.save_path_d,
-                save_g: app_state.save_path_g,
+                save_a: app_state.save_path_a.clone(),
+                save_d: app_state.save_path_d.clone(),
+                save_g: app_state.save_path_g.clone(),
             },
-        };
+        }
     }
 }
 impl Widget for Instructs {
