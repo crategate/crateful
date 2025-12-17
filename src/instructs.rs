@@ -87,5 +87,27 @@ impl Widget for Instructs {
         .bg(Color::LightBlue)
         .wrap(Wrap { trim: true })
         .render(save_g, buf);
+        let scrub_block = Block::bordered()
+            .border_type(BorderType::Rounded)
+            .title_bottom("how to scrub")
+            .title_alignment(Alignment::Center);
+        Paragraph::new(format!("use numbers\r\n1-9 to scrub\r\nthrough the track"))
+            .block(scrub_block)
+            .centered()
+            .fg(Color::White)
+            .bg(Color::LightCyan)
+            .wrap(Wrap { trim: true })
+            .render(scrub, buf);
+        let delete_block = Block::bordered()
+            .border_type(BorderType::Rounded)
+            .title_bottom("delete")
+            .title_alignment(Alignment::Center);
+        Paragraph::new(format!("press backspace\r\nto delete\r\nthis track"))
+            .block(delete_block)
+            .centered()
+            .fg(Color::White)
+            .bg(Color::LightRed)
+            .wrap(Wrap { trim: true })
+            .render(delete, buf);
     }
 }

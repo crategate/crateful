@@ -36,6 +36,8 @@ impl Widget for &App {
             .split(new_pop[0]);
         let [playing, list, controls] = vertical.areas(area);
 
+        let playblock = Block::new().padding(Padding::vertical(playing.height / 4));
+
         let pause_instruct = Layout::default()
             .direction(ratatui::layout::Direction::Vertical)
             .constraints([Constraint::Percentage(50)])
@@ -50,8 +52,9 @@ impl Widget for &App {
         let listformat = format!("{:#?}", self.display_list);
         let trace = format!("{:#?}", self.playing);
 
-        let paragraph = Paragraph::new(text)
+        let now_playing = Paragraph::new(text)
             .fg(Color::White)
+            .block(playblock)
             .bg(Color::DarkGray)
             .centered();
         let paragraph2 = Paragraph::new(listformat)
@@ -59,7 +62,7 @@ impl Widget for &App {
             .bg(Color::White)
             .centered()
             .block(block);
-        paragraph.render(playing, buf);
+        now_playing.render(playing, buf);
         paragraph2.render(list, buf);
 
         let bottom_section = instructs::Instructs::new(controls, self, buf);

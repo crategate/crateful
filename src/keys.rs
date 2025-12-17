@@ -53,7 +53,7 @@ impl App {
                 KeyCode::Char('8') => self.events.send(AppEvent::Seek(8)),
                 KeyCode::Char('9') => self.events.send(AppEvent::Seek(9)),
                 KeyCode::Char('s') => self.events.send(AppEvent::SaveTrack),
-                KeyCode::Char('k') => self.events.send(AppEvent::DeleteTrack),
+                KeyCode::Backspace => self.events.send(AppEvent::DeleteTrack),
                 KeyCode::Char(' ') => self.events.send(AppEvent::Pause),
                 KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
                 KeyCode::Char('c' | 'C') if key_event.modifiers == KeyModifiers::CONTROL => {
