@@ -4,11 +4,14 @@ use std::path::PathBuf;
 
 use crate::env::dotenv::Error;
 use config::Config;
+use directories;
 
 #[derive(Debug)]
 pub struct Envs {
     pub incoming: PathBuf,
     pub save_path_a: PathBuf,
+    pub save_path_d: PathBuf,
+    pub save_path_g: PathBuf,
 }
 
 impl Envs {

@@ -164,7 +164,7 @@ impl App {
         self.start_playback();
     }
     pub fn pause(&mut self) {
-        Envs::read_incoming_path();
+        // Envs::read_incoming_path();
         self.pause_menu.select(Some(0));
         self.pause_mode = PauseMode::MainMenu;
         self.paused = !self.paused;

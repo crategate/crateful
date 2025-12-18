@@ -46,6 +46,11 @@ pub enum PauseMode {
     IncomingSelect,
     SelectError,
 }
+pub enum SavePath {
+    A,
+    D,
+    G,
+}
 
 impl Default for App {
     fn default() -> Self {
