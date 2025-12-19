@@ -4,6 +4,7 @@ use crate::event::{AppEvent, Event, EventHandler};
 use ratatui::{DefaultTerminal, widgets::ListState};
 use ratatui_explorer::{FileExplorer, Theme};
 use rodio::{Decoder, OutputStream, Sink, Source};
+use std::env;
 use std::fs;
 use std::path::{self, Path, PathBuf};
 use std::sync::{Arc, Mutex};
@@ -61,7 +62,8 @@ impl Default for App {
         Self {
             running: true,
             events: EventHandler::new(),
-            incoming: fs::canonicalize(PathBuf::from("../../Music/incoming/")).unwrap(),
+            //incoming: fs::canonicalize(PathBuf::from("../../Music/incoming/")).unwrap(),
+            incoming: fs::canonicalize(PathBuf::from(env::var("INCOMING_PATH").unwrap())).unwrap(),
             track_list: fs::read_dir("../../Music/incoming")
                 .unwrap()
                 .filter_map(|e| e.ok())
