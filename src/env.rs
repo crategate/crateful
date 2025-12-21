@@ -18,9 +18,7 @@ pub fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where
     P: AsRef<Path> + std::fmt::Debug,
 {
-    dbg!("{}", &filename);
     let file = File::open(filename).expect("well");
-
     Ok(io::BufReader::new(file).lines())
 }
 impl Envs {
@@ -41,11 +39,14 @@ impl Envs {
     }
 
     pub fn set_env(key: &str, value: &str) {
+        let mut to_write: Vec<&str> = Vec::new();
+        let pair = format!("{} = {}", key, value);
         if let Ok(lines) = read_lines("../../dev/crateful/.env") {
-            dbg!("oh hell");
             for line in lines.map_while(Result::ok) {
                 dbg!("{}", line.clone());
-                dbg!("{}", line);
+                if line.contains(key) {
+                    to_write.push(pair.as_str())
+                }
             }
         }
     }
