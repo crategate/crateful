@@ -62,8 +62,8 @@ impl Default for App {
         Self {
             running: true,
             events: EventHandler::new(),
-            //incoming: fs::canonicalize(PathBuf::from("../../Music/incoming/")).unwrap(),
-            incoming: fs::canonicalize(PathBuf::from(env::var("INCOMING_PATH").unwrap())).unwrap(),
+            incoming: fs::canonicalize(PathBuf::from("../../Music/incoming/")).unwrap(),
+            //incoming: fs::canonicalize(PathBuf::from(env::var("INCOMING_PATH").unwrap())).unwrap(),
             track_list: fs::read_dir("../../Music/incoming")
                 .unwrap()
                 .filter_map(|e| e.ok())

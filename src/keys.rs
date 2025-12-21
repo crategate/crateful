@@ -52,7 +52,7 @@ impl App {
                 KeyCode::Char('7') => self.events.send(AppEvent::Seek(7)),
                 KeyCode::Char('8') => self.events.send(AppEvent::Seek(8)),
                 KeyCode::Char('9') => self.events.send(AppEvent::Seek(9)),
-                KeyCode::Char('s') => self.events.send(AppEvent::SaveTrack),
+                KeyCode::Char('a') => self.events.send(AppEvent::SaveTrack),
                 KeyCode::Backspace => self.events.send(AppEvent::DeleteTrack),
                 KeyCode::Char(' ') => self.events.send(AppEvent::Pause),
                 KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
@@ -164,7 +164,7 @@ impl App {
         self.start_playback();
     }
     pub fn pause(&mut self) {
-        // Envs::read_incoming_path();
+        Envs::set_env("get", "fucked");
         self.pause_menu.select(Some(0));
         self.pause_mode = PauseMode::MainMenu;
         self.paused = !self.paused;
@@ -180,7 +180,7 @@ impl App {
             0 => {
                 self.pause_mode = PauseMode::IncomingSelect;
                 self.explorer_path = self.incoming.to_path_buf();
-                self.explorer.set_cwd(self.incoming.to_path_buf());
+                self.explorer.set_cwd(self.incoming.clone());
                 self.explorer_index = 0;
             }
             1 => {
