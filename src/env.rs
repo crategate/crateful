@@ -41,14 +41,12 @@ impl Envs {
     }
 
     pub fn set_env(key: &str, value: &str) {
-        read_lines("../../dev/crateful/src/app.rs");
-
-        //        if let Ok(lines) = read_lines("./event.rs") {
-        //            dbg!("oh hell");
-        //            for line in lines.map_while(Result::ok) {
-        //                dbg!("{}", line.clone());
-        //                dbg!("{}", line);
-        //            }
-        //        }
+        if let Ok(lines) = read_lines("../../dev/crateful/.env") {
+            dbg!("oh hell");
+            for line in lines.map_while(Result::ok) {
+                dbg!("{}", line.clone());
+                dbg!("{}", line);
+            }
+        }
     }
 }
