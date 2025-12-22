@@ -164,7 +164,7 @@ impl App {
         self.start_playback();
     }
     pub fn pause(&mut self) {
-        Envs::set_env("get", "fucked");
+        Envs::set_env("INCOMING_PATH", "../../Music/Incoming");
         self.pause_menu.select(Some(0));
         self.pause_mode = PauseMode::MainMenu;
         self.paused = !self.paused;

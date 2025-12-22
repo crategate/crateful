@@ -3,7 +3,8 @@ use config::Config;
 use directories::ProjectDirs;
 use dotenv;
 use std::env::{self, VarError};
-use std::fs::File;
+use std::fs::{File, OpenOptions};
+use std::io::prelude::*;
 use std::io::{self, BufRead};
 use std::path::{Path, PathBuf};
 
@@ -34,19 +35,28 @@ impl Envs {
 
     //        unsafe { env::set_var("INCOMING_PATH", path) }
     pub fn read_incoming_path() -> Result<String, VarError> {
-        dbg!(env::var("INCOMING_PATH").unwrap());
         env::var("INCOMING_PATH")
     }
 
     pub fn set_env(key: &str, value: &str) {
-        let mut to_write: Vec<&str> = Vec::new();
-        let pair = format!("{} = {}", key, value);
-        if let Ok(lines) = read_lines("../../dev/crateful/.env") {
+        let mut to_write: Vec<String> = Vec::new();
+        let newpair = format!("{}={}\n", key, value);
+        let env_path = "../../dev/crateful/.env";
+        let mut env_file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(env_path)
+            .unwrap();
+        if let Ok(lines) = read_lines(env_path) {
             for line in lines.map_while(Result::ok) {
-                dbg!("{}", line.clone());
                 if line.contains(key) {
-                    to_write.push(pair.as_str())
-                }
+                    env_file.write(newpair.clone().as_bytes()).unwrap();
+                    // to_write.push(newpair.clone());
+                } else {
+                    // to_write.push(line);
+                    let liner = format!("{}\n", line);
+                    env_file.write(liner.as_bytes()).unwrap();
+                };
             }
         }
     }
