@@ -50,14 +50,17 @@ impl Envs {
         if let Ok(lines) = read_lines(env_path) {
             for line in lines.map_while(Result::ok) {
                 if line.contains(key) {
-                    env_file.write(newpair.clone().as_bytes()).unwrap();
-                    // to_write.push(newpair.clone());
+                    //                    env_file.write(newpair.clone().as_bytes()).unwrap();
+                    to_write.push(newpair.clone());
                 } else {
-                    // to_write.push(line);
                     let liner = format!("{}\n", line);
-                    env_file.write(liner.as_bytes()).unwrap();
+                    // env_file.write(liner.as_bytes()).unwrap();
+                    to_write.push(liner);
                 };
             }
+        }
+        for line in to_write {
+            env_file.write(line.as_bytes());
         }
     }
 }
