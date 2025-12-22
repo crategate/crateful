@@ -59,17 +59,20 @@ impl Default for App {
             rodio::OutputStreamBuilder::open_default_stream().expect("open default audio stream");
         let sink = rodio::Sink::connect_new(&stream.mixer());
 
+        let incoming_from_env = env::var("INCOMING_PATH").unwrap();
+        let save_a_env = env::var("SAVE_PATH_A").unwrap();
+
         Self {
             running: true,
             events: EventHandler::new(),
-            incoming: fs::canonicalize(PathBuf::from("../../Music/incoming/")).unwrap(),
-            //incoming: fs::canonicalize(PathBuf::from(env::var("INCOMING_PATH").unwrap())).unwrap(),
-            track_list: fs::read_dir("../../Music/incoming")
+            // incoming: fs::canonicalize(PathBuf::from("../../Music/incoming/")).unwrap(),
+            incoming: fs::canonicalize(PathBuf::from(incoming_from_env.clone())).unwrap(),
+            track_list: fs::read_dir(incoming_from_env)
                 .unwrap()
                 .filter_map(|e| e.ok())
                 .map(|e| e.path())
                 .collect::<Vec<_>>(),
-            save_path_a: fs::canonicalize(PathBuf::from("../../Music/saved")).unwrap(),
+            save_path_a: fs::canonicalize(PathBuf::from(save_a_env)).unwrap(),
             save_path_d: None,
             save_path_g: None,
             display_list: Vec::new(),
