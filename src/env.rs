@@ -1,25 +1,66 @@
-use dotenv;
-use std::env;
-use std::path::PathBuf;
-
+use crate::env::dotenv::Error;
 use config::Config;
+use directories::ProjectDirs;
+use dotenv;
+use std::env::{self, VarError};
+use std::fs::{File, OpenOptions};
+use std::io::prelude::*;
+use std::io::{self, BufRead};
+use std::path::{Path, PathBuf};
 
 #[derive(Debug)]
 pub struct Envs {
     pub incoming: PathBuf,
     pub save_path_a: PathBuf,
+    pub save_path_d: PathBuf,
+    pub save_path_g: PathBuf,
 }
-
+pub fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
+where
+    P: AsRef<Path> + std::fmt::Debug,
+{
+    let file = File::open(filename).expect("well");
+    Ok(io::BufReader::new(file).lines())
+}
 impl Envs {
     pub fn load_envs() {
         dotenv::dotenv().ok();
     }
 
+    pub fn try_config_load() {
+        if let Some(proj_dirs) = ProjectDirs::from("", "", "crateful") {
+            proj_dirs.config_dir();
+        }
+    }
+
     //        unsafe { env::set_var("INCOMING_PATH", path) }
-    pub fn read_env_paths() {
-        match env::var("INCOMING_PATH") {
-            Ok(value) => dbg!("{}", value),
-            Err(e) => dbg!("{}", "Fatal Error Reading Env Vars".to_string()),
-        };
+    pub fn read_incoming_path() -> Result<String, VarError> {
+        env::var("INCOMING_PATH")
+    }
+
+    pub fn set_env(key: &str, value: &str) {
+        let mut to_write: Vec<String> = Vec::new();
+        let newpair = format!("{}={}\n", key, value);
+        let env_path = "../../dev/crateful/.env";
+        let mut env_file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(env_path)
+            .unwrap();
+        if let Ok(lines) = read_lines(env_path) {
+            for line in lines.map_while(Result::ok) {
+                if line.contains(key) {
+                    //                    env_file.write(newpair.clone().as_bytes()).unwrap();
+                    to_write.push(newpair.clone());
+                } else {
+                    let liner = format!("{}\n", line);
+                    // env_file.write(liner.as_bytes()).unwrap();
+                    to_write.push(liner);
+                };
+            }
+        }
+        for line in to_write {
+            env_file.write(line.as_bytes());
+        }
     }
 }

@@ -3,7 +3,7 @@ use ratatui::{
     layout::{Alignment, Constraint, Flex, Layout, Margin, Offset, Rect},
     style::{Color, Style, Stylize},
     text::{Line, Text},
-    widgets::{Block, BorderType, Borders, Clear, Padding, Paragraph, Widget, Wrap},
+    widgets::{Block, BorderType, Borders, List, Padding, Paragraph, Widget, Wrap},
 };
 
 use crate::app::App;
@@ -57,13 +57,19 @@ impl Widget for &App {
             .block(playblock)
             .bg(Color::DarkGray)
             .centered();
-        let paragraph2 = Paragraph::new(listformat)
+        List::new(self.display_list.clone())
             .fg(Color::Blue)
             .bg(Color::Gray)
-            .centered()
-            .block(block);
+            .block(block)
+            .render(list, buf);
+
+        //        let paragraph2 = Paragraph::new(listformat)
+        //            .fg(Color::Blue)
+        //            .bg(Color::Gray)
+        //            .centered()
+        //            .block(block);
         now_playing.render(playing, buf);
-        paragraph2.render(list, buf);
+        //  paragraph2.render(list, buf);
 
         let bottom_section = instructs::Instructs::new(controls, self, buf);
         instructs::Instructs::display(bottom_section, controls, buf);
@@ -85,7 +91,8 @@ impl Widget for &App {
                     .widget()
                     .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
                 Paragraph::new(
-                    "Pick a Folder to store saved tracks. \r\n Use arrow keys (or hjkl) to navigate the explorer. \r\n\r\n Select a foler with Enter.",
+                    "Pick a Folder to store saved tracks. \r\n Use arrow keys (or hjkl) to navigate the explorer. 
+                        \r\n\r\n Select a foler with Enter.",
                 )
                 .wrap(Wrap { trim: true })
                 .render(pause_instruct[0], buf);

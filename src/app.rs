@@ -4,6 +4,7 @@ use crate::event::{AppEvent, Event, EventHandler};
 use ratatui::{DefaultTerminal, widgets::ListState};
 use ratatui_explorer::{FileExplorer, Theme};
 use rodio::{Decoder, OutputStream, Sink, Source};
+use std::env;
 use std::fs;
 use std::path::{self, Path, PathBuf};
 use std::sync::{Arc, Mutex};
@@ -46,6 +47,11 @@ pub enum PauseMode {
     IncomingSelect,
     SelectError,
 }
+pub enum SavePath {
+    A,
+    D,
+    G,
+}
 
 impl Default for App {
     fn default() -> Self {
@@ -53,16 +59,20 @@ impl Default for App {
             rodio::OutputStreamBuilder::open_default_stream().expect("open default audio stream");
         let sink = rodio::Sink::connect_new(&stream.mixer());
 
+        let incoming_from_env = env::var("INCOMING_PATH").unwrap();
+        let save_a_env = env::var("SAVE_PATH_A").unwrap();
+
         Self {
             running: true,
             events: EventHandler::new(),
-            incoming: fs::canonicalize(PathBuf::from("../../Music/incoming/")).unwrap(),
-            track_list: fs::read_dir("../../Music/incoming")
+            // incoming: fs::canonicalize(PathBuf::from("../../Music/incoming/")).unwrap(),
+            incoming: fs::canonicalize(PathBuf::from(incoming_from_env.clone())).unwrap(),
+            track_list: fs::read_dir(incoming_from_env)
                 .unwrap()
                 .filter_map(|e| e.ok())
                 .map(|e| e.path())
                 .collect::<Vec<_>>(),
-            save_path_a: fs::canonicalize(PathBuf::from("../../Music/saved")).unwrap(),
+            save_path_a: fs::canonicalize(PathBuf::from(save_a_env)).unwrap(),
             save_path_d: None,
             save_path_g: None,
             display_list: Vec::new(),
@@ -86,6 +96,7 @@ impl Default for App {
 impl App {
     /// Constructs a new instance of [`App`].
     pub fn new() -> Self {
+        Envs::load_envs();
         Self::default()
     }
     /// Run the application's main loop.
