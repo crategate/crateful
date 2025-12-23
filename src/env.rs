@@ -1,5 +1,3 @@
-use crate::env::dotenv::Error;
-use config::Config;
 use directories::ProjectDirs;
 use dotenv;
 use std::env::{self, VarError};
@@ -49,6 +47,9 @@ impl Envs {
             .unwrap();
         if let Ok(lines) = read_lines(env_path) {
             for line in lines.map_while(Result::ok) {
+                if line.is_empty() {
+                    return;
+                }
                 if line.contains(key) {
                     //                    env_file.write(newpair.clone().as_bytes()).unwrap();
                     to_write.push(newpair.clone());
@@ -60,7 +61,8 @@ impl Envs {
             }
         }
         for line in to_write {
-            env_file.write(line.as_bytes());
+            dbg!(&line);
+            let _ = env_file.write(line.as_bytes());
         }
     }
 }

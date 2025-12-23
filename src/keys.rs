@@ -1,15 +1,14 @@
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
-use rodio::{Decoder, OutputStream, Sink, Source};
+use rodio::{Decoder, Source};
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
-use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 use crate::app::App;
 use crate::app::PauseMode;
 use crate::env::Envs;
-use crate::event::{AppEvent, Event, EventHandler, WhichPath};
+use crate::event::AppEvent;
 use ratatui_explorer::Input;
 
 impl App {
@@ -121,7 +120,6 @@ impl App {
             return;
         }
         let percent = ((pos as f64 / 10.0) * self.length.as_secs() as f64).round();
-        // self.playing = PathBuf::from(percent.to_string());
         self.music_player.lock().unwrap().pause();
         self.music_player.lock().unwrap().clear();
         self.start_playback();
@@ -179,13 +177,13 @@ impl App {
             0 => {
                 self.pause_mode = PauseMode::IncomingSelect;
                 self.explorer_path = self.incoming.to_path_buf();
-                self.explorer.set_cwd(self.incoming.clone());
+                let _ = self.explorer.set_cwd(self.incoming.clone());
                 self.explorer_index = 0;
             }
             1 => {
                 self.pause_mode = PauseMode::SaveSelect;
                 self.explorer_path = self.save_path_a.to_path_buf();
-                self.explorer.set_cwd(self.save_path_a.clone());
+                let _ = self.explorer.set_cwd(self.save_path_a.clone());
                 self.explorer_index = 0;
             }
             2 => {
@@ -242,11 +240,5 @@ impl App {
 
     pub fn accept_erorr(&mut self) {
         self.pause_mode = PauseMode::MainMenu;
-    }
-
-    pub fn set_path(&mut self, which: WhichPath) {
-        // check if directory before setting
-        dbg!("PUSH");
-        // match which {WhichPath::PathA => }
     }
 }

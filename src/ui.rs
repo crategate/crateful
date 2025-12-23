@@ -1,9 +1,8 @@
 use ratatui::{
     buffer::Buffer,
-    layout::{Alignment, Constraint, Flex, Layout, Margin, Offset, Rect},
+    layout::{Alignment, Constraint, Layout, Offset, Rect},
     style::{Color, Style, Stylize},
-    text::{Line, Text},
-    widgets::{Block, BorderType, Borders, List, Padding, Paragraph, Widget, Wrap},
+    widgets::{Block, BorderType, List, Padding, Paragraph, Widget, Wrap},
 };
 
 use crate::app::App;
@@ -12,7 +11,7 @@ use crate::instructs;
 use crate::pause;
 
 impl Widget for &App {
-    fn render(mut self, area: Rect, buf: &mut Buffer) {
+    fn render(self, area: Rect, buf: &mut Buffer) {
         let block = Block::bordered()
             .title_alignment(Alignment::Center)
             .title("Tracks to Sort")
@@ -49,8 +48,8 @@ impl Widget for &App {
                 : {:?}... it's this long: {:?}",
             self.playing, self.length
         );
-        let listformat = format!("{:#?}", self.display_list);
-        let trace = format!("{:#?}", self.playing);
+        //let listformat = format!("{:#?}", self.display_list);
+        //let trace = format!("{:#?}", self.playing);
 
         let now_playing = Paragraph::new(text)
             .fg(Color::White)
