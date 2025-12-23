@@ -13,17 +13,13 @@ pub enum Event {
     /// An event that is emitted on a regular schedule.
     Tick,
     /// Crossterm events.
-    ///
     /// These events are emitted by the terminal.
     Crossterm(CrosstermEvent),
-    /// Application events.
-    ///
     /// Use this event to emit custom events that are specific to your application.
     App(AppEvent),
 }
 
 /// Application events.
-///
 #[derive(Clone, Debug)]
 pub enum WhichPath {
     PathA,
@@ -43,7 +39,6 @@ pub enum AppEvent {
     Up,
     Down,
     Select,
-    SetPath(WhichPath),
     AcceptError,
 }
 

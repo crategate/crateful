@@ -2,11 +2,10 @@ use crate::env::Envs;
 
 use crate::event::{AppEvent, Event, EventHandler};
 use ratatui::{DefaultTerminal, widgets::ListState};
-use ratatui_explorer::{FileExplorer, Theme};
-use rodio::{Decoder, OutputStream, Sink, Source};
+use ratatui_explorer::FileExplorer;
 use std::env;
 use std::fs;
-use std::path::{self, Path, PathBuf};
+use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
@@ -121,7 +120,6 @@ impl App {
                     AppEvent::Up => self.up(),
                     AppEvent::Down => self.down(),
                     AppEvent::Select => self.select(),
-                    AppEvent::SetPath(which) => self.set_path(which),
                     AppEvent::AcceptError => self.accept_erorr(),
                 },
             }

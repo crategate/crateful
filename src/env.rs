@@ -1,5 +1,3 @@
-use crate::env::dotenv::Error;
-use config::Config;
 use directories::ProjectDirs;
 use dotenv;
 use std::env::{self, VarError};

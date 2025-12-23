@@ -19,11 +19,11 @@ pub struct Instructs {
 impl PathStates {}
 
 impl Instructs {
-    pub fn display(mut self, area: Rect, buf: &mut Buffer) {
+    pub fn display(self, area: Rect, buf: &mut Buffer) {
         //        self.state.save_a = app_state.save_path_a.clone();
         self.render(area, buf);
     }
-    pub fn new(area: Rect, app_state: &App, buf: &mut Buffer) -> Instructs {
+    pub fn new(_area: Rect, app_state: &App, _buf: &mut Buffer) -> Instructs {
         Instructs {
             state: PathStates {
                 save_a: app_state.save_path_a.clone(),
