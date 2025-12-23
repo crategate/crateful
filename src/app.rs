@@ -58,13 +58,12 @@ impl Default for App {
             rodio::OutputStreamBuilder::open_default_stream().expect("open default audio stream");
         let sink = rodio::Sink::connect_new(&stream.mixer());
 
-        let incoming_from_env = env::var("INCOMING_PATH").unwrap();
-        let save_a_env = env::var("SAVE_PATH_A").unwrap();
+        let incoming_from_env = Envs::read_env_var(String::from("INCOMING_PATH")).unwrap();
+        let save_a_env = Envs::read_env_var(String::from("SAVE_PATH_A")).unwrap();
 
         Self {
             running: true,
             events: EventHandler::new(),
-            // incoming: fs::canonicalize(PathBuf::from("../../Music/incoming/")).unwrap(),
             incoming: fs::canonicalize(PathBuf::from(incoming_from_env.clone())).unwrap(),
             track_list: fs::read_dir(incoming_from_env)
                 .unwrap()
