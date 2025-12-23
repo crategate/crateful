@@ -1,15 +1,14 @@
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
-use rodio::{Decoder, OutputStream, Sink, Source};
+use rodio::{Decoder, Source};
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
-use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 use crate::app::App;
 use crate::app::PauseMode;
 use crate::env::Envs;
-use crate::event::{AppEvent, Event, EventHandler, WhichPath};
+use crate::event::{AppEvent, WhichPath};
 use ratatui_explorer::Input;
 
 impl App {
