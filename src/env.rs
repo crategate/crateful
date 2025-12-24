@@ -29,7 +29,7 @@ impl Envs {
             .unwrap()
             .config_dir()
             .join("/.env");
-        // dotenv::from_path(my_linux_path).ok();
+        dotenv::from_path(my_linux_path).ok();
         dotenv::dotenv().ok();
     }
 
