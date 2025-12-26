@@ -5,7 +5,7 @@ use ratatui::{DefaultTerminal, widgets::ListState};
 use ratatui_explorer::FileExplorer;
 use std::env;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
@@ -58,19 +58,19 @@ impl Default for App {
             rodio::OutputStreamBuilder::open_default_stream().expect("open default audio stream");
         let sink = rodio::Sink::connect_new(&stream.mixer());
 
-        let incoming_from_env = Envs::read_env_var(String::from("INCOMING_PATH")).unwrap();
-        let save_a_env = Envs::read_env_var(String::from("SAVE_PATH_A")).unwrap();
+        let incoming_from_env = Envs::read_env_var(String::from("INCOMING_PATH"))
+            .unwrap_or_else(|a| String::from("home/"));
+        let save_a_env =
+            Envs::read_env_var(String::from("SAVE_PATH_A")).unwrap_or_else(|a| String::from(""));
 
         Self {
             running: true,
             events: EventHandler::new(),
-            incoming: fs::canonicalize(PathBuf::from(incoming_from_env.clone())).unwrap(),
-            track_list: fs::read_dir(incoming_from_env)
-                .unwrap()
-                .filter_map(|e| e.ok())
-                .map(|e| e.path())
-                .collect::<Vec<_>>(),
-            save_path_a: fs::canonicalize(PathBuf::from(save_a_env)).unwrap(),
+            incoming: fs::canonicalize(PathBuf::from(incoming_from_env.clone()))
+                .unwrap_or_else(|a| PathBuf::from("")),
+            track_list: Vec::new(),
+            save_path_a: fs::canonicalize(PathBuf::from(save_a_env))
+                .unwrap_or_else(|a| PathBuf::from("")),
             save_path_d: None,
             save_path_g: None,
             display_list: Vec::new(),
@@ -99,6 +99,9 @@ impl App {
     }
     /// Run the application's main loop.
     pub async fn run(mut self, mut terminal: DefaultTerminal) -> color_eyre::Result<()> {
+        if self.track_list.len() > 0 {
+            self.load_tracks();
+        }
         self.start_playback();
         self.list_write();
         while self.running {

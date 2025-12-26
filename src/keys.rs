@@ -3,6 +3,7 @@ use rodio::{Decoder, Source};
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
+use std::path::PathBuf;
 use std::time::Duration;
 
 use crate::app::App;
@@ -83,7 +84,7 @@ impl App {
     pub fn load_tracks(&mut self) {
         // enumerate and save track list with pathes
         self.track_list = fs::read_dir(self.incoming.clone())
-            .unwrap()
+            .unwrap_or_else(|a| fs::read_dir("../../").unwrap())
             .filter_map(|e| e.ok())
             .map(|e| e.path())
             .collect::<Vec<_>>();
@@ -91,13 +92,24 @@ impl App {
     }
 
     pub fn start_playback(&mut self) {
-        let file = BufReader::new(File::open(self.track_list.get(self.index).unwrap()).unwrap());
-        let source = Decoder::try_from(file).unwrap();
+        let no_track_andy = PathBuf::from("./blank.mp3");
+        let blank = BufReader::new(File::open(&no_track_andy).unwrap());
+        let file = BufReader::new(
+            File::open(
+                self.track_list
+                    .get(self.index)
+                    .unwrap_or_else(|| &no_track_andy),
+            )
+            .unwrap(),
+        );
+        let source = Decoder::try_from(file).unwrap_or_else(|a| Decoder::try_from(blank).unwrap());
 
         self.length = source.total_duration().expect("length read fail");
         self.music_player.lock().unwrap().append(source);
         self.music_player.lock().unwrap().play();
-        self.playing = self.track_list.get(self.index).unwrap().to_path_buf();
+        if self.track_list.len() > 0 {
+            self.playing = self.track_list.get(self.index).unwrap().to_path_buf();
+        }
     }
 
     pub fn list_write(&mut self) {
