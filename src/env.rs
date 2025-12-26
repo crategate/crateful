@@ -1,6 +1,7 @@
 use directories::ProjectDirs;
 use dotenv;
-use std::env::{self, VarError};
+use env_home::env_home_dir as home_dir;
+use std::env;
 use std::fs::{File, OpenOptions};
 use std::io::prelude::*;
 use std::io::{self, BufRead};
@@ -21,8 +22,42 @@ where
     Ok(io::BufReader::new(file).lines())
 }
 impl Envs {
+    // develop & debug loads project local env
+    #[cfg(debug_assertions)]
     pub fn load_envs() {
-        dotenv::dotenv().ok();
+        // if let Some(proj_dirs) = ProjectDirs::from("", "", "crateful") {
+        //     let mut my_linux_path = proj_dirs.config_dir().to_str().unwrap().to_string();
+        //     let with_env = format!("{}/.env", my_linux_path);
+        //     dotenv::from_path(with_env).ok();
+        // };
+
+        use std::fs;
+        match ProjectDirs::from("", "", "crateful") {
+            Some(proj_dirs) => {
+                let my_linux_path = proj_dirs.config_dir().to_str().unwrap().to_string();
+                let with_env = format!("{}/.env", my_linux_path);
+                dotenv::from_path(with_env).ok();
+            }
+            None => {
+                fs::create_dir(
+                    env::home_dir()
+                        .and_then(|a| Some(a.join("/.config/crateful/")))
+                        .unwrap(),
+                )
+                .unwrap();
+                //File::create(path)
+            }
+        }
+        //dotenv::dotenv().ok();
+    }
+
+    #[cfg(all(not(debug_assertions), target_os = "linux"))]
+    pub fn load_envs() {
+        #[cfg(all(not(debug_assertions), target_os = "linux"))]
+        let my_linux_path = env::home_dir()
+            .and_then(|a| Some(a.join("/.config/crateful/.env")))
+            .unwrap();
+        dotenv::from_path(my_linux_path.as_path());
     }
 
     pub fn try_config_load() {
@@ -32,8 +67,8 @@ impl Envs {
     }
 
     //        unsafe { env::set_var("INCOMING_PATH", path) }
-    pub fn read_incoming_path() -> Result<String, VarError> {
-        env::var("INCOMING_PATH")
+    pub fn read_env_var(var: String) -> Result<String, env::VarError> {
+        env::var(var)
     }
 
     pub fn set_env(key: &str, value: &str) {

@@ -1,5 +1,6 @@
 use crate::App;
 use crate::app::PauseMode;
+use directories::ProjectDirs;
 use ratatui::{
     buffer::Buffer,
     layout::{Constraint, Layout, Offset, Rect},
@@ -7,6 +8,7 @@ use ratatui::{
     text::{Line, Text},
     widgets::{Block, Borders, Clear, List, ListState, Paragraph, StatefulWidgetRef, Widget},
 };
+use std::env;
 use std::path::PathBuf;
 
 use derive_setters::Setters;
@@ -63,6 +65,12 @@ impl Widget for Popup<'_> {
                 buf,
                 &mut self.pause_menu,
             );
+
+        //Paragraph::new(home_test).render(inner_menu[1].offset(Offset { x: 4, y: 0 }), buf);
+        if let Some(proj_dirs) = ProjectDirs::from("", "", "crateful") {
+            let mut my_linux_path = proj_dirs.config_dir().to_str().unwrap().to_string();
+            let with_env = format!("{}/.env", my_linux_path);
+        };
 
         let select_error_area_big = Layout::vertical([Constraint::Percentage(55)]).margin(9);
         let select_error_rect: [Rect; 1] = select_error_area_big.areas(area);
