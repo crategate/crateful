@@ -25,12 +25,30 @@ impl Envs {
     // develop & debug loads project local env
     #[cfg(debug_assertions)]
     pub fn load_envs() {
-        let my_linux_path = ProjectDirs::from("", "", "crateful")
-            .unwrap()
-            .config_dir()
-            .join("/.env");
-        dotenv::from_path(my_linux_path).ok();
-        dotenv::dotenv().ok();
+        // if let Some(proj_dirs) = ProjectDirs::from("", "", "crateful") {
+        //     let mut my_linux_path = proj_dirs.config_dir().to_str().unwrap().to_string();
+        //     let with_env = format!("{}/.env", my_linux_path);
+        //     dotenv::from_path(with_env).ok();
+        // };
+
+        use std::fs;
+        match ProjectDirs::from("", "", "crateful") {
+            Some(proj_dirs) => {
+                let my_linux_path = proj_dirs.config_dir().to_str().unwrap().to_string();
+                let with_env = format!("{}/.env", my_linux_path);
+                dotenv::from_path(with_env).ok();
+            }
+            None => {
+                fs::create_dir(
+                    env::home_dir()
+                        .and_then(|a| Some(a.join("/.config/crateful/")))
+                        .unwrap(),
+                )
+                .unwrap();
+                //File::create(path)
+            }
+        }
+        //dotenv::dotenv().ok();
     }
 
     #[cfg(all(not(debug_assertions), target_os = "linux"))]
