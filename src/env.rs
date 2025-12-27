@@ -2,6 +2,7 @@ use directories::ProjectDirs;
 use dotenv;
 use env_home::env_home_dir as home_dir;
 use std::env;
+use std::fs;
 use std::fs::{File, OpenOptions};
 use std::io::prelude::*;
 use std::io::{self, BufRead};
@@ -25,13 +26,6 @@ impl Envs {
     // develop & debug loads project local env
     #[cfg(debug_assertions)]
     pub fn load_envs() {
-        // if let Some(proj_dirs) = ProjectDirs::from("", "", "crateful") {
-        //     let mut my_linux_path = proj_dirs.config_dir().to_str().unwrap().to_string();
-        //     let with_env = format!("{}/.env", my_linux_path);
-        //     dotenv::from_path(with_env).ok();
-        // };
-
-        use std::fs;
         match ProjectDirs::from("", "", "crateful") {
             Some(proj_dirs) => {
                 let my_linux_path = proj_dirs.config_dir().to_str().unwrap().to_string();
@@ -39,9 +33,9 @@ impl Envs {
                 dotenv::from_path(with_env).ok();
             }
             None => {
-                fs::create_dir(
-                    env::home_dir()
-                        .and_then(|a| Some(a.join("/.config/crateful/")))
+                fs::create_dir_all(
+                    dirs::config_dir()
+                        .and_then(|a| Some(a.join("crateful")))
                         .unwrap(),
                 )
                 .unwrap();

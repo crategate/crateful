@@ -84,12 +84,15 @@ impl App {
     pub fn load_tracks(&mut self) {
         // enumerate and save track list with pathes
         // self.incoming = PathBuf::from(Envs::read_env_var(String::from("INCOMING")).unwrap());
-        self.track_list = fs::read_dir(self.incoming.clone())
-            .unwrap_or_else(|a| fs::read_dir("../../").unwrap())
-            .filter_map(|e| e.ok())
-            .map(|e| e.path())
-            .collect::<Vec<_>>();
-        self.index = 0;
+        if self.incoming.exists() {
+            self.track_list = fs::read_dir(self.incoming.clone())
+                //.unwrap_or_else(|a| fs::read_dir("../../").unwrap())
+                .unwrap()
+                .filter_map(|e| e.ok())
+                .map(|e| e.path())
+                .collect::<Vec<_>>();
+            self.index = 0;
+        }
     }
 
     pub fn start_playback(&mut self) {
