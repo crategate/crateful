@@ -105,6 +105,7 @@ impl App {
 
     pub fn start_playback(&mut self) {
         //self.load_tracks();
+        let blank_bytes = include_bytes!("../blank.mp3");
         let no_track_andy = PathBuf::from("./blank.mp3");
         let blank = BufReader::new(File::open(&no_track_andy).unwrap());
         let file = BufReader::new(

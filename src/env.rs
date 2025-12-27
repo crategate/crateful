@@ -26,7 +26,7 @@ where
 }
 impl Envs {
     // develop & debug loads project local env
-    #[cfg(debug_assertions)]
+    //    #[cfg(debug_assertions)]
     pub fn load_envs() {
         match ProjectDirs::from("", "", "crateful") {
             Some(proj_dirs) => {
@@ -38,15 +38,15 @@ impl Envs {
         }
     }
 
-    #[cfg(all(not(debug_assertions), target_os = "linux"))]
-    pub fn load_envs() {
-        #[cfg(all(not(debug_assertions), target_os = "linux"))]
-        let my_linux_path = env::home_dir()
-            .and_then(|a| Some(a.join("/.config/crateful/.env")))
-            .unwrap();
-        dotenv::from_path(my_linux_path.as_path());
-    }
-
+    //    #[cfg(all(not(debug_assertions), target_os = "linux"))]
+    //    pub fn load_envs() {
+    //        #[cfg(all(not(debug_assertions), target_os = "linux"))]
+    //        let my_linux_path = env::home_dir()
+    //            .and_then(|a| Some(a.join("/.config/crateful/.env")))
+    //            .unwrap();
+    //        dotenv::from_path(my_linux_path.as_path());
+    //    }
+    //
     pub fn try_config_load() {
         if let Some(proj_dirs) = ProjectDirs::from("", "", "crateful") {
             proj_dirs.config_dir();
