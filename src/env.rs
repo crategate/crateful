@@ -8,6 +8,8 @@ use std::io::prelude::*;
 use std::io::{self, BufRead};
 use std::path::{Path, PathBuf};
 
+use crate::app::App;
+
 #[derive(Debug)]
 pub struct Envs {
     pub incoming: PathBuf,
@@ -32,14 +34,7 @@ impl Envs {
                 let with_env = format!("{}/.env", my_linux_path);
                 dotenv::from_path(with_env).ok();
             }
-            None => {
-                fs::create_dir_all(
-                    dirs::config_dir()
-                        .and_then(|a| Some(a.join("crateful")))
-                        .unwrap(),
-                )
-                .unwrap();
-            }
+            None => {}
         }
     }
 

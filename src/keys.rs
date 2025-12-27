@@ -92,6 +92,14 @@ impl App {
                 .map(|e| e.path())
                 .collect::<Vec<_>>();
             self.index = 0;
+        } else {
+            fs::create_dir(
+                dirs::config_dir()
+                    .and_then(|a| Some(a.join("crateful")))
+                    .unwrap()
+                    .as_path(),
+            )
+            .unwrap();
         }
     }
 
