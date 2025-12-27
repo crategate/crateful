@@ -99,9 +99,8 @@ impl App {
     }
     /// Run the application's main loop.
     pub async fn run(mut self, mut terminal: DefaultTerminal) -> color_eyre::Result<()> {
-        if self.track_list.len() > 0 {
-            self.load_tracks();
-        }
+        if self.track_list.len() > 0 {}
+        self.load_tracks();
         self.start_playback();
         self.list_write();
         while self.running {

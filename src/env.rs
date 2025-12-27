@@ -45,10 +45,8 @@ impl Envs {
                         .unwrap(),
                 )
                 .unwrap();
-                //File::create(path)
             }
         }
-        //dotenv::dotenv().ok();
     }
 
     #[cfg(all(not(debug_assertions), target_os = "linux"))]
