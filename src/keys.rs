@@ -83,7 +83,7 @@ impl App {
 
     pub fn load_tracks(&mut self) {
         // enumerate and save track list with pathes
-        // self.incoming = PathBuf::from(Envs::read_env_var(String::from("INCOMING")).unwrap());
+        // when incoming isn't set, create the config system file. prompt user in pause menu
         if self.incoming.exists() {
             self.track_list = fs::read_dir(self.incoming.clone())
                 //.unwrap_or_else(|a| fs::read_dir("../../").unwrap())
@@ -93,13 +93,9 @@ impl App {
                 .collect::<Vec<_>>();
             self.index = 0;
         } else {
-            fs::create_dir(
-                dirs::config_dir()
-                    .and_then(|a| Some(a.join("crateful")))
-                    .unwrap()
-                    .as_path(),
-            )
-            .unwrap();
+            Envs::create_config();
+            self.paused = true;
+            self.pause_mode = PauseMode::IncomingSelect;
         }
     }
 

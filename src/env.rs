@@ -53,7 +53,24 @@ impl Envs {
         }
     }
 
-    //        unsafe { env::set_var("INCOMING_PATH", path) }
+    pub fn create_config() {
+        fs::create_dir(
+            dirs::config_dir()
+                .and_then(|a| Some(a.join("crateful")))
+                .unwrap()
+                .as_path(),
+        )
+        .unwrap();
+        File::create(
+            dirs::config_dir()
+                .and_then(|a| Some(a.join("crateful/.env")))
+                .unwrap()
+                .as_path(),
+        )
+        .unwrap();
+        // maybe write empty env variables to this config file?
+    }
+
     pub fn read_env_var(var: String) -> Result<String, env::VarError> {
         env::var(var)
     }
