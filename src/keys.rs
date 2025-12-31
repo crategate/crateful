@@ -10,6 +10,7 @@ use crate::app::App;
 use crate::app::PauseMode;
 use crate::env::Envs;
 use crate::event::AppEvent;
+use crate::event::WhichPath;
 use crate::event::WhichPath::{PathA, PathD, PathG};
 use ratatui_explorer::Input;
 
@@ -157,12 +158,17 @@ impl App {
             .try_seek(Duration::new(percent as u64, 0));
     }
 
-    pub fn save_track(&mut self) {
+    pub fn save_track(&mut self, which: WhichPath) {
         // move track file. increment index. Play next track.
         if self.paused {
             return;
         }
-        let mut newpath = self.save_path_a.clone();
+        let mut newpath;
+        match which {
+            PathA => newpath = self.save_path_a.as_ref().unwrap().clone(),
+            PathD => newpath = self.save_path_d.as_ref().unwrap().clone(),
+            PathG => newpath = self.save_path_g.as_ref().unwrap().clone(),
+        }
         newpath.push(
             self.track_list
                 .get(self.index)
