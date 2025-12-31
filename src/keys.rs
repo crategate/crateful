@@ -83,15 +83,25 @@ impl App {
 
     pub fn load_tracks(&mut self) {
         // enumerate and save track list with pathes
-        self.track_list = fs::read_dir(self.incoming.clone())
-            .unwrap_or_else(|a| fs::read_dir("../../").unwrap())
-            .filter_map(|e| e.ok())
-            .map(|e| e.path())
-            .collect::<Vec<_>>();
-        self.index = 0;
+        // when incoming isn't set, create the config system file. prompt user in pause menu
+        if self.incoming.exists() {
+            self.track_list = fs::read_dir(self.incoming.clone())
+                //.unwrap_or_else(|a| fs::read_dir("../../").unwrap())
+                .unwrap()
+                .filter_map(|e| e.ok())
+                .map(|e| e.path())
+                .collect::<Vec<_>>();
+            self.index = 0;
+        } else {
+            Envs::create_config();
+            self.paused = true;
+            self.pause_mode = PauseMode::IncomingSelect;
+        }
     }
 
     pub fn start_playback(&mut self) {
+        //self.load_tracks();
+        let blank_bytes = include_bytes!("../blank.mp3");
         let no_track_andy = PathBuf::from("./blank.mp3");
         let blank = BufReader::new(File::open(&no_track_andy).unwrap());
         let file = BufReader::new(
@@ -113,18 +123,20 @@ impl App {
     }
 
     pub fn list_write(&mut self) {
-        self.display_list = Vec::new();
-        let _ = self
-            .track_list
-            .iter()
-            .enumerate()
-            .map(|(i, x)| {
-                if i >= self.index {
-                    self.display_list
-                        .push(x.to_str().unwrap().to_string()[21..].to_string())
-                }
-            })
-            .collect::<Vec<_>>();
+        if self.track_list.len() > 0 {
+            self.display_list = Vec::new();
+            let _ = self
+                .track_list
+                .iter()
+                .enumerate()
+                .map(|(i, x)| {
+                    if i >= self.index {
+                        self.display_list
+                            .push(x.file_name().unwrap().to_str().unwrap().to_string())
+                    }
+                })
+                .collect::<Vec<_>>();
+        }
     }
 
     pub fn seek(&mut self, pos: u64) {

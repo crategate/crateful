@@ -61,6 +61,8 @@ impl Widget for &App {
             .bg(Color::Gray)
             .block(block)
             .render(list, buf);
+        Paragraph::new(self.incoming.to_str().unwrap()).render(list, buf);
+        // Paragraph::new("asdf").render(list, buf);
 
         //        let paragraph2 = Paragraph::new(listformat)
         //            .fg(Color::Blue)

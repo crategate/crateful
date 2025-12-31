@@ -76,7 +76,7 @@ impl Widget for Popup<'_> {
         let select_error_rect: [Rect; 1] = select_error_area_big.areas(area);
         let select_error_area = Layout::default()
             .direction(ratatui::layout::Direction::Horizontal)
-            .constraints([Constraint::Percentage(33)])
+            .constraints([Constraint::Percentage(63)])
             .split(select_error_rect[0]);
         let error_para = Paragraph::new(
             "You must select a FOLDER with enter, \r\nDon't select a file!\r\n\r\n\r\nPress esc, space, or exit to try again",
