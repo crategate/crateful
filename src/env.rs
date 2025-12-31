@@ -2,6 +2,7 @@ use directories::ProjectDirs;
 use dotenv;
 use env_home::env_home_dir as home_dir;
 use std::env;
+use std::fmt::format;
 use std::fs;
 use std::fs::{File, OpenOptions};
 use std::io::prelude::*;
@@ -78,30 +79,34 @@ impl Envs {
     pub fn set_env(key: &str, value: &str) {
         let mut to_write: Vec<String> = Vec::new();
         let newpair = format!("{}={}\n", key, value);
-        let env_path = "../../dev/crateful/.env";
-        let mut env_file = OpenOptions::new()
-            .read(true)
-            .write(true)
-            .open(env_path)
-            .unwrap();
-        if let Ok(lines) = read_lines(env_path) {
-            for line in lines.map_while(Result::ok) {
-                if line.is_empty() {
-                    return;
+
+        let mut env_path;
+        if let Some(env) = ProjectDirs::from("", "", "crateful") {
+            env_path = env.config_dir().to_str().unwrap().to_string();
+            let with_file = format!("{}/.env", env_path);
+            let mut env_file = OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open(&with_file)
+                .unwrap();
+            if let Ok(lines) = read_lines(with_file) {
+                for line in lines.map_while(Result::ok) {
+                    if line.is_empty() {
+                        return;
+                    } else if line.contains(&key) {
+                        //                    env_file.write(newpair.clone().as_bytes()).unwrap();
+                        to_write.push(newpair.clone());
+                    } else {
+                        let liner = format!("{}\n", line);
+                        // env_file.write(liner.as_bytes()).unwrap();
+                        to_write.push(liner);
+                    };
                 }
-                if line.contains(key) {
-                    //                    env_file.write(newpair.clone().as_bytes()).unwrap();
-                    to_write.push(newpair.clone());
-                } else {
-                    let liner = format!("{}\n", line);
-                    // env_file.write(liner.as_bytes()).unwrap();
-                    to_write.push(liner);
-                };
             }
-        }
-        for line in to_write {
-            dbg!(&line);
-            let _ = env_file.write(line.as_bytes());
+            for line in to_write {
+                dbg!(&line);
+                let _ = env_file.write(line.as_bytes());
+            }
         }
     }
 }
