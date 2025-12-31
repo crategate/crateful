@@ -10,6 +10,7 @@ use crate::app::App;
 use crate::app::PauseMode;
 use crate::env::Envs;
 use crate::event::AppEvent;
+use crate::event::WhichPath::{PathA, PathD, PathG};
 use ratatui_explorer::Input;
 
 impl App {
@@ -52,7 +53,9 @@ impl App {
                 KeyCode::Char('7') => self.events.send(AppEvent::Seek(7)),
                 KeyCode::Char('8') => self.events.send(AppEvent::Seek(8)),
                 KeyCode::Char('9') => self.events.send(AppEvent::Seek(9)),
-                KeyCode::Char('a') => self.events.send(AppEvent::SaveTrack),
+                KeyCode::Char('a') => self.events.send(AppEvent::SaveTrack(PathA)),
+                KeyCode::Char('d') => self.events.send(AppEvent::SaveTrack(PathD)),
+                KeyCode::Char('g') => self.events.send(AppEvent::SaveTrack(PathG)),
                 KeyCode::Backspace => self.events.send(AppEvent::DeleteTrack),
                 KeyCode::Char(' ') => self.events.send(AppEvent::Pause),
                 KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),

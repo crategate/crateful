@@ -31,7 +31,7 @@ pub enum WhichPath {
 #[derive(Clone, Debug)]
 pub enum AppEvent {
     Seek(u64),
-    SaveTrack,
+    SaveTrack(WhichPath),
     DeleteTrack,
     Pause,
     SetPauseMode,

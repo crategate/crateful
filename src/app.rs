@@ -1,6 +1,6 @@
 use crate::env::Envs;
 
-use crate::event::{AppEvent, Event, EventHandler};
+use crate::event::{AppEvent, Event, EventHandler, WhichPath};
 use ratatui::{DefaultTerminal, widgets::ListState};
 use ratatui_explorer::FileExplorer;
 use std::env;
@@ -113,7 +113,7 @@ impl App {
                 },
                 Event::App(app_event) => match app_event {
                     AppEvent::Seek(num) => self.seek(num),
-                    AppEvent::SaveTrack => self.save_track(),
+                    AppEvent::SaveTrack(which) => self.save_track(which),
                     AppEvent::DeleteTrack => self.delete_track(),
                     AppEvent::Pause => self.pause(),
                     AppEvent::SetPauseMode => self.set_pause_mode(),
