@@ -9,7 +9,7 @@ use ratatui::{
 };
 
 pub struct PathStates {
-    save_a: PathBuf,
+    save_a: Option<PathBuf>,
     save_d: Option<PathBuf>,
     save_g: Option<PathBuf>,
 }
@@ -51,7 +51,7 @@ impl Widget for Instructs {
             .title_alignment(Alignment::Center);
         Paragraph::new(format!(
             "Press a\r\nto save to\r\n\r\n{:?}",
-            self.state.save_a
+            self.state.save_a.unwrap()
         ))
         .block(save_a_block)
         .centered()
@@ -65,7 +65,7 @@ impl Widget for Instructs {
             .title_alignment(Alignment::Center);
         Paragraph::new(format!(
             "Press d\r\nto save to\r\n\r\n{:?}",
-            self.state.save_d
+            self.state.save_d.unwrap()
         ))
         .block(save_d_block)
         .centered()
@@ -79,7 +79,7 @@ impl Widget for Instructs {
             .title_alignment(Alignment::Center);
         Paragraph::new(format!(
             "Press g\r\nto save to\r\n\r\n{:?}",
-            self.state.save_g
+            self.state.save_g.unwrap()
         ))
         .block(save_g_block)
         .centered()
@@ -95,7 +95,7 @@ impl Widget for Instructs {
             .block(scrub_block)
             .centered()
             .fg(Color::White)
-            .bg(Color::LightCyan)
+            .bg(Color::Blue)
             .wrap(Wrap { trim: true })
             .render(scrub, buf);
         let delete_block = Block::bordered()

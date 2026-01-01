@@ -215,8 +215,10 @@ impl App {
             }
             1 => {
                 self.pause_mode = PauseMode::SaveSelect;
-                self.explorer_path = self.save_path_a.to_path_buf();
-                let _ = self.explorer.set_cwd(self.save_path_a.clone());
+                self.explorer_path = self.save_path_a.as_ref().unwrap().clone();
+                let _ = self
+                    .explorer
+                    .set_cwd(self.save_path_a.as_ref().unwrap().clone());
                 self.explorer_index = 0;
             }
             2 => {
@@ -255,7 +257,7 @@ impl App {
                 self.pause_mode = PauseMode::NotPaused;
             }
             PauseMode::SaveSelect => {
-                self.save_path_a = self.explorer.current().path().to_path_buf();
+                self.save_path_a = Some(self.explorer.current().path().to_path_buf());
                 Envs::set_env(
                     "SAVE_PATH_A",
                     self.explorer.current().path().to_str().unwrap(),
