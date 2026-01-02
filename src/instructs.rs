@@ -96,7 +96,7 @@ impl Widget for Instructs {
                 folder_select_substitute(String::from("d"))
             } else {
                 format!(
-                    "Press a\r\nto save to\r\n\r\n{:?}",
+                    "Press d\r\nto save to\r\n\r\n{:?}",
                     self.state.save_d.unwrap()
                 )
             },
@@ -124,7 +124,7 @@ impl Widget for Instructs {
                 folder_select_substitute(String::from("g"))
             } else {
                 format!(
-                    "Press a\r\nto save to\r\n\r\n{:?}",
+                    "Press g\r\nto save to\r\n\r\n{:?}",
                     self.state.save_g.unwrap()
                 )
             },
