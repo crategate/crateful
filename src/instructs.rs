@@ -1,4 +1,4 @@
-use crate::app::App;
+use crate::app::{App, SavePath};
 use std::path::PathBuf;
 
 use ratatui::{
@@ -49,10 +49,30 @@ impl Widget for Instructs {
             .border_type(BorderType::Rounded)
             .title_bottom("'a' save")
             .title_alignment(Alignment::Center);
-        Paragraph::new(format!(
-            "Press a\r\nto save to\r\n\r\n{:?}",
-            self.state.save_a.unwrap()
-        ))
+        fn folder_select_substitute(which_save_path: String) -> String {
+            return format!(
+                "Press {:?}\r\nto select a\r\nfolder to save to\r\nfor this button",
+                which_save_path
+            );
+        }
+        Paragraph::new(
+            if self
+                .state
+                .save_a
+                .as_ref()
+                .unwrap()
+                .clone()
+                .into_os_string()
+                .is_empty()
+            {
+                folder_select_substitute(String::from("a"))
+            } else {
+                format!(
+                    "Press a\r\nto save to\r\n\r\n{:?}",
+                    self.state.save_a.unwrap()
+                )
+            },
+        )
         .block(save_a_block)
         .centered()
         .fg(Color::White)
@@ -63,10 +83,24 @@ impl Widget for Instructs {
             .border_type(BorderType::Rounded)
             .title_bottom("'d' save")
             .title_alignment(Alignment::Center);
-        Paragraph::new(format!(
-            "Press d\r\nto save to\r\n\r\n{:?}",
-            self.state.save_d.unwrap()
-        ))
+        Paragraph::new(
+            if self
+                .state
+                .save_d
+                .as_ref()
+                .unwrap()
+                .clone()
+                .into_os_string()
+                .is_empty()
+            {
+                folder_select_substitute(String::from("d"))
+            } else {
+                format!(
+                    "Press a\r\nto save to\r\n\r\n{:?}",
+                    self.state.save_d.unwrap()
+                )
+            },
+        )
         .block(save_d_block)
         .centered()
         .fg(Color::White)
@@ -77,10 +111,24 @@ impl Widget for Instructs {
             .border_type(BorderType::Rounded)
             .title_bottom("'g' save")
             .title_alignment(Alignment::Center);
-        Paragraph::new(format!(
-            "Press g\r\nto save to\r\n\r\n{:?}",
-            self.state.save_g.unwrap()
-        ))
+        Paragraph::new(
+            if self
+                .state
+                .save_g
+                .as_ref()
+                .unwrap()
+                .clone()
+                .into_os_string()
+                .is_empty()
+            {
+                folder_select_substitute(String::from("g"))
+            } else {
+                format!(
+                    "Press a\r\nto save to\r\n\r\n{:?}",
+                    self.state.save_g.unwrap()
+                )
+            },
+        )
         .block(save_g_block)
         .centered()
         .fg(Color::White)
@@ -91,13 +139,15 @@ impl Widget for Instructs {
             .border_type(BorderType::Rounded)
             .title_bottom("how to scrub")
             .title_alignment(Alignment::Center);
-        Paragraph::new(format!("use numbers\r\n1-9 to scrub\r\nthrough the track"))
-            .block(scrub_block)
-            .centered()
-            .fg(Color::White)
-            .bg(Color::Blue)
-            .wrap(Wrap { trim: true })
-            .render(scrub, buf);
+        Paragraph::new(format!(
+            "use numbers\r\n1-9 to scrub\r\nthrough the track\r\n \r\nspacebar\r\nfor pause\r\nmenu"
+        ))
+        .block(scrub_block)
+        .centered()
+        .fg(Color::White)
+        .bg(Color::Blue)
+        .wrap(Wrap { trim: true })
+        .render(scrub, buf);
         let delete_block = Block::bordered()
             .border_type(BorderType::Rounded)
             .title_bottom("delete")
