@@ -1,15 +1,11 @@
 use directories::{BaseDirs, ProjectDirs};
 use dotenv;
-use env_home::env_home_dir as home_dir;
 use std::env;
-use std::fmt::format;
 use std::fs;
 use std::fs::{File, OpenOptions};
 use std::io::prelude::*;
 use std::io::{self, BufRead};
 use std::path::{Path, PathBuf};
-
-use crate::app::App;
 
 #[derive(Debug)]
 pub struct Envs {
@@ -71,7 +67,7 @@ impl Envs {
         .unwrap();
         // maybe write empty env variables to this config file?
         if let Some(base_dirs) = BaseDirs::new() {
-            let home_path = base_dirs.home_dir();
+            let _home_path = base_dirs.home_dir();
             let empty_vars = [
                 format!("INCOMING_PATH=\n"),
                 //home_path.to_str().unwrap()),
@@ -102,7 +98,7 @@ impl Envs {
         let mut to_write: Vec<String> = Vec::new();
         let newpair = format!("{}={}\n", key, value);
 
-        let mut env_path;
+        let env_path;
         if let Some(env) = ProjectDirs::from("", "", "crateful") {
             env_path = env.config_dir().to_str().unwrap().to_string();
             let with_file = format!("{}/.env", env_path);

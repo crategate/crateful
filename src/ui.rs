@@ -83,7 +83,7 @@ impl Widget for &App {
         };
 
         match self.pause_mode {
-            PauseMode::SaveSelect => {
+            PauseMode::SaveSelect(save_path) => {
                 self.explorer
                     .widget()
                     .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);

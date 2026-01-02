@@ -42,10 +42,11 @@ pub enum PauseMode {
     #[default]
     NotPaused,
     MainMenu,
-    SaveSelect,
+    SaveSelect(SavePath),
     IncomingSelect,
     SelectError,
 }
+#[derive(Clone, Debug, Copy, PartialEq)]
 pub enum SavePath {
     A,
     D,
