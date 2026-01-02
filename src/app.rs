@@ -3,9 +3,8 @@ use crate::env::Envs;
 use crate::event::{AppEvent, Event, EventHandler};
 use ratatui::{DefaultTerminal, widgets::ListState};
 use ratatui_explorer::FileExplorer;
-use std::env;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
@@ -16,7 +15,7 @@ pub struct App {
     pub events: EventHandler,
     // incoming path
     pub incoming: PathBuf,
-    pub save_path_a: PathBuf,
+    pub save_path_a: Option<PathBuf>,
     pub save_path_d: Option<PathBuf>,
     pub save_path_g: Option<PathBuf>,
     pub track_list: Vec<PathBuf>,
@@ -42,10 +41,11 @@ pub enum PauseMode {
     #[default]
     NotPaused,
     MainMenu,
-    SaveSelect,
+    SaveSelect(SavePath),
     IncomingSelect,
     SelectError,
 }
+#[derive(Clone, Debug, Copy, PartialEq)]
 pub enum SavePath {
     A,
     D,
@@ -59,20 +59,28 @@ impl Default for App {
         let sink = rodio::Sink::connect_new(&stream.mixer());
 
         let incoming_from_env = Envs::read_env_var(String::from("INCOMING_PATH"))
-            .unwrap_or_else(|a| String::from("home/"));
+            .unwrap_or_else(|_a| String::from("home/"));
         let save_a_env =
-            Envs::read_env_var(String::from("SAVE_PATH_A")).unwrap_or_else(|a| String::from(""));
-
+            Envs::read_env_var(String::from("SAVE_PATH_A")).unwrap_or_else(|_a| String::from(""));
+        let save_d_env =
+            Envs::read_env_var(String::from("SAVE_PATH_D")).unwrap_or_else(|_a| String::from(""));
+        let save_g_env =
+            Envs::read_env_var(String::from("SAVE_PATH_G")).unwrap_or_else(|_a| String::from(""));
         Self {
             running: true,
             events: EventHandler::new(),
             incoming: fs::canonicalize(PathBuf::from(incoming_from_env.clone()))
-                .unwrap_or_else(|a| PathBuf::from("")),
+                .unwrap_or_else(|_a| PathBuf::from("")),
             track_list: Vec::new(),
-            save_path_a: fs::canonicalize(PathBuf::from(save_a_env))
-                .unwrap_or_else(|a| PathBuf::from("")),
-            save_path_d: None,
-            save_path_g: None,
+            save_path_a: Some(
+                fs::canonicalize(PathBuf::from(save_a_env)).unwrap_or_else(|_a| PathBuf::from("")),
+            ),
+            save_path_d: Some(
+                fs::canonicalize(PathBuf::from(save_d_env)).unwrap_or_else(|_a| PathBuf::from("")),
+            ),
+            save_path_g: Some(
+                fs::canonicalize(PathBuf::from(save_g_env)).unwrap_or_else(|_a| PathBuf::from("")),
+            ),
             display_list: Vec::new(),
             index: 0,
             playing: PathBuf::new(),
@@ -113,7 +121,7 @@ impl App {
                 },
                 Event::App(app_event) => match app_event {
                     AppEvent::Seek(num) => self.seek(num),
-                    AppEvent::SaveTrack => self.save_track(),
+                    AppEvent::SaveTrack(which) => self.save_track(which),
                     AppEvent::DeleteTrack => self.delete_track(),
                     AppEvent::Pause => self.pause(),
                     AppEvent::SetPauseMode => self.set_pause_mode(),

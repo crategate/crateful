@@ -1,3 +1,4 @@
+use crate::app::SavePath;
 use color_eyre::eyre::OptionExt;
 use futures::{FutureExt, StreamExt};
 use ratatui::crossterm::event::Event as CrosstermEvent;
@@ -25,13 +26,12 @@ pub enum WhichPath {
     PathA,
     PathD,
     PathG,
-    PathIncoming,
 }
 /// You can extend this enum with your own custom events.
 #[derive(Clone, Debug)]
 pub enum AppEvent {
     Seek(u64),
-    SaveTrack,
+    SaveTrack(SavePath),
     DeleteTrack,
     Pause,
     SetPauseMode,

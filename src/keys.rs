@@ -8,6 +8,8 @@ use std::time::Duration;
 
 use crate::app::App;
 use crate::app::PauseMode;
+use crate::app::SavePath;
+use crate::app::SavePath::{A, D, G};
 use crate::env::Envs;
 use crate::event::AppEvent;
 use ratatui_explorer::Input;
@@ -16,7 +18,7 @@ impl App {
     /// Handles the key events and updates the state of [`App`].
     pub fn handle_key_events(&mut self, key_event: KeyEvent) -> color_eyre::Result<()> {
         match self.pause_mode {
-            PauseMode::SaveSelect => match key_event.code {
+            PauseMode::SaveSelect(_path) => match key_event.code {
                 KeyCode::Up | KeyCode::Char('k') => self.explorer.handle(Input::Up).unwrap(),
                 KeyCode::Down | KeyCode::Char('j') => self.explorer.handle(Input::Down).unwrap(),
                 KeyCode::Left | KeyCode::Char('h') => self.explorer.handle(Input::Left).unwrap(),
@@ -52,7 +54,9 @@ impl App {
                 KeyCode::Char('7') => self.events.send(AppEvent::Seek(7)),
                 KeyCode::Char('8') => self.events.send(AppEvent::Seek(8)),
                 KeyCode::Char('9') => self.events.send(AppEvent::Seek(9)),
-                KeyCode::Char('a') => self.events.send(AppEvent::SaveTrack),
+                KeyCode::Char('a') => self.events.send(AppEvent::SaveTrack(A)),
+                KeyCode::Char('d') => self.events.send(AppEvent::SaveTrack(D)),
+                KeyCode::Char('g') => self.events.send(AppEvent::SaveTrack(G)),
                 KeyCode::Backspace => self.events.send(AppEvent::DeleteTrack),
                 KeyCode::Char(' ') => self.events.send(AppEvent::Pause),
                 KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
@@ -112,7 +116,7 @@ impl App {
             )
             .unwrap(),
         );
-        let source = Decoder::try_from(file).unwrap_or_else(|a| Decoder::try_from(blank).unwrap());
+        let source = Decoder::try_from(file).unwrap_or_else(|_a| Decoder::try_from(blank).unwrap());
 
         self.length = source.total_duration().expect("length read fail");
         self.music_player.lock().unwrap().append(source);
@@ -154,12 +158,22 @@ impl App {
             .try_seek(Duration::new(percent as u64, 0));
     }
 
-    pub fn save_track(&mut self) {
+    pub fn save_track(&mut self, which: SavePath) {
         // move track file. increment index. Play next track.
         if self.paused {
             return;
         }
-        let mut newpath = self.save_path_a.clone();
+        let mut newpath;
+        match which {
+            SavePath::A => newpath = self.save_path_a.as_ref().unwrap().clone(),
+            SavePath::D => newpath = self.save_path_d.as_ref().unwrap().clone(),
+            SavePath::G => newpath = self.save_path_g.as_ref().unwrap().clone(),
+        }
+        if newpath.as_os_str().is_empty() {
+            self.pause();
+            self.pause_mode = PauseMode::SaveSelect(which);
+            return ();
+        }
         newpath.push(
             self.track_list
                 .get(self.index)
@@ -205,12 +219,30 @@ impl App {
                 self.explorer_index = 0;
             }
             1 => {
-                self.pause_mode = PauseMode::SaveSelect;
-                self.explorer_path = self.save_path_a.to_path_buf();
-                let _ = self.explorer.set_cwd(self.save_path_a.clone());
+                self.pause_mode = PauseMode::SaveSelect(A);
+                self.explorer_path = self.save_path_a.as_ref().unwrap().clone();
+                let _ = self
+                    .explorer
+                    .set_cwd(self.save_path_a.as_ref().unwrap().clone());
                 self.explorer_index = 0;
             }
             2 => {
+                self.pause_mode = PauseMode::SaveSelect(D);
+                self.explorer_path = self.save_path_d.as_ref().unwrap().clone();
+                let _ = self
+                    .explorer
+                    .set_cwd(self.save_path_d.as_ref().unwrap().clone());
+                self.explorer_index = 0;
+            }
+            3 => {
+                self.pause_mode = PauseMode::SaveSelect(G);
+                self.explorer_path = self.save_path_g.as_ref().unwrap().clone();
+                let _ = self
+                    .explorer
+                    .set_cwd(self.save_path_g.as_ref().unwrap().clone());
+                self.explorer_index = 0;
+            }
+            4 => {
                 self.pause_mode = PauseMode::NotPaused;
                 self.pause();
             }
@@ -221,7 +253,7 @@ impl App {
         self.pause_menu.select_previous();
     }
     pub fn down(&mut self) {
-        if self.pause_menu.selected().unwrap() < 2 {
+        if self.pause_menu.selected().unwrap() < 4 {
             self.pause_menu.select_next();
         }
     }
@@ -245,12 +277,32 @@ impl App {
                 self.list_write();
                 self.pause_mode = PauseMode::NotPaused;
             }
-            PauseMode::SaveSelect => {
-                self.save_path_a = self.explorer.current().path().to_path_buf();
-                Envs::set_env(
-                    "SAVE_PATH_A",
-                    self.explorer.current().path().to_str().unwrap(),
-                );
+            PauseMode::SaveSelect(save_path) => {
+                let this_path = Some(self.explorer.current().path().to_path_buf());
+                match save_path {
+                    A => {
+                        Envs::set_env(
+                            "SAVE_PATH_A",
+                            self.explorer.current().path().to_str().unwrap(),
+                        );
+                        self.save_path_a = this_path;
+                    }
+                    D => {
+                        Envs::set_env(
+                            "SAVE_PATH_D",
+                            self.explorer.current().path().to_str().unwrap(),
+                        );
+                        self.save_path_d = this_path;
+                    }
+                    G => {
+                        Envs::set_env(
+                            "SAVE_PATH_G",
+                            self.explorer.current().path().to_str().unwrap(),
+                        );
+                        self.save_path_g = this_path;
+                    }
+                }
+
                 self.paused = false;
                 self.pause_mode = PauseMode::NotPaused;
                 self.music_player.lock().unwrap().play();

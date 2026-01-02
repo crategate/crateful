@@ -53,7 +53,9 @@ impl Widget for Popup<'_> {
         Clear.render(new_pop[0], buf);
         let selects = [
             "Select folder to sort",
-            "Set save folders",
+            "Set 'A' button save folder",
+            "Set 'D' button save folder",
+            "Set 'G' button save folder",
             "Resume sorting (press Space)",
         ];
         List::new(selects)
