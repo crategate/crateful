@@ -12,14 +12,13 @@ use crate::app::SavePath;
 use crate::app::SavePath::{A, D, G};
 use crate::env::Envs;
 use crate::event::AppEvent;
-use crate::event::WhichPath::{PathA, PathD, PathG};
 use ratatui_explorer::Input;
 
 impl App {
     /// Handles the key events and updates the state of [`App`].
     pub fn handle_key_events(&mut self, key_event: KeyEvent) -> color_eyre::Result<()> {
         match self.pause_mode {
-            PauseMode::SaveSelect(path) => match key_event.code {
+            PauseMode::SaveSelect(_path) => match key_event.code {
                 KeyCode::Up | KeyCode::Char('k') => self.explorer.handle(Input::Up).unwrap(),
                 KeyCode::Down | KeyCode::Char('j') => self.explorer.handle(Input::Down).unwrap(),
                 KeyCode::Left | KeyCode::Char('h') => self.explorer.handle(Input::Left).unwrap(),

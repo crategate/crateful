@@ -1,4 +1,4 @@
-use crate::app::{App, SavePath};
+use crate::app::App;
 use std::path::PathBuf;
 
 use ratatui::{

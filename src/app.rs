@@ -1,11 +1,10 @@
 use crate::env::Envs;
 
-use crate::event::{AppEvent, Event, EventHandler, WhichPath};
+use crate::event::{AppEvent, Event, EventHandler};
 use ratatui::{DefaultTerminal, widgets::ListState};
 use ratatui_explorer::FileExplorer;
-use std::env;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
