@@ -5,6 +5,7 @@ use ratatui::{
     style::{Color, Style, Stylize},
     widgets::{Block, BorderType, List, Padding, Paragraph, Widget, Wrap},
 };
+use roundable::{Roundable, SECOND, Tie};
 
 use crate::app::App;
 use crate::app::PauseMode;
@@ -50,9 +51,9 @@ impl Widget for &App {
 
         let text = format!(
             "Now Playing:\n\
-                 {:?}... it's this long: {:?}",
-            self.playing.file_name(),
-            self.length
+                 {:?}... it's {:?} long",
+            self.playing.file_name().unwrap(),
+            self.length.round_to(SECOND, Tie::Up)
         );
 
         let now_playing = Paragraph::new(text)
