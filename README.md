@@ -21,4 +21,6 @@ Use numbers 1-9 to scrub through the song, 10% - 90% through the track.
 
 Press backspace to delete a track. The next track starts immediately. There's no undoing a deletion.
 
+Press escape to exit Crateful.
+
 <img width="3473" height="2168" alt="cute-tui" src="https://github.com/user-attachments/assets/5467b2be-b0a6-4657-a4e8-8510453b08f1" />
