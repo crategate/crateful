@@ -2,7 +2,7 @@
 
 Let's say you've acquired a trove of new music files. Sorting through them, desciding what to save and what to delete, can take hours.
 
-This app streamlines the process!
+This app streamlines the process.
 
 ## When First Opening Crateful
 
@@ -23,4 +23,4 @@ Press backspace to delete a track. The next track starts immediately. There's no
 
 Press escape to exit Crateful.
 
-<img width="3473" height="2168" alt="cute-tui" src="https://github.com/user-attachments/assets/5467b2be-b0a6-4657-a4e8-8510453b08f1" />
+<img width="2654" height="1646" alt="cute-tui" src="https://github.com/user-attachments/assets/08ce79a9-8802-4983-a721-97dfc616bf56" />
