@@ -375,6 +375,7 @@ dependencies = [
  "ratatui",
  "ratatui-explorer",
  "rodio",
+ "roundable",
  "serde",
  "symphonia",
  "tokio",
@@ -1478,6 +1479,12 @@ dependencies = [
  "typeid",
  "unicode-ident",
 ]
+
+[[package]]
+name = "roundable"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "034c92e809b6c2e9c7fe11e63a71d7d055571a00762bdbbd06f54e9fd2f94369"
 
 [[package]]
 name = "rust-ini"

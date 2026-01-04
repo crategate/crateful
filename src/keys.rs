@@ -4,7 +4,6 @@ use std::fs;
 use std::fs::File;
 use std::io::BufReader;
 use std::io::Cursor;
-use std::path::PathBuf;
 use std::time::Duration;
 
 use crate::app::App;

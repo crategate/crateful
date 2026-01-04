@@ -1,10 +1,10 @@
-use color_eyre::owo_colors::OwoColorize;
 use ratatui::{
     buffer::Buffer,
     layout::{Alignment, Constraint, Layout, Offset, Rect},
     style::{Color, Style, Stylize},
-    widgets::{Block, BorderType, List, Padding, Paragraph, Widget, Wrap},
+    widgets::{Block, BorderType, Padding, Paragraph, Widget, Wrap},
 };
+use roundable::{Roundable, SECOND, Tie};
 
 use crate::app::App;
 use crate::app::PauseMode;
@@ -25,7 +25,7 @@ impl Widget for &App {
                 "Sorting Tracks in folder \r\n{}",
                 self.incoming.to_str().unwrap()
             ))
-            .title_style(Style::new().dark_gray().bold())
+            .title_style(Style::new().gray().bold())
             .border_type(BorderType::Rounded);
         let pop_per = Layout::vertical([Constraint::Percentage(80)]).margin(5);
         let new_pop: [Rect; 1] = pop_per.areas(area);
@@ -50,9 +50,9 @@ impl Widget for &App {
 
         let text = format!(
             "Now Playing:\n\
-                 {:?}... it's this long: {:?}",
-            self.playing.file_name(),
-            self.length
+                 {:?}\n it's {:?} long",
+            self.playing.file_name().unwrap(),
+            self.length.round_to(SECOND, Tie::Up)
         );
 
         let now_playing = Paragraph::new(text)
@@ -60,10 +60,17 @@ impl Widget for &App {
             .block(playblock)
             .bg(Color::DarkGray)
             .centered();
-        List::new(self.display_list.clone())
-            .fg(Color::Blue)
-            .bg(Color::Gray)
+
+        let mut show_list = String::new();
+        for item in self.display_list.clone() {
+            show_list.push_str(format!("{}\r\n", item).as_str())
+        }
+
+        Paragraph::new(show_list)
+            .fg(Color::LightBlue)
+            .bg(Color::Black)
             .block(block)
+            .alignment(Alignment::Center)
             .render(list, buf);
 
         now_playing.render(playing, buf);
@@ -83,7 +90,7 @@ impl Widget for &App {
         };
 
         match self.pause_mode {
-            PauseMode::SaveSelect(save_path) => {
+            PauseMode::SaveSelect(_save_path) => {
                 self.explorer
                     .widget()
                     .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
