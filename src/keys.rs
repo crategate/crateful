@@ -3,6 +3,7 @@ use rodio::{Decoder, Source};
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
+use std::io::Cursor;
 use std::path::PathBuf;
 use std::time::Duration;
 
@@ -106,20 +107,18 @@ impl App {
     pub fn start_playback(&mut self) {
         //self.load_tracks();
         let blank_bytes = include_bytes!("../blank.mp3");
-        let no_track_andy = PathBuf::from("./blank.mp3");
-        let blank = BufReader::new(File::open(&no_track_andy).unwrap());
-        let file = BufReader::new(
-            File::open(
-                self.track_list
-                    .get(self.index)
-                    .unwrap_or_else(|| &no_track_andy),
-            )
-            .unwrap(),
-        );
-        let source = Decoder::try_from(file).unwrap_or_else(|_a| Decoder::try_from(blank).unwrap());
+        let blank_curs = BufReader::new(Cursor::new(blank_bytes));
+        let blank_source = Decoder::try_from(blank_curs).unwrap();
 
-        self.length = source.total_duration().expect("length read fail");
-        self.music_player.lock().unwrap().append(source);
+        if self.track_list.len() < 1 {
+            self.music_player.lock().unwrap().append(blank_source)
+        } else {
+            let file =
+                BufReader::new(File::open(self.track_list.get(self.index).unwrap()).unwrap());
+            let source = Decoder::try_from(file).unwrap();
+            self.length = source.total_duration().expect("length read fail");
+            self.music_player.lock().unwrap().append(source);
+        }
         self.music_player.lock().unwrap().play();
         if self.track_list.len() > 0 {
             self.playing = self.track_list.get(self.index).unwrap().to_path_buf();
