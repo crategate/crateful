@@ -1,4 +1,4 @@
-# Crateful - For Music Collectors, DJs, & Pirates
+# Crateful - For Music Collectors & DJs
 
 Let's say you've acquired a trove of new music files. Sorting through them, desciding what to save where, and what to delete, can take hours.
 
@@ -13,6 +13,8 @@ Next, you need to asign where to save your "keepers". Press 'a' and you'll have 
 Now, while a track is playing, pressing 'a' will save that track to the folder selected. Next track starts right away (no backsies).
 
 You can also assign folders to the 'd' and 'g' keys. So one folder for metal tracks, one for jazz, one for EDM... you get the picture.
+
+Pressing spacebar will bring up the pause menu, where you can re-assign all these folders.
 
 ## Scrubbing & Deleting
 Use numbers 1-9 to scrub through the song, 10% - 90% through the track.
