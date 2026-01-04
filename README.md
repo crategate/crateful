@@ -1,6 +1,6 @@
 # Crateful - For Music Collectors & DJs
 
-Let's say you've acquired a trove of new music files. Sorting through them, desciding what to save where, and what to delete, can take hours.
+Let's say you've acquired a trove of new music files. Sorting through them, desciding what to save and what to delete, can take hours.
 
 This app streamlines the process!
 
@@ -10,9 +10,9 @@ You will be prompted to select the folder of music to sort. Read the instruction
 
 Next, you need to asign where to save your "keepers". Press 'a' and you'll have another file explorer menu. 
 
-Now, while a track is playing, pressing 'a' will save that track to the folder selected. Next track starts right away (no backsies).
+While a track is playing, pressing 'a' will now save that track to the folder selected. Next track starts right away (no backsies).
 
-You can also assign folders to the 'd' and 'g' keys. So one folder for metal tracks, one for jazz, one for EDM... you get the picture.
+You can also assign folders to the 'd' and 'g' keys. So one folder for metal tracks, one for jazz, one for EDM - however you want.
 
 Pressing spacebar will bring up the pause menu, where you can re-assign all these folders.
 
