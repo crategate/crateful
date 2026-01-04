@@ -3,7 +3,6 @@ use crate::env::Envs;
 use crate::event::{AppEvent, Event, EventHandler};
 use ratatui::{DefaultTerminal, widgets::ListState};
 use ratatui_explorer::FileExplorer;
-use roundable::{Roundable, Tie};
 use std::fs;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
