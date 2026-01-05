@@ -103,7 +103,7 @@ impl Envs {
         .unwrap();
         // maybe write empty env variables to this config file?
         if let Some(base_dirs) = BaseDirs::new() {
-            let home_path = base_dirs.home_dir();
+            let _home_path = base_dirs.home_dir();
             let empty_vars = [
                 format!("INCOMING_PATH=\n"), //home_path.to_str().unwrap()),
                 //home_path.to_str().unwrap()),
