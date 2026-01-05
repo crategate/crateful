@@ -1,8 +1,12 @@
 use crate::env::Envs;
 
 use crate::event::{AppEvent, Event, EventHandler};
-use ratatui::{DefaultTerminal, widgets::ListState};
-use ratatui_explorer::FileExplorer;
+use ratatui::{
+    DefaultTerminal,
+    style::{Color, Style},
+    widgets::ListState,
+};
+use ratatui_explorer::{FileExplorer, Theme};
 use std::fs;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
@@ -66,6 +70,12 @@ impl Default for App {
             Envs::read_env_var(String::from("SAVE_PATH_D")).unwrap_or_else(|_a| String::from(""));
         let save_g_env =
             Envs::read_env_var(String::from("SAVE_PATH_G")).unwrap_or_else(|_a| String::from(""));
+
+        let explorer_theme = Theme::default()
+            .with_highlight_item_style(Style::default().fg(Color::Red))
+            .with_dir_style(Style::default().fg(Color::Cyan))
+            .with_highlight_symbol("> ".into());
+
         Self {
             running: true,
             events: EventHandler::new(),
@@ -87,7 +97,7 @@ impl Default for App {
             paused: false,
             pause_menu: ListState::default().with_selected(Some(0)),
             pause_mode: PauseMode::NotPaused,
-            explorer: FileExplorer::new().unwrap(),
+            explorer: FileExplorer::with_theme(explorer_theme).unwrap(),
             explorer_path: PathBuf::new(),
             explorer_items: Vec::new(),
             explorer_index: 0,
