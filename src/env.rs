@@ -82,7 +82,6 @@ impl Envs {
                 }
             }
             for line in to_write {
-                dbg!(&line);
                 let _ = env_file.write(line.as_bytes());
             }
         }
