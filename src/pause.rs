@@ -59,7 +59,7 @@ impl Widget for Popup<'_> {
         ];
         List::new(selects)
             .block(Block::bordered().title("options (arrows/jk, Enter)"))
-            .highlight_style(Style::new().white())
+            .highlight_style(Style::new().light_green())
             .highlight_symbol(">>")
             .render_ref(
                 inner_menu[0].offset(Offset { x: 0, y: 0 }),
