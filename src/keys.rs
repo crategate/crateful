@@ -1,9 +1,11 @@
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use rodio::{Decoder, Source};
+use std::ffi::OsStr;
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
 use std::io::Cursor;
+use std::path::Path;
 use std::time::Duration;
 
 use crate::app::App;
@@ -14,6 +16,21 @@ use crate::env::Envs;
 use crate::event::AppEvent;
 use ratatui_explorer::Input;
 
+pub trait FileExtension {
+    fn has_extension<S: AsRef<str>>(&self, extensions: &[S]) -> bool;
+}
+
+impl<P: AsRef<Path>> FileExtension for P {
+    fn has_extension<S: AsRef<str>>(&self, extensions: &[S]) -> bool {
+        if let Some(ref extension) = self.as_ref().extension().and_then(OsStr::to_str) {
+            return extensions
+                .iter()
+                .any(|x| x.as_ref().eq_ignore_ascii_case(extension));
+        }
+
+        false
+    }
+}
 impl App {
     /// Handles the key events and updates the state of [`App`].
     pub fn handle_key_events(&mut self, key_event: KeyEvent) -> color_eyre::Result<()> {
@@ -92,7 +109,18 @@ impl App {
             self.track_list = fs::read_dir(self.incoming.clone())
                 //.unwrap_or_else(|a| fs::read_dir("../../").unwrap())
                 .unwrap()
-                .filter_map(|e| e.ok())
+                .filter_map(|e| {
+                    if e.as_ref()
+                        .ok()
+                        .unwrap()
+                        .path()
+                        .has_extension(&["mp3", "wav", "flac"])
+                    {
+                        e.ok()
+                    } else {
+                        None
+                    }
+                })
                 .map(|e| e.path())
                 .collect::<Vec<_>>();
             self.index = 0;

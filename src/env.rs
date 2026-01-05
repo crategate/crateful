@@ -50,46 +50,6 @@ impl Envs {
         }
     }
 
-    pub fn create_config() {
-        fs::create_dir(
-            dirs::config_dir()
-                .and_then(|a| Some(a.join("crateful")))
-                .unwrap()
-                .as_path(),
-        )
-        .unwrap();
-        File::create(
-            dirs::config_dir()
-                .and_then(|a| Some(a.join("crateful/.env")))
-                .unwrap()
-                .as_path(),
-        )
-        .unwrap();
-        // maybe write empty env variables to this config file?
-        if let Some(base_dirs) = BaseDirs::new() {
-            let _home_path = base_dirs.home_dir();
-            let empty_vars = [
-                format!("INCOMING_PATH=\n"),
-                //home_path.to_str().unwrap()),
-                format!("SAVE_PATH_A=\n"),
-                format!("SAVE_PATH_D=\n"),
-                format!("SAVE_PATH_G=\n"),
-            ];
-            let mut env_file = OpenOptions::new()
-                .read(true)
-                .write(true)
-                .open(
-                    dirs::config_dir()
-                        .and_then(|a| Some(a.join("crateful/.env")))
-                        .unwrap(),
-                )
-                .unwrap();
-            for line in empty_vars {
-                let _ = env_file.write(line.as_bytes());
-            }
-        }
-    }
-
     pub fn read_env_var(var: String) -> Result<String, env::VarError> {
         env::var(var)
     }
@@ -123,6 +83,45 @@ impl Envs {
             }
             for line in to_write {
                 dbg!(&line);
+                let _ = env_file.write(line.as_bytes());
+            }
+        }
+    }
+    pub fn create_config() {
+        fs::create_dir(
+            dirs::config_dir()
+                .and_then(|a| Some(a.join("crateful")))
+                .unwrap()
+                .as_path(),
+        )
+        .unwrap();
+        File::create(
+            dirs::config_dir()
+                .and_then(|a| Some(a.join("crateful/.env")))
+                .unwrap()
+                .as_path(),
+        )
+        .unwrap();
+        // maybe write empty env variables to this config file?
+        if let Some(base_dirs) = BaseDirs::new() {
+            let home_path = base_dirs.home_dir();
+            let empty_vars = [
+                format!("INCOMING_PATH=\n"), //home_path.to_str().unwrap()),
+                //home_path.to_str().unwrap()),
+                format!("SAVE_PATH_A=\n",),
+                format!("SAVE_PATH_D=\n"),
+                format!("SAVE_PATH_G=\n"),
+            ];
+            let mut env_file = OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open(
+                    dirs::config_dir()
+                        .and_then(|a| Some(a.join("crateful/.env")))
+                        .unwrap(),
+                )
+                .unwrap();
+            for line in empty_vars {
                 let _ = env_file.write(line.as_bytes());
             }
         }

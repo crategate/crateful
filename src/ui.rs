@@ -1,3 +1,5 @@
+use std::ffi::OsStr;
+
 use ratatui::{
     buffer::Buffer,
     layout::{Alignment, Constraint, Layout, Offset, Rect},
@@ -51,7 +53,7 @@ impl Widget for &App {
         let text = format!(
             "Now Playing:\n\
                  {:?}\n it's {:?} long",
-            self.playing.file_name().unwrap(),
+            self.playing.file_name().unwrap_or_else(|| OsStr::new("")),
             self.length.round_to(SECOND, Tie::Up)
         );
 
