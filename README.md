@@ -39,4 +39,6 @@ Name=Crateful<br>
 ## Pairs Great with SoulSeek
 In SoulSeek settings, set your "Finished Downloads" folder to the same folder that you're sorting in Crateful, so you can sort music as it finishes downloading. (Set the "incomplete" downloads somewhere else, so you don't accidentally sort a half downloaded track!)
 
+If the number of "tracks to sort" gets lower than 5, Crateful will reload the "to sort" folder, so you can continuously download & sort tracks without reloading Crateful.
+
 Cheers to full crates!
