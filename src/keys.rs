@@ -144,7 +144,10 @@ impl App {
             let file =
                 BufReader::new(File::open(self.track_list.get(self.index).unwrap()).unwrap());
             let source = Decoder::try_from(file).unwrap();
-            self.length = source.total_duration().expect("length read fail");
+
+            self.length = source
+                .total_duration()
+                .unwrap_or_else(|| Duration::from_secs(0));
             self.music_player.lock().unwrap().append(source);
         }
         self.music_player.lock().unwrap().play();
@@ -298,8 +301,8 @@ impl App {
                     self.explorer.current().path().to_str().unwrap(),
                 );
                 self.music_player.lock().unwrap().clear();
-                self.paused = false;
                 self.load_tracks();
+                self.paused = false;
                 self.start_playback();
                 self.list_write();
                 self.pause_mode = PauseMode::NotPaused;
