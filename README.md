@@ -1,6 +1,6 @@
 # Crateful - For Music Collectors & DJs
 
-Let's say you've acquired a trove of new music files. Sorting through them, desciding what to save and what to delete, can take hours.
+Let's say you've acquired a trove of new music files. Sorting through them, deciding what to save and what to delete, can take hours.
 
 This app streamlines the process.
 
