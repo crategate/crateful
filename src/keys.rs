@@ -7,6 +7,7 @@ use std::io::BufReader;
 use std::io::Cursor;
 use std::path::Path;
 use std::time::Duration;
+use walkdir::WalkDir;
 
 use crate::app::App;
 use crate::app::PauseMode;
@@ -106,9 +107,9 @@ impl App {
         // enumerate and save track list with pathes
         // when incoming isn't set, create the config system file. prompt user in pause menu
         if self.incoming.exists() {
-            self.track_list = fs::read_dir(self.incoming.clone())
+            self.track_list = WalkDir::new(self.incoming.clone())
+                .into_iter()
                 //.unwrap_or_else(|a| fs::read_dir("../../").unwrap())
-                .unwrap()
                 .filter_map(|e| {
                     if e.as_ref()
                         .ok()
@@ -121,7 +122,7 @@ impl App {
                         None
                     }
                 })
-                .map(|e| e.path())
+                .map(|e| e.path().to_path_buf())
                 .collect::<Vec<_>>();
             self.index = 0;
         } else {
