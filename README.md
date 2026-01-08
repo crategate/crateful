@@ -24,3 +24,20 @@ Press backspace to delete a track. The next track starts immediately. There's no
 Press escape to exit Crateful.
 
 <img width="2654" height="1646" alt="cute-tui" src="https://github.com/user-attachments/assets/08ce79a9-8802-4983-a721-97dfc616bf56" />
+
+## Installation
+Clone this repository. Run Cargo build --release to build the released version. In the project folder, the file /target/release/crateful can be moved & ran wherever you like.
+
+If you're on <b>Linux</b> make this file, "Crateful.desktop" in ~/.local/share/applications. Then you can launch the app with rofi. 
+>[Desktop Entry]<br>
+Exec=/absolute_path/to/crateful<br>
+Type=Application<br>
+Terminal=true<br>
+Categories=Music<br>
+Name=Crateful<br>
+
+
+## Pairs Great with SoulSeek
+I use this app to sort tracks from SoulSeek. If you set your "Finished Downloads" folder to the same folder that you're sorting in Crateful, you can sort music as it downloads. (Set the "incomplete" downloads somewhere else, so you don't accidentally sort a half downloaded track!)
+
+Crateful will automagically look for more downloaded files when the sort list gets shorter than 5 songs.
