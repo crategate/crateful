@@ -36,8 +36,9 @@ Terminal=true<br>
 Categories=Music<br>
 Name=Crateful<br>
 
-
 ## Pairs Great with SoulSeek
-I use this app to sort tracks from SoulSeek. If you set your "Finished Downloads" folder to the same folder that you're sorting in Crateful, you can sort music as it downloads. (Set the "incomplete" downloads somewhere else, so you don't accidentally sort a half downloaded track!)
+If you set your "Finished Downloads" folder to the same folder that you're sorting in Crateful, you can sort music as it finishes downloading. (Set the "incomplete" downloads somewhere else, so you don't accidentally sort a half downloaded track!)
 
-Crateful will automagically look for more downloaded files when the sort list gets shorter than 5 songs.
+Crateful will automagically look for more downloaded files when the "to sort" list gets shorter than 5 songs.
+
+Cheers to full crates!
