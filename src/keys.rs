@@ -212,6 +212,11 @@ impl App {
         self.index += 1;
         self.list_write();
         self.music_player.lock().unwrap().clear();
+        if self.display_list.len() < 5 {
+            self.load_tracks();
+            self.list_write();
+            self.index = 0;
+        }
         self.start_playback();
     }
 
@@ -224,6 +229,11 @@ impl App {
         let _ = fs::remove_file(self.track_list.get(self.index).unwrap());
         self.index += 1;
         self.list_write();
+        if self.display_list.len() < 5 {
+            self.load_tracks();
+            self.list_write();
+            self.index = 0;
+        }
         self.start_playback();
     }
     pub fn pause(&mut self) {
