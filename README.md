@@ -41,4 +41,6 @@ In SoulSeek settings, set your "Finished Downloads" folder to the same folder th
 
 If the number of "tracks to sort" gets lower than 5, Crateful will reload the "to sort" folder, so you can continuously download & sort tracks without reloading Crateful.
 
+Crateful will get all tracks in the folder selected for sorting, even tracks in nested folders, however it does not delete empty folders on exiting.
+
 Cheers to full crates!
