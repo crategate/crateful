@@ -100,6 +100,10 @@ impl App {
 
     /// Set running to false to quit the application.
     pub fn quit(&mut self) {
+        // check the env, delete the file if the user somehow didn't assign a "to sort" folder
+        if !self.incoming.exists() {
+            Envs::destroy_config();
+        }
         self.running = false;
     }
 
@@ -201,6 +205,11 @@ impl App {
         }
         if newpath.as_os_str().is_empty() {
             self.pause();
+            match which {
+                SavePath::A => self.pause_menu.select(Some(1)),
+                SavePath::D => self.pause_menu.select(Some(2)),
+                SavePath::G => self.pause_menu.select(Some(3)),
+            }
             self.pause_mode = PauseMode::SaveSelect(which);
             return ();
         }
