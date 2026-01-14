@@ -1,5 +1,6 @@
 use crate::app::{App, Indicator};
 use std::path::PathBuf;
+use tokio::time::{Duration, Sleep};
 
 use ratatui::{
     layout::{Alignment, Constraint, Layout, Offset, Rect},
@@ -45,6 +46,18 @@ impl Widget for Instructs {
             Constraint::Percentage(20),
         ]);
 
+        let mut offset_indicator = vec![0, 0, 0, 0, 0];
+        match self.last_action {
+            Some(indicator) => match indicator {
+                Indicator::SavedA => offset_indicator[0] = -1,
+                Indicator::SavedD => offset_indicator[1] = -1,
+                Indicator::SavedG => offset_indicator[2] = -1,
+                Indicator::Scrubbed => offset_indicator[3] = -1,
+                Indicator::Deleted => offset_indicator[4] = -1,
+            },
+            None => dbg!(),
+        }
+
         let [save_a, save_d, save_g, scrub, delete] = controls_split.areas(area);
 
         let save_a_block = Block::bordered()
@@ -80,7 +93,13 @@ impl Widget for Instructs {
         .fg(Color::White)
         .bg(Color::LightBlue)
         .wrap(Wrap { trim: true })
-        .render(save_a.offset(Offset { x: 0, y: -1 }), buf);
+        .render(
+            save_a.offset(Offset {
+                x: 0,
+                y: offset_indicator[0],
+            }),
+            buf,
+        );
         let save_d_block = Block::bordered()
             .border_type(BorderType::Rounded)
             .title_bottom("'d' save")
@@ -108,7 +127,13 @@ impl Widget for Instructs {
         .fg(Color::White)
         .bg(Color::Cyan)
         .wrap(Wrap { trim: true })
-        .render(save_d, buf);
+        .render(
+            save_d.offset(Offset {
+                x: 0,
+                y: offset_indicator[1],
+            }),
+            buf,
+        );
         let save_g_block = Block::bordered()
             .border_type(BorderType::Rounded)
             .title_bottom("'g' save")
@@ -136,7 +161,13 @@ impl Widget for Instructs {
         .fg(Color::White)
         .bg(Color::LightBlue)
         .wrap(Wrap { trim: true })
-        .render(save_g, buf);
+        .render(
+            save_g.offset(Offset {
+                x: 0,
+                y: offset_indicator[2],
+            }),
+            buf,
+        );
         let scrub_block = Block::bordered()
             .border_type(BorderType::Rounded)
             .title_bottom("how to scrub")
@@ -149,7 +180,13 @@ impl Widget for Instructs {
         .fg(Color::White)
         .bg(Color::Blue)
         .wrap(Wrap { trim: true })
-        .render(scrub, buf);
+        .render(
+            scrub.offset(Offset {
+                x: 0,
+                y: offset_indicator[3],
+            }),
+            buf,
+        );
         let delete_block = Block::bordered()
             .border_type(BorderType::Rounded)
             .title_bottom("delete")
@@ -160,6 +197,12 @@ impl Widget for Instructs {
             .fg(Color::White)
             .bg(Color::LightRed)
             .wrap(Wrap { trim: true })
-            .render(delete, buf);
+            .render(
+                delete.offset(Offset {
+                    x: 0,
+                    y: offset_indicator[4],
+                }),
+                buf,
+            );
     }
 }

@@ -9,7 +9,8 @@ use std::path::Path;
 use std::time::Duration;
 use walkdir::WalkDir;
 
-use crate::app::App;
+use crate::App;
+use crate::app::Indicator;
 use crate::app::PauseMode;
 use crate::app::SavePath;
 use crate::app::SavePath::{A, D, G};
@@ -181,6 +182,7 @@ impl App {
         if self.paused {
             return;
         }
+        self.visual_action_indicator = Some(Indicator::Scrubbed);
         let percent = ((pos as f64 / 10.0) * self.length.as_secs() as f64).round();
         self.music_player.lock().unwrap().pause();
         self.music_player.lock().unwrap().clear();
@@ -199,9 +201,18 @@ impl App {
         }
         let mut newpath;
         match which {
-            SavePath::A => newpath = self.save_path_a.as_ref().unwrap().clone(),
-            SavePath::D => newpath = self.save_path_d.as_ref().unwrap().clone(),
-            SavePath::G => newpath = self.save_path_g.as_ref().unwrap().clone(),
+            SavePath::A => {
+                newpath = self.save_path_a.as_ref().unwrap().clone();
+                self.visual_action_indicator = Some(Indicator::SavedA)
+            }
+            SavePath::D => {
+                newpath = self.save_path_d.as_ref().unwrap().clone();
+                self.visual_action_indicator = Some(Indicator::SavedD)
+            }
+            SavePath::G => {
+                newpath = self.save_path_g.as_ref().unwrap().clone();
+                self.visual_action_indicator = Some(Indicator::SavedG)
+            }
         }
         if newpath.as_os_str().is_empty() {
             self.pause();
@@ -236,6 +247,7 @@ impl App {
         if self.paused {
             return;
         }
+        self.visual_action_indicator = Some(Indicator::Deleted);
         // delete file. Increment index. Play next.
         self.music_player.lock().unwrap().clear();
         let _ = fs::remove_file(self.track_list.get(self.index).unwrap());
