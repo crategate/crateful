@@ -125,4 +125,14 @@ impl Envs {
             }
         }
     }
+
+    pub fn destroy_config() {
+        fs::remove_dir_all(
+            dirs::config_dir()
+                .and_then(|a| Some(a.join("crateful/")))
+                .unwrap()
+                .as_path(),
+        )
+        .unwrap();
+    }
 }

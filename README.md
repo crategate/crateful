@@ -26,6 +26,8 @@ Press escape to exit Crateful.
 <img width="2654" height="1646" alt="cute-tui" src="https://github.com/user-attachments/assets/08ce79a9-8802-4983-a721-97dfc616bf56" />
 
 ## Installation
+You can <a href="https://ruffolo.pro">download & run the Crateful binary from my website</a>, without having to worry about Rust or Git.
+
 Clone this repository. You also need to <a href="https://doc.rust-lang.org/cargo/getting-started/installation.html">install Rust & Cargo</a>. Run Cargo build --release to build the released version. In the project folder, the file /target/release/crateful can be moved & ran wherever you like. (just use the command "./crateful" to run it if you're in that directory)
 
 If you're on <b>Linux</b> make this file, "Crateful.desktop" in ~/.local/share/applications. Then you can launch the app with rofi. 
