@@ -100,6 +100,10 @@ impl App {
 
     /// Set running to false to quit the application.
     pub fn quit(&mut self) {
+        // check the env, delete the file if the user somehow didn't assign a "to sort" folder
+        if !self.incoming.exists() {
+            Envs::destroy_config();
+        }
         self.running = false;
     }
 
