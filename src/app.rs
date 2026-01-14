@@ -33,6 +33,7 @@ pub struct App {
     pub explorer_path: PathBuf,
     pub explorer_index: usize,
     pub explorer_items: Vec<std::fs::DirEntry>,
+    pub visual_action_indicator: Option<Indicator>,
     pub length: Duration,
     pub progress: usize,
     pub music_player: Arc<Mutex<rodio::Sink>>,
@@ -40,6 +41,14 @@ pub struct App {
     pub volume: f32,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub enum Indicator {
+    SavedA,
+    SavedD,
+    SavedG,
+    Scrubbed,
+    Deleted,
+}
 #[derive(Clone, Default, Debug, PartialEq)]
 pub enum PauseMode {
     #[default]
@@ -101,6 +110,7 @@ impl Default for App {
             explorer_path: PathBuf::new(),
             explorer_items: Vec::new(),
             explorer_index: 0,
+            visual_action_indicator: None,
             length: Duration::new(0, 0),
             progress: 0,
             music_player: Arc::new(Mutex::new(sink)),

@@ -1,8 +1,8 @@
-use crate::app::App;
+use crate::app::{App, Indicator};
 use std::path::PathBuf;
 
 use ratatui::{
-    layout::{Alignment, Constraint, Layout, Rect},
+    layout::{Alignment, Constraint, Layout, Offset, Rect},
     prelude::Buffer,
     style::{Color, Stylize},
     widgets::{Block, BorderType, Paragraph, Widget, Wrap},
@@ -15,6 +15,7 @@ pub struct PathStates {
 }
 pub struct Instructs {
     state: PathStates,
+    last_action: Option<Indicator>,
 }
 impl PathStates {}
 
@@ -30,6 +31,7 @@ impl Instructs {
                 save_d: app_state.save_path_d.clone(),
                 save_g: app_state.save_path_g.clone(),
             },
+            last_action: app_state.visual_action_indicator.clone(),
         }
     }
 }
@@ -78,7 +80,7 @@ impl Widget for Instructs {
         .fg(Color::White)
         .bg(Color::LightBlue)
         .wrap(Wrap { trim: true })
-        .render(save_a, buf);
+        .render(save_a.offset(Offset { x: 0, y: -1 }), buf);
         let save_d_block = Block::bordered()
             .border_type(BorderType::Rounded)
             .title_bottom("'d' save")
