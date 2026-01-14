@@ -201,6 +201,11 @@ impl App {
         }
         if newpath.as_os_str().is_empty() {
             self.pause();
+            match which {
+                SavePath::A => self.pause_menu.select(Some(1)),
+                SavePath::D => self.pause_menu.select(Some(2)),
+                SavePath::G => self.pause_menu.select(Some(3)),
+            }
             self.pause_mode = PauseMode::SaveSelect(which);
             return ();
         }
