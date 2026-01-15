@@ -1,6 +1,6 @@
 use crate::app::{App, Indicator};
-use std::path::PathBuf;
-use tokio::time::{Duration, Sleep};
+use std::{path::PathBuf, vec};
+use tokio::time::{Duration, sleep};
 
 use ratatui::{
     layout::{Alignment, Constraint, Layout, Offset, Rect},
@@ -17,6 +17,7 @@ pub struct PathStates {
 pub struct Instructs {
     state: PathStates,
     last_action: Option<Indicator>,
+    offset_indicator: Vec<i8>,
 }
 impl PathStates {}
 
@@ -33,6 +34,7 @@ impl Instructs {
                 save_g: app_state.save_path_g.clone(),
             },
             last_action: app_state.visual_action_indicator.clone(),
+            offset_indicator: vec![0, 0, 0, 0, 0],
         }
     }
 }
@@ -46,14 +48,13 @@ impl Widget for Instructs {
             Constraint::Percentage(20),
         ]);
 
-        let mut offset_indicator = vec![0, 0, 0, 0, 0];
         match self.last_action {
             Some(indicator) => match indicator {
-                Indicator::SavedA => offset_indicator[0] = -1,
-                Indicator::SavedD => offset_indicator[1] = -1,
-                Indicator::SavedG => offset_indicator[2] = -1,
-                Indicator::Scrubbed => offset_indicator[3] = -1,
-                Indicator::Deleted => offset_indicator[4] = -1,
+                Indicator::SavedA => self.offset_indicator[0] = -1,
+                Indicator::SavedD => self.offset_indicator[1] = -1,
+                Indicator::SavedG => self.offset_indicator[2] = -1,
+                Indicator::Scrubbed => self.offset_indicator[3] = -1,
+                Indicator::Deleted => self.offset_indicator[4] = -1,
             },
             None => dbg!(),
         }
