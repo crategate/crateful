@@ -17,7 +17,7 @@ pub struct PathStates {
 pub struct Instructs {
     state: PathStates,
     last_action: Option<Indicator>,
-    offset_indicator: Vec<i8>,
+    offset_indicator: Vec<i32>,
 }
 impl PathStates {}
 
@@ -39,7 +39,7 @@ impl Instructs {
     }
 }
 impl Widget for Instructs {
-    fn render(self, area: Rect, buf: &mut Buffer) {
+    fn render(mut self, area: Rect, buf: &mut Buffer) {
         let controls_split = Layout::horizontal([
             Constraint::Percentage(20),
             Constraint::Percentage(20),
@@ -56,7 +56,7 @@ impl Widget for Instructs {
                 Indicator::Scrubbed => self.offset_indicator[3] = -1,
                 Indicator::Deleted => self.offset_indicator[4] = -1,
             },
-            None => dbg!(),
+            None => (),
         }
 
         let [save_a, save_d, save_g, scrub, delete] = controls_split.areas(area);
@@ -97,7 +97,7 @@ impl Widget for Instructs {
         .render(
             save_a.offset(Offset {
                 x: 0,
-                y: offset_indicator[0],
+                y: self.offset_indicator[0],
             }),
             buf,
         );
@@ -131,7 +131,7 @@ impl Widget for Instructs {
         .render(
             save_d.offset(Offset {
                 x: 0,
-                y: offset_indicator[1],
+                y: self.offset_indicator[1],
             }),
             buf,
         );
@@ -165,7 +165,7 @@ impl Widget for Instructs {
         .render(
             save_g.offset(Offset {
                 x: 0,
-                y: offset_indicator[2],
+                y: self.offset_indicator[2],
             }),
             buf,
         );
@@ -184,7 +184,7 @@ impl Widget for Instructs {
         .render(
             scrub.offset(Offset {
                 x: 0,
-                y: offset_indicator[3],
+                y: self.offset_indicator[3],
             }),
             buf,
         );
@@ -201,7 +201,7 @@ impl Widget for Instructs {
             .render(
                 delete.offset(Offset {
                     x: 0,
-                    y: offset_indicator[4],
+                    y: self.offset_indicator[4],
                 }),
                 buf,
             );
