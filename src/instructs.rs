@@ -1,8 +1,9 @@
-use crate::app::App;
-use std::path::PathBuf;
+use crate::app::{App, Indicator};
+use std::{path::PathBuf, vec};
+use tokio::time::{Duration, sleep};
 
 use ratatui::{
-    layout::{Alignment, Constraint, Layout, Rect},
+    layout::{Alignment, Constraint, Layout, Offset, Rect},
     prelude::Buffer,
     style::{Color, Stylize},
     widgets::{Block, BorderType, Paragraph, Widget, Wrap},
@@ -15,6 +16,8 @@ pub struct PathStates {
 }
 pub struct Instructs {
     state: PathStates,
+    last_action: Option<Indicator>,
+    offset_indicator: Vec<i32>,
 }
 impl PathStates {}
 
@@ -30,11 +33,13 @@ impl Instructs {
                 save_d: app_state.save_path_d.clone(),
                 save_g: app_state.save_path_g.clone(),
             },
+            last_action: app_state.visual_action_indicator.clone(),
+            offset_indicator: vec![0, 0, 0, 0, 0],
         }
     }
 }
 impl Widget for Instructs {
-    fn render(self, area: Rect, buf: &mut Buffer) {
+    fn render(mut self, area: Rect, buf: &mut Buffer) {
         let controls_split = Layout::horizontal([
             Constraint::Percentage(20),
             Constraint::Percentage(20),
@@ -42,6 +47,17 @@ impl Widget for Instructs {
             Constraint::Percentage(20),
             Constraint::Percentage(20),
         ]);
+
+        match self.last_action {
+            Some(indicator) => match indicator {
+                Indicator::SavedA => self.offset_indicator[0] = -1,
+                Indicator::SavedD => self.offset_indicator[1] = -1,
+                Indicator::SavedG => self.offset_indicator[2] = -1,
+                Indicator::Scrubbed => self.offset_indicator[3] = -1,
+                Indicator::Deleted => self.offset_indicator[4] = -1,
+            },
+            None => (),
+        }
 
         let [save_a, save_d, save_g, scrub, delete] = controls_split.areas(area);
 
@@ -78,7 +94,13 @@ impl Widget for Instructs {
         .fg(Color::White)
         .bg(Color::LightBlue)
         .wrap(Wrap { trim: true })
-        .render(save_a, buf);
+        .render(
+            save_a.offset(Offset {
+                x: 0,
+                y: self.offset_indicator[0],
+            }),
+            buf,
+        );
         let save_d_block = Block::bordered()
             .border_type(BorderType::Rounded)
             .title_bottom("'d' save")
@@ -106,7 +128,13 @@ impl Widget for Instructs {
         .fg(Color::White)
         .bg(Color::Cyan)
         .wrap(Wrap { trim: true })
-        .render(save_d, buf);
+        .render(
+            save_d.offset(Offset {
+                x: 0,
+                y: self.offset_indicator[1],
+            }),
+            buf,
+        );
         let save_g_block = Block::bordered()
             .border_type(BorderType::Rounded)
             .title_bottom("'g' save")
@@ -134,7 +162,13 @@ impl Widget for Instructs {
         .fg(Color::White)
         .bg(Color::LightBlue)
         .wrap(Wrap { trim: true })
-        .render(save_g, buf);
+        .render(
+            save_g.offset(Offset {
+                x: 0,
+                y: self.offset_indicator[2],
+            }),
+            buf,
+        );
         let scrub_block = Block::bordered()
             .border_type(BorderType::Rounded)
             .title_bottom("how to scrub")
@@ -147,7 +181,13 @@ impl Widget for Instructs {
         .fg(Color::White)
         .bg(Color::Blue)
         .wrap(Wrap { trim: true })
-        .render(scrub, buf);
+        .render(
+            scrub.offset(Offset {
+                x: 0,
+                y: self.offset_indicator[3],
+            }),
+            buf,
+        );
         let delete_block = Block::bordered()
             .border_type(BorderType::Rounded)
             .title_bottom("delete")
@@ -158,6 +198,12 @@ impl Widget for Instructs {
             .fg(Color::White)
             .bg(Color::LightRed)
             .wrap(Wrap { trim: true })
-            .render(delete, buf);
+            .render(
+                delete.offset(Offset {
+                    x: 0,
+                    y: self.offset_indicator[4],
+                }),
+                buf,
+            );
     }
 }
