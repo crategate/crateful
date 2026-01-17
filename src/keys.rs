@@ -73,6 +73,10 @@ impl App {
                 KeyCode::Char('7') => self.events.send(AppEvent::Seek(7)),
                 KeyCode::Char('8') => self.events.send(AppEvent::Seek(8)),
                 KeyCode::Char('9') => self.events.send(AppEvent::Seek(9)),
+
+                KeyCode::Char('h') | KeyCode::Left => self.events.send(AppEvent::SkipBack),
+                KeyCode::Char('l') | KeyCode::Right => self.events.send(AppEvent::SkipForward),
+
                 KeyCode::Char('a') => self.events.send(AppEvent::SaveTrack(A)),
                 KeyCode::Char('d') => self.events.send(AppEvent::SaveTrack(D)),
                 KeyCode::Char('g') => self.events.send(AppEvent::SaveTrack(G)),
@@ -192,6 +196,33 @@ impl App {
             .lock()
             .unwrap()
             .try_seek(Duration::new(percent as u64, 0));
+    }
+    pub fn skip_back(&mut self) {
+        if self.paused {
+            return;
+        }
+        self.visual_action_indicator = Some(Indicator::Scrubbed);
+        let current_pos = self.music_player.lock().unwrap().get_pos();
+        self.music_player.lock().unwrap().pause();
+        self.music_player.lock().unwrap().clear();
+        self.start_playback();
+        let _ = self
+            .music_player
+            .lock()
+            .unwrap()
+            .try_seek(current_pos.saturating_sub(Duration::from_secs(2)));
+    }
+
+    pub fn skip_forward(&mut self) {
+        if self.paused {
+            return;
+        }
+        self.visual_action_indicator = Some(Indicator::Scrubbed);
+        let current_pos = self.music_player.lock().unwrap().get_pos();
+        self.music_player
+            .lock()
+            .unwrap()
+            .try_seek(current_pos.saturating_add(Duration::from_secs(2)));
     }
 
     pub fn save_track(&mut self, which: SavePath) {
