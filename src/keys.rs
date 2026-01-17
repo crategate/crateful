@@ -6,6 +6,7 @@ use std::fs::File;
 use std::io::BufReader;
 use std::io::Cursor;
 use std::path::Path;
+use std::thread;
 use std::time::Duration;
 use walkdir::WalkDir;
 
@@ -17,6 +18,7 @@ use crate::app::SavePath::{A, D, G};
 use crate::env::Envs;
 use crate::event::AppEvent;
 use ratatui_explorer::Input;
+use std::sync::mpsc;
 
 pub trait FileExtension {
     fn has_extension<S: AsRef<str>>(&self, extensions: &[S]) -> bool;
@@ -98,6 +100,21 @@ impl App {
     /// The tick event is where you can update the state of your application with any logic that
     /// needs to be updated at a fixed frame rate. E.g. polling a server, updating an animation.
     pub fn tick(&self) {}
+
+    pub fn reset_indicator(&mut self) {
+        let (tx, rx): (
+            mpsc::Sender<Option<Indicator>>,
+            mpsc::Receiver<Option<Indicator>>,
+        ) = mpsc::channel();
+        let handle = thread::spawn(async move || {
+            thread::sleep(Duration::from_millis(300));
+            let no_indicator: Option<Indicator> = None;
+            //    tx.send(no_indicator).unwrap();
+            panic!("");
+        });
+        handle.join().unwrap();
+        // self.visual_action_indicator = rx.try_recv().unwrap();
+    }
 
     /// Set running to false to quit the application.
     pub fn quit(&mut self) {
@@ -183,6 +200,7 @@ impl App {
             return;
         }
         self.visual_action_indicator = Some(Indicator::Scrubbed);
+        self.reset_indicator();
         let percent = ((pos as f64 / 10.0) * self.length.as_secs() as f64).round();
         self.music_player.lock().unwrap().pause();
         self.music_player.lock().unwrap().clear();
