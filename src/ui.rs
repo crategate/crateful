@@ -42,7 +42,7 @@ impl Widget for &App {
             .margin(2)
             .split(new_pop[0]);
 
-        let playblock = Block::new().padding(Padding::vertical(playing.height / 4));
+        let playblock = Block::new().padding(Padding::vertical(playing.height / 6));
 
         let pause_instruct = Layout::default()
             .direction(ratatui::layout::Direction::Vertical)
@@ -52,7 +52,7 @@ impl Widget for &App {
 
         let text = format!(
             "Now Playing:\n\
-                 {:?}\n it's {:?} long",
+                 {:?}\n it's {:?} long \r\n\r\n press SPACE for pause menu",
             self.playing.file_name().unwrap_or_else(|| OsStr::new("")),
             self.length.round_to(SECOND, Tie::Up)
         );
