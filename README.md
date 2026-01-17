@@ -17,9 +17,11 @@ You can also assign folders to the 'd' and 'g' keys. So one folder for metal tra
 Pressing spacebar will bring up the pause menu, where you can re-assign all these folders.
 
 ## Scrubbing & Deleting
-Use numbers 1-9 to scrub through the song, 10% - 90% through the track.
+Use numbers 1-9 to seek through the song, 10% - 90% through the track.
 
-Press backspace to delete a track. The next track starts immediately. There's no undoing a deletion.
+The left/right arrow keys (or h & l) will scrub forwards and back by 2 seconds.
+
+Press backspace to delete a track. The next track starts immediately. There's no undoing a deletion!
 
 Press escape to exit Crateful.
 
