@@ -28,7 +28,11 @@ Press escape to exit Crateful.
 <img width="2654" height="1646" alt="cute-tui" src="https://github.com/user-attachments/assets/08ce79a9-8802-4983-a721-97dfc616bf56" />
 
 ## Installation
-You can <a href="https://ruffolo.pro">download & run the Crateful binary from my website</a>, without having to worry about Rust or Git. Linux (& Mac) users: just run the command "chmod +x crateful" (or "chmod +x crateful-mac"). Then "./crateful" ("./crateful-mac").
+You can <a href="https://ruffolo.pro">download & run the Crateful binary from my website</a>, without having to worry about Rust or Git. 
+
+Using your terminal, navigate to your downloads folder. (use the command "cd Downloads")
+
+Linux (& Mac) users: run the command "chmod +x crateful" (or "chmod +x crateful-mac"). Then "./crateful" ("./crateful-mac") will start the TUI.
 
 
 ### Developer Installation
