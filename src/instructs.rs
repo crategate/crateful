@@ -92,7 +92,8 @@ impl Widget for Instructs {
         .block(save_a_block)
         .centered()
         .fg(Color::White)
-        .bg(Color::LightBlue)
+        .bg(Color::Reset)
+        .bg(Color::Indexed(14))
         .wrap(Wrap { trim: true })
         .render(
             save_a.offset(Offset {

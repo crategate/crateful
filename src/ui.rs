@@ -1,10 +1,11 @@
 use std::ffi::OsStr;
 
+use color_eyre::owo_colors::{OwoColorize, colors::Yellow};
 use ratatui::{
     buffer::Buffer,
     layout::{Alignment, Constraint, Layout, Offset, Rect},
     style::{Color, Style, Stylize},
-    widgets::{Block, BorderType, Padding, Paragraph, Widget, Wrap},
+    widgets::{Block, BorderType, Gauge, Padding, Paragraph, Widget, Wrap},
 };
 use roundable::{Roundable, SECOND, Tie};
 
@@ -16,11 +17,12 @@ use crate::pause;
 impl Widget for &App {
     fn render(self, area: Rect, buf: &mut Buffer) {
         let vertical = Layout::vertical([
-            Constraint::Percentage(20),
+            Constraint::Percentage(15),
+            Constraint::Percentage(5),
             Constraint::Percentage(50),
             Constraint::Percentage(30),
         ]);
-        let [playing, list, controls] = vertical.areas(area);
+        let [playing, progress, list, controls] = vertical.areas(area);
         let block = Block::bordered()
             .title_alignment(Alignment::Center)
             .title(format!(
@@ -52,9 +54,8 @@ impl Widget for &App {
 
         let text = format!(
             "Now Playing:\n\
-                 {:?}\n it's {:?} long \r\n\r\n press SPACE for pause menu",
+                 {:?}\n \r\n\r\n press SPACE for pause menu",
             self.playing.file_name().unwrap_or_else(|| OsStr::new("")),
-            self.length.round_to(SECOND, Tie::Up)
         );
 
         let now_playing = Paragraph::new(text)
@@ -62,6 +63,15 @@ impl Widget for &App {
             .block(playblock)
             .bg(Color::DarkGray)
             .centered();
+
+        let progressblock = Block::new().fg(Color::Yellow);
+
+        Gauge::default()
+            .block(progressblock)
+            .gauge_style(Color::Yellow)
+            .percent(self.progress as u16)
+            .label(&self.format_time)
+            .render(progress, buf);
 
         let mut show_list = String::new();
         for item in self.display_list.clone() {
