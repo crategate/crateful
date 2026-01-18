@@ -66,13 +66,14 @@ impl Widget for &App {
 
         let progressblock = Block::new().fg(Color::Yellow);
 
+        if self.track_list.len() > 0 {
         Gauge::default()
             .block(progressblock)
             .gauge_style(Color::Yellow)
             .percent(self.progress as u16)
             .label(&self.format_time)
             .render(progress, buf);
-
+        }
         let mut show_list = String::new();
         for item in self.display_list.clone() {
             show_list.push_str(format!("{}\r\n", item).as_str())

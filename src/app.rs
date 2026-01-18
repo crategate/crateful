@@ -114,7 +114,7 @@ impl Default for App {
             visual_action_indicator: None,
             length: Duration::new(0, 0),
             format_time: String::new(),
-            progress: 0.0,
+            progress: 1.0,
             music_player: Arc::new(Mutex::new(sink)),
             stream,
             volume: 1.0,
