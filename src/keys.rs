@@ -115,7 +115,19 @@ impl App {
     /// Handles the tick event of the terminal.
     /// The tick event is where you can update the state of your application with any logic that
     /// needs to be updated at a fixed frame rate. E.g. polling a server, updating an animation.
-    pub fn tick(&self) {}
+    pub fn tick(&mut self) {
+        let point = self.music_player.lock().unwrap().get_pos().as_secs() as f64;
+        let percent = (point / self.length.as_secs() as f64) * 100.0;
+        // self.progress = percent as u16;
+        self.progress = percent;
+        self.format_time = format!(
+            "{}:{:0>2} out of {}:{:0>2}",
+            (point as u64 / 60),
+            (point as u64 % 60),
+            self.length.as_secs() / 60,
+            self.length.as_secs() % 60
+        );
+    }
 
     /// Set running to false to quit the application.
     pub fn quit(&mut self) {
