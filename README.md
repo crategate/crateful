@@ -30,6 +30,8 @@ Press escape to exit Crateful.
 ## Installation
 You can <a href="https://ruffolo.pro">download & run the Crateful binary from my website</a>, without having to worry about Rust or Git. Linux (& Mac) users: just run the command "chmod +x crateful" (or "chmod +x crateful-mac"). Then "./crateful" ("./crateful-mac").
 
+
+### Developer Installation
 Clone this repository. You also need to <a href="https://doc.rust-lang.org/cargo/getting-started/installation.html">install Rust & Cargo</a>. Run Cargo build --release to build the released version. In the project folder, the file /target/release/crateful can be moved & ran wherever you like. (just use the command "./crateful" to run it if you're in that directory)
 
 If you're on <b>Linux</b> make this file, "Crateful.desktop" in ~/.local/share/applications. Then you can launch the app with rofi. 
