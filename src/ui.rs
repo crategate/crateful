@@ -18,8 +18,8 @@ impl Widget for &App {
     fn render(self, area: Rect, buf: &mut Buffer) {
         let vertical = Layout::vertical([
             Constraint::Percentage(15),
-            Constraint::Percentage(5),
-            Constraint::Percentage(50),
+            Constraint::Percentage(3),
+            Constraint::Percentage(52),
             Constraint::Percentage(30),
         ]);
         let [playing, progress, list, controls] = vertical.areas(area);
