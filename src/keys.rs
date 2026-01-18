@@ -1,4 +1,4 @@
-use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
+use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use rodio::{Decoder, Source};
 use std::ffi::OsStr;
 use std::fs;
@@ -36,64 +36,78 @@ impl<P: AsRef<Path>> FileExtension for P {
 impl App {
     /// Handles the key events and updates the state of [`App`].
     pub fn handle_key_events(&mut self, key_event: KeyEvent) -> color_eyre::Result<()> {
-        match self.pause_mode {
-            PauseMode::SaveSelect(_path) => match key_event.code {
-                KeyCode::Up | KeyCode::Char('k') => self.explorer.handle(Input::Up).unwrap(),
-                KeyCode::Down | KeyCode::Char('j') => self.explorer.handle(Input::Down).unwrap(),
-                KeyCode::Left | KeyCode::Char('h') => self.explorer.handle(Input::Left).unwrap(),
-                KeyCode::Right | KeyCode::Char('l') => self.explorer.handle(Input::Right).unwrap(),
-                KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
-                KeyCode::Enter => self.events.send(AppEvent::Select),
-                _ => {}
-            },
-            PauseMode::MainMenu => match key_event.code {
-                KeyCode::Char(' ') => self.events.send(AppEvent::Pause),
-                KeyCode::Enter => self.events.send(AppEvent::SetPauseMode),
-                KeyCode::Up | KeyCode::Char('k') => self.events.send(AppEvent::Up),
-                KeyCode::Down | KeyCode::Char('j') => self.events.send(AppEvent::Down),
-                KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
-                _ => {}
-            },
-            PauseMode::IncomingSelect => match key_event.code {
-                KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
-                KeyCode::Up | KeyCode::Char('k') => self.explorer.handle(Input::Up).unwrap(),
-                KeyCode::Down | KeyCode::Char('j') => self.explorer.handle(Input::Down).unwrap(),
-                KeyCode::Left | KeyCode::Char('h') => self.explorer.handle(Input::Left).unwrap(),
-                KeyCode::Right | KeyCode::Char('l') => self.explorer.handle(Input::Right).unwrap(),
-                KeyCode::Enter => self.events.send(AppEvent::Select),
-                _ => {}
-            },
-            PauseMode::NotPaused => match key_event.code {
-                KeyCode::Char('1') => self.events.send(AppEvent::Seek(1)),
-                KeyCode::Char('2') => self.events.send(AppEvent::Seek(2)),
-                KeyCode::Char('3') => self.events.send(AppEvent::Seek(3)),
-                KeyCode::Char('4') => self.events.send(AppEvent::Seek(4)),
-                KeyCode::Char('5') => self.events.send(AppEvent::Seek(5)),
-                KeyCode::Char('6') => self.events.send(AppEvent::Seek(6)),
-                KeyCode::Char('7') => self.events.send(AppEvent::Seek(7)),
-                KeyCode::Char('8') => self.events.send(AppEvent::Seek(8)),
-                KeyCode::Char('9') => self.events.send(AppEvent::Seek(9)),
+        if key_event.kind == KeyEventKind::Press {
+            match self.pause_mode {
+                PauseMode::SaveSelect(_path) => match key_event.code {
+                    KeyCode::Up | KeyCode::Char('k') => self.explorer.handle(Input::Up).unwrap(),
+                    KeyCode::Down | KeyCode::Char('j') => {
+                        self.explorer.handle(Input::Down).unwrap()
+                    }
+                    KeyCode::Left | KeyCode::Char('h') => {
+                        self.explorer.handle(Input::Left).unwrap()
+                    }
+                    KeyCode::Right | KeyCode::Char('l') => {
+                        self.explorer.handle(Input::Right).unwrap()
+                    }
+                    KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
+                    KeyCode::Enter => self.events.send(AppEvent::Select),
+                    _ => {}
+                },
+                PauseMode::MainMenu => match key_event.code {
+                    KeyCode::Char(' ') => self.events.send(AppEvent::Pause),
+                    KeyCode::Enter => self.events.send(AppEvent::SetPauseMode),
+                    KeyCode::Up | KeyCode::Char('k') => self.events.send(AppEvent::Up),
+                    KeyCode::Down | KeyCode::Char('j') => self.events.send(AppEvent::Down),
+                    KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
+                    _ => {}
+                },
+                PauseMode::IncomingSelect => match key_event.code {
+                    KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
+                    KeyCode::Up | KeyCode::Char('k') => self.explorer.handle(Input::Up).unwrap(),
+                    KeyCode::Down | KeyCode::Char('j') => {
+                        self.explorer.handle(Input::Down).unwrap()
+                    }
+                    KeyCode::Left | KeyCode::Char('h') => {
+                        self.explorer.handle(Input::Left).unwrap()
+                    }
+                    KeyCode::Right | KeyCode::Char('l') => {
+                        self.explorer.handle(Input::Right).unwrap()
+                    }
+                    KeyCode::Enter => self.events.send(AppEvent::Select),
+                    _ => {}
+                },
+                PauseMode::NotPaused => match key_event.code {
+                    KeyCode::Char('1') => self.events.send(AppEvent::Seek(1)),
+                    KeyCode::Char('2') => self.events.send(AppEvent::Seek(2)),
+                    KeyCode::Char('3') => self.events.send(AppEvent::Seek(3)),
+                    KeyCode::Char('4') => self.events.send(AppEvent::Seek(4)),
+                    KeyCode::Char('5') => self.events.send(AppEvent::Seek(5)),
+                    KeyCode::Char('6') => self.events.send(AppEvent::Seek(6)),
+                    KeyCode::Char('7') => self.events.send(AppEvent::Seek(7)),
+                    KeyCode::Char('8') => self.events.send(AppEvent::Seek(8)),
+                    KeyCode::Char('9') => self.events.send(AppEvent::Seek(9)),
 
-                KeyCode::Char('h') | KeyCode::Left => self.events.send(AppEvent::SkipBack),
-                KeyCode::Char('l') | KeyCode::Right => self.events.send(AppEvent::SkipForward),
+                    KeyCode::Char('h') | KeyCode::Left => self.events.send(AppEvent::SkipBack),
+                    KeyCode::Char('l') | KeyCode::Right => self.events.send(AppEvent::SkipForward),
 
-                KeyCode::Char('a') => self.events.send(AppEvent::SaveTrack(A)),
-                KeyCode::Char('d') => self.events.send(AppEvent::SaveTrack(D)),
-                KeyCode::Char('g') => self.events.send(AppEvent::SaveTrack(G)),
-                KeyCode::Backspace => self.events.send(AppEvent::DeleteTrack),
-                KeyCode::Char(' ') => self.events.send(AppEvent::Pause),
-                KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
-                KeyCode::Char('c' | 'C') if key_event.modifiers == KeyModifiers::CONTROL => {
-                    self.events.send(AppEvent::Quit)
-                }
-                _ => {}
-            },
-            PauseMode::SelectError => match key_event.code {
-                KeyCode::Char(' ') | KeyCode::Esc | KeyCode::Enter => {
-                    self.events.send(AppEvent::AcceptError)
-                }
-                _ => {}
-            },
+                    KeyCode::Char('a') => self.events.send(AppEvent::SaveTrack(A)),
+                    KeyCode::Char('d') => self.events.send(AppEvent::SaveTrack(D)),
+                    KeyCode::Char('g') => self.events.send(AppEvent::SaveTrack(G)),
+                    KeyCode::Backspace => self.events.send(AppEvent::DeleteTrack),
+                    KeyCode::Char(' ') => self.events.send(AppEvent::Pause),
+                    KeyCode::Esc | KeyCode::Char('q') => self.events.send(AppEvent::Quit),
+                    KeyCode::Char('c' | 'C') if key_event.modifiers == KeyModifiers::CONTROL => {
+                        self.events.send(AppEvent::Quit)
+                    }
+                    _ => {}
+                },
+                PauseMode::SelectError => match key_event.code {
+                    KeyCode::Char(' ') | KeyCode::Esc | KeyCode::Enter => {
+                        self.events.send(AppEvent::AcceptError)
+                    }
+                    _ => {}
+                },
+            }
         }
         Ok(())
     }
