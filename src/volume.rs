@@ -4,7 +4,7 @@ use directories::ProjectDirs;
 use ratatui::{
     buffer::Buffer,
     layout::{Constraint, Direction, Layout, Offset, Rect},
-    style::{Style, Stylize},
+    style::{Color, Style, Stylize},
     text::{Line, Text},
     widgets::{
         Bar, BarChart, BarGroup, Block, Borders, Clear, List, ListState, Paragraph,
@@ -39,28 +39,36 @@ impl Widget for Popup {
 
         let vol_bar = Bar::default().value(20 as u64).label(Line::from("Volume"));
 
+        let redline;
+        if (self.vol > 1.02) {
+            redline = Style::new().fg(Color::Red);
+        } else if self.vol > 0.9 {
+            redline = Style::new().fg(Color::Yellow);
+        } else {
+            redline = Style::new().fg(Color::Green);
+        }
         BarChart::default()
             .direction(Direction::Vertical)
-            .data(&[("", 40)])
-            .max(100)
+            .data(&[("", (self.vol * 100.0) as u64)])
+            .max(115)
+            .bar_style(redline)
             .bar_width(5)
             .block(Block::new().title("volume"))
             .render(bar_area[0], buf);
 
-        let select_error_area_big = Layout::vertical([Constraint::Percentage(55)]).margin(9);
+        let select_error_area_big = Layout::vertical([Constraint::Percentage(5)]).margin(9);
         let select_error_rect: [Rect; 1] = select_error_area_big.areas(area);
         let select_error_area = Layout::default()
             .direction(ratatui::layout::Direction::Horizontal)
-            .constraints([Constraint::Percentage(63)])
+            .constraints([Constraint::Percentage(33)])
             .split(select_error_rect[0]);
-        let error_para = Paragraph::new(
-            "You must select a FOLDER with enter, \r\nDon't select a file!\r\n\r\n\r\nPress esc or space to try again",
-        );
         let error_block = Block::new()
-            .title("Warning: Over-Driving track, may distort")
-            .borders(Borders::ALL);
+            .title("Warning: ")
+            .borders(Borders::ALL)
+            .border_style(Color::Red);
 
-        if self.vol > 1.0 {
+        let error_para = Paragraph::new("Over driving track \r\nmay distort audio");
+        if self.vol > 1.02 {
             Clear.render(select_error_area[0], buf);
             error_block.render(select_error_area[0], buf);
             error_para.render(select_error_area[0].offset(Offset { x: 1, y: 1 }), buf);
