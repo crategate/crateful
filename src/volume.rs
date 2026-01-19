@@ -1,17 +1,10 @@
 use crate::App;
-use crate::app::PauseMode;
-use directories::ProjectDirs;
 use ratatui::{
     buffer::Buffer,
     layout::{Constraint, Direction, Layout, Offset, Rect},
-    style::{Color, Style, Stylize},
-    text::{Line, Text},
-    widgets::{
-        Bar, BarChart, BarGroup, Block, Borders, Clear, List, ListState, Paragraph,
-        StatefulWidgetRef, Widget,
-    },
+    style::{Color, Style},
+    widgets::{BarChart, Block, Borders, Clear, Paragraph, Widget},
 };
-use std::path::PathBuf;
 
 use derive_setters::Setters;
 #[derive(Debug, Default, Setters)]
@@ -26,7 +19,7 @@ impl Popup {
     }
 }
 impl Widget for Popup {
-    fn render(mut self, area: Rect, buf: &mut Buffer) {
+    fn render(self, area: Rect, buf: &mut Buffer) {
         let pop_per = Layout::horizontal([Constraint::Percentage(8)]).margin(5);
         let new_pop: [Rect; 1] = pop_per.areas(area);
 
@@ -37,10 +30,8 @@ impl Widget for Popup {
             .split(new_pop[0]);
         Clear.render(new_pop[0], buf);
 
-        let vol_bar = Bar::default().value(20 as u64).label(Line::from("Volume"));
-
         let redline;
-        if (self.vol > 1.02) {
+        if self.vol > 1.02 {
             redline = Style::new().fg(Color::Red);
         } else if self.vol > 0.9 {
             redline = Style::new().fg(Color::Yellow);
