@@ -8,9 +8,11 @@ use ratatui::{
 };
 
 use crate::app::App;
+use crate::app::Indicator;
 use crate::app::PauseMode;
 use crate::instructs;
 use crate::pause;
+use crate::volume;
 
 impl Widget for &App {
     fn render(self, area: Rect, buf: &mut Buffer) {
@@ -65,12 +67,12 @@ impl Widget for &App {
         let progressblock = Block::new().fg(Color::Yellow);
 
         if self.track_list.len() > 0 {
-        Gauge::default()
-            .block(progressblock)
-            .gauge_style(Color::Yellow)
-            .percent(self.progress as u16)
-            .label(&self.format_time)
-            .render(progress, buf);
+            Gauge::default()
+                .block(progressblock)
+                .gauge_style(Color::Yellow)
+                .percent(self.progress as u16)
+                .label(&self.format_time)
+                .render(progress, buf);
         }
         let mut show_list = String::new();
         for item in self.display_list.clone() {
@@ -90,7 +92,6 @@ impl Widget for &App {
         instructs::Instructs::display(bottom_section, controls, buf);
 
         let popup = pause::Popup::default()
-            .content("Hello world!")
             .style(Style::new().yellow())
             .title("Pause Menu... Press Space to Resume Sorting")
             .title_style(Style::new().white().bold())
@@ -98,6 +99,11 @@ impl Widget for &App {
 
         if self.paused {
             popup.show(area, self, buf)
+        };
+
+        let vol = volume::Popup::default();
+        if self.visual_action_indicator == Some(Indicator::Volume) {
+            vol.show(area, self, buf)
         };
 
         match self.pause_mode {
