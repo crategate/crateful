@@ -136,19 +136,18 @@ impl App {
         }
     }
 
-    pub fn reset_indicator(&mut self) {
+    pub async fn reset_indicator(&mut self, timout: u64) {
         let (tx, rx): (
             mpsc::Sender<Option<Indicator>>,
             mpsc::Receiver<Option<Indicator>>,
         ) = mpsc::channel();
         let handle = thread::spawn(async move || {
-            thread::sleep(Duration::from_millis(300));
+            thread::sleep(Duration::from_millis(timout));
             let no_indicator: Option<Indicator> = None;
-            //    tx.send(no_indicator).unwrap();
-            panic!("");
+            tx.send(no_indicator).unwrap();
         });
-        handle.join().unwrap();
-        // self.visual_action_indicator = rx.try_recv().unwrap();
+        handle.join().unwrap().await;
+        self.visual_action_indicator = rx.try_recv().unwrap();
     }
 
     /// Set running to false to quit the application.
@@ -252,7 +251,6 @@ impl App {
             return;
         }
         self.visual_action_indicator = Some(Indicator::Scrubbed);
-        self.reset_indicator();
         let percent = ((pos as f64 / 10.0) * self.length.as_secs() as f64).round();
         self.music_player.lock().unwrap().pause();
         self.music_player.lock().unwrap().clear();
