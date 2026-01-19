@@ -27,6 +27,11 @@ pub enum WhichPath {
     PathD,
     PathG,
 }
+#[derive(Clone, Debug)]
+pub enum Amp {
+    Up,
+    Down,
+}
 /// You can extend this enum with your own custom events.
 #[derive(Clone, Debug)]
 pub enum AppEvent {
@@ -34,6 +39,7 @@ pub enum AppEvent {
     SkipBack,
     SkipForward,
     SaveTrack(SavePath),
+    Volume(Amp),
     DeleteTrack,
     Pause,
     SetPauseMode,

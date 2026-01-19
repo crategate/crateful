@@ -15,6 +15,7 @@ use crate::app::PauseMode;
 use crate::app::SavePath;
 use crate::app::SavePath::{A, D, G};
 use crate::env::Envs;
+use crate::event::Amp;
 use crate::event::AppEvent;
 use ratatui_explorer::Input;
 
@@ -86,10 +87,12 @@ impl App {
                     KeyCode::Char('7') => self.events.send(AppEvent::Seek(7)),
                     KeyCode::Char('8') => self.events.send(AppEvent::Seek(8)),
                     KeyCode::Char('9') => self.events.send(AppEvent::Seek(9)),
-
                     KeyCode::Char('h') | KeyCode::Left => self.events.send(AppEvent::SkipBack),
                     KeyCode::Char('l') | KeyCode::Right => self.events.send(AppEvent::SkipForward),
-
+                    KeyCode::Char('j') | KeyCode::Down => {
+                        self.events.send(AppEvent::Volume(Amp::Down))
+                    }
+                    KeyCode::Char('k') | KeyCode::Up => self.events.send(AppEvent::Volume(Amp::Up)),
                     KeyCode::Char('a') => self.events.send(AppEvent::SaveTrack(A)),
                     KeyCode::Char('d') => self.events.send(AppEvent::SaveTrack(D)),
                     KeyCode::Char('g') => self.events.send(AppEvent::SaveTrack(G)),
@@ -117,17 +120,18 @@ impl App {
     /// needs to be updated at a fixed frame rate. E.g. polling a server, updating an animation.
     pub fn tick(&mut self) {
         if self.incoming.exists() {
-        let point = self.music_player.lock().unwrap().get_pos().as_secs() as f64;
-        let percent = (point / self.length.as_secs() as f64) * 100.0;
-        // self.progress = percent as u16;
-        self.progress = percent;
-        self.format_time = format!(
-            "{}:{:0>2} out of {}:{:0>2}",
-            (point as u64 / 60),
-            (point as u64 % 60),
-            self.length.as_secs() / 60,
-            self.length.as_secs() % 60
-        ) }
+            let point = self.music_player.lock().unwrap().get_pos().as_secs() as f64;
+            let percent = (point / self.length.as_secs() as f64) * 100.0;
+            // self.progress = percent as u16;
+            self.progress = percent;
+            self.format_time = format!(
+                "{}:{:0>2} out of {}:{:0>2}",
+                (point as u64 / 60),
+                (point as u64 % 60),
+                self.length.as_secs() / 60,
+                self.length.as_secs() % 60
+            )
+        }
     }
 
     /// Set running to false to quit the application.
@@ -189,6 +193,22 @@ impl App {
         self.music_player.lock().unwrap().play();
         if self.track_list.len() > 0 {
             self.playing = self.track_list.get(self.index).unwrap().to_path_buf();
+        }
+    }
+
+    pub fn volume(&mut self, amp: Amp) {
+        let vol_now = self.music_player.lock().unwrap().volume();
+        match amp {
+            Amp::Up => {
+                if vol_now < 1.15 {
+                    self.music_player.lock().unwrap().set_volume(vol_now + 0.05)
+                }
+            }
+            Amp::Down => {
+                if vol_now > 0.15 {
+                    self.music_player.lock().unwrap().set_volume(vol_now - 0.04)
+                }
+            }
         }
     }
 

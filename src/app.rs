@@ -144,11 +144,11 @@ impl App {
                 Event::App(app_event) => match app_event {
                     AppEvent::Seek(num) => self.seek(num),
                     AppEvent::SkipBack => self.skip_back(),
-
                     AppEvent::SkipForward => self.skip_forward(),
                     AppEvent::SaveTrack(which) => self.save_track(which),
                     AppEvent::DeleteTrack => self.delete_track(),
                     AppEvent::Pause => self.pause(),
+                    AppEvent::Volume(amp) => self.volume(amp),
                     AppEvent::SetPauseMode => self.set_pause_mode(),
                     AppEvent::Quit => self.quit(),
                     AppEvent::Up => self.up(),
