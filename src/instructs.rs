@@ -53,6 +53,7 @@ impl Widget for Instructs {
                 Indicator::SavedD => self.offset_indicator[1] = -1,
                 Indicator::SavedG => self.offset_indicator[2] = -1,
                 Indicator::Scrubbed => self.offset_indicator[3] = -1,
+                Indicator::Volume => (),
                 Indicator::Deleted => self.offset_indicator[4] = -1,
             },
             None => (),

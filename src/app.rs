@@ -48,6 +48,7 @@ pub enum Indicator {
     SavedD,
     SavedG,
     Scrubbed,
+    Volume,
     Deleted,
 }
 #[derive(Clone, Default, Debug, PartialEq)]

@@ -198,6 +198,7 @@ impl App {
 
     pub fn volume(&mut self, amp: Amp) {
         let vol_now = self.music_player.lock().unwrap().volume();
+        self.visual_action_indicator = Some(Indicator::Volume);
         match amp {
             Amp::Up => {
                 if vol_now < 1.15 {
