@@ -246,7 +246,8 @@ impl App {
         }
         self.visual_action_indicator = Some(Indicator::Scrubbed);
         let current_pos = self.music_player.lock().unwrap().get_pos();
-        self.music_player
+        let _ = self
+            .music_player
             .lock()
             .unwrap()
             .try_seek(current_pos.saturating_add(Duration::from_secs(2)));

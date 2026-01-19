@@ -1,13 +1,11 @@
 use std::ffi::OsStr;
 
-use color_eyre::owo_colors::{OwoColorize, colors::Yellow};
 use ratatui::{
     buffer::Buffer,
     layout::{Alignment, Constraint, Layout, Offset, Rect},
     style::{Color, Style, Stylize},
     widgets::{Block, BorderType, Gauge, Padding, Paragraph, Widget, Wrap},
 };
-use roundable::{Roundable, SECOND, Tie};
 
 use crate::app::App;
 use crate::app::PauseMode;

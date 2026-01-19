@@ -1,6 +1,5 @@
 use crate::app::{App, Indicator};
 use std::{path::PathBuf, vec};
-use tokio::time::{Duration, sleep};
 
 use ratatui::{
     layout::{Alignment, Constraint, Layout, Offset, Rect},
