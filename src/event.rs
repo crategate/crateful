@@ -95,10 +95,10 @@ impl EventHandler {
         let _ = self.sender.send(Event::App(app_event));
         let timeout: u64;
         match app_event {
-            AppEvent::Volume(_amp) => timeout = 2000,
-            AppEvent::Seek(_num) => timeout = 400,
+            AppEvent::Volume(_amp) => timeout = 500,
+            AppEvent::Seek(_num) => timeout = 200,
             AppEvent::SkipBack | AppEvent::SkipForward => timeout = 200,
-            AppEvent::DeleteTrack => timeout = 700,
+            AppEvent::DeleteTrack => timeout = 400,
             _ => timeout = 300,
         }
         self.sender
