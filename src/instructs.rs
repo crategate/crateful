@@ -1,6 +1,5 @@
 use crate::app::{App, Indicator};
 use std::{path::PathBuf, vec};
-use tokio::time::{Duration, sleep};
 
 use ratatui::{
     layout::{Alignment, Constraint, Layout, Offset, Rect},
@@ -92,7 +91,8 @@ impl Widget for Instructs {
         .block(save_a_block)
         .centered()
         .fg(Color::White)
-        .bg(Color::LightBlue)
+        .bg(Color::Reset)
+        .bg(Color::Indexed(14))
         .wrap(Wrap { trim: true })
         .render(
             save_a.offset(Offset {
@@ -174,7 +174,7 @@ impl Widget for Instructs {
             .title_bottom("how to scrub")
             .title_alignment(Alignment::Center);
         Paragraph::new(format!(
-            "use numbers\r\n1-9 to scrub\r\nthrough the track\r\n \r\nspacebar\r\nfor pause\r\nmenu"
+            "use numbers\r\n1-9 to seek\r\nthrough the track\r\n \r\narrows (or j & l)\r\nfor 2sec\r\nscrubs"
         ))
         .block(scrub_block)
         .centered()

@@ -17,17 +17,25 @@ You can also assign folders to the 'd' and 'g' keys. So one folder for metal tra
 Pressing spacebar will bring up the pause menu, where you can re-assign all these folders.
 
 ## Scrubbing & Deleting
-Use numbers 1-9 to scrub through the song, 10% - 90% through the track.
+Use numbers 1-9 to seek through the song, 10% - 90% through the track.
 
-Press backspace to delete a track. The next track starts immediately. There's no undoing a deletion.
+The left/right arrow keys (or h & l) will scrub forwards and back by 2 seconds.
+
+Press backspace to delete a track. The next track starts immediately. There's no undoing a deletion!
 
 Press escape to exit Crateful.
 
 <img width="2654" height="1646" alt="cute-tui" src="https://github.com/user-attachments/assets/08ce79a9-8802-4983-a721-97dfc616bf56" />
 
 ## Installation
-You can <a href="https://ruffolo.pro">download & run the Crateful binary from my website</a>, without having to worry about Rust or Git.
+You can <a href="https://ruffolo.pro">download & run the Crateful binary from my website</a>, without having to worry about Rust or Git. 
 
+Using your terminal, navigate to your downloads folder. (use the command "cd Downloads")
+
+Linux (& Mac) users: run the command "chmod +x crateful" (or "chmod +x crateful-mac"). Then "./crateful" ("./crateful-mac") will start the TUI.
+
+
+### Developer Installation
 Clone this repository. You also need to <a href="https://doc.rust-lang.org/cargo/getting-started/installation.html">install Rust & Cargo</a>. Run Cargo build --release to build the released version. In the project folder, the file /target/release/crateful can be moved & ran wherever you like. (just use the command "./crateful" to run it if you're in that directory)
 
 If you're on <b>Linux</b> make this file, "Crateful.desktop" in ~/.local/share/applications. Then you can launch the app with rofi. 
