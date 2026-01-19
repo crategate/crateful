@@ -6,6 +6,7 @@ use std::fs::File;
 use std::io::BufReader;
 use std::io::Cursor;
 use std::path::Path;
+use std::thread;
 use std::time::Duration;
 use walkdir::WalkDir;
 
@@ -18,6 +19,7 @@ use crate::env::Envs;
 use crate::event::Amp;
 use crate::event::AppEvent;
 use ratatui_explorer::Input;
+use std::sync::mpsc;
 
 pub trait FileExtension {
     fn has_extension<S: AsRef<str>>(&self, extensions: &[S]) -> bool;
@@ -132,6 +134,20 @@ impl App {
                 self.length.as_secs() % 60
             )
         }
+    }
+
+    pub async fn reset_indicator(&mut self, timout: u64) {
+        let (tx, rx): (
+            mpsc::Sender<Option<Indicator>>,
+            mpsc::Receiver<Option<Indicator>>,
+        ) = mpsc::channel();
+        let handle = thread::spawn(async move || {
+            thread::sleep(Duration::from_millis(timout));
+            let no_indicator: Option<Indicator> = None;
+            tx.send(no_indicator).unwrap();
+        });
+        handle.join().unwrap().await;
+        self.visual_action_indicator = rx.try_recv().unwrap();
     }
 
     /// Set running to false to quit the application.

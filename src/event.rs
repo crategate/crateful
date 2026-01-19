@@ -27,19 +27,20 @@ pub enum WhichPath {
     PathD,
     PathG,
 }
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum Amp {
     Up,
     Down,
 }
 /// You can extend this enum with your own custom events.
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum AppEvent {
     Seek(u64),
     SkipBack,
     SkipForward,
     SaveTrack(SavePath),
     Volume(Amp),
+    ResetIndicator(u64),
     DeleteTrack,
     Pause,
     SetPauseMode,
@@ -92,6 +93,16 @@ impl EventHandler {
         // Ignore the result as the reciever cannot be dropped while this struct still has a
         // reference to it
         let _ = self.sender.send(Event::App(app_event));
+        let timeout: u64;
+        match app_event {
+            AppEvent::Volume(_amp) => timeout = 2000,
+            AppEvent::Seek(_num) => timeout = 400,
+            AppEvent::SkipBack | AppEvent::SkipForward => timeout = 200,
+            AppEvent::DeleteTrack => timeout = 700,
+            _ => timeout = 300,
+        }
+        self.sender
+            .send(Event::App(AppEvent::ResetIndicator(timeout)));
     }
 }
 

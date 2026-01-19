@@ -147,6 +147,7 @@ impl App {
                     AppEvent::SkipBack => self.skip_back(),
                     AppEvent::SkipForward => self.skip_forward(),
                     AppEvent::SaveTrack(which) => self.save_track(which),
+                    AppEvent::ResetIndicator(timeout) => self.reset_indicator(timeout).await,
                     AppEvent::DeleteTrack => self.delete_track(),
                     AppEvent::Pause => self.pause(),
                     AppEvent::Volume(amp) => self.volume(amp),
