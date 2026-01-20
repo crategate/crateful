@@ -27,6 +27,9 @@ Press escape to exit Crateful.
 
 <img width="2654" height="1646" alt="cute-tui" src="https://github.com/user-attachments/assets/08ce79a9-8802-4983-a721-97dfc616bf56" />
 
+## Volume
+Adjust the volume with the up/down arrow keys (or j for up, k for down).
+
 ## Installation
 You can <a href="https://ruffolo.pro">download & run the Crateful binary from my website</a>, without having to worry about Rust or Git. 
 

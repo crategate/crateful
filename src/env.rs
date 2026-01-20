@@ -87,20 +87,33 @@ impl Envs {
         }
     }
     pub fn create_config() {
-        fs::create_dir(
-            dirs::config_dir()
-                .and_then(|a| Some(a.join("crateful")))
-                .unwrap()
-                .as_path(),
-        )
-        .unwrap();
-        File::create(
-            dirs::config_dir()
-                .and_then(|a| Some(a.join("crateful/.env")))
-                .unwrap()
-                .as_path(),
-        )
-        .unwrap();
+        if !dirs::config_dir()
+            .and_then(|a| Some(a.join("crateful")))
+            .unwrap()
+            .is_dir()
+        {
+            fs::create_dir(
+                dirs::config_dir()
+                    .and_then(|a| Some(a.join("crateful")))
+                    .unwrap()
+                    .as_path(),
+            )
+            .unwrap();
+        }
+        if !dirs::config_dir()
+            .and_then(|a| Some(a.join("crateful/.env")))
+            .unwrap()
+            .as_path()
+            .exists()
+        {
+            File::create(
+                dirs::config_dir()
+                    .and_then(|a| Some(a.join("crateful/.env")))
+                    .unwrap()
+                    .as_path(),
+            )
+            .unwrap();
+        }
         // maybe write empty env variables to this config file?
         if let Some(base_dirs) = BaseDirs::new() {
             let _home_path = base_dirs.home_dir();
