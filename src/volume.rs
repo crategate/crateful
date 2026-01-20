@@ -47,11 +47,11 @@ impl Widget for Popup {
             .block(Block::new().title("volume"))
             .render(bar_area[0], buf);
 
-        let select_error_area_big = Layout::vertical([Constraint::Percentage(5)]).margin(9);
+        let select_error_area_big = Layout::vertical([Constraint::Percentage(7)]).margin(9);
         let select_error_rect: [Rect; 1] = select_error_area_big.areas(area);
         let select_error_area = Layout::default()
             .direction(ratatui::layout::Direction::Horizontal)
-            .constraints([Constraint::Percentage(33)])
+            .constraints([Constraint::Percentage(23)])
             .split(select_error_rect[0]);
         let error_block = Block::new()
             .title("Warning: ")

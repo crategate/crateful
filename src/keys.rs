@@ -8,6 +8,7 @@ use std::io::Cursor;
 use std::path::Path;
 use std::thread;
 use std::time::Duration;
+use tokio::time::sleep;
 use walkdir::WalkDir;
 
 use crate::App;
@@ -142,7 +143,7 @@ impl App {
             mpsc::Receiver<Option<Indicator>>,
         ) = mpsc::channel();
         let handle = thread::spawn(async move || {
-            thread::sleep(Duration::from_millis(timout));
+            sleep(Duration::from_millis(timout)).await;
             let no_indicator: Option<Indicator> = None;
             tx.send(no_indicator).unwrap();
         });
