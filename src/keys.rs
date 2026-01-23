@@ -1,5 +1,7 @@
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
-use rodio::{Decoder, Source};
+use rodio::{Decoder, OutputStream, Sink};
+use rodio::source::{SineWave, Source};
+
 use std::ffi::OsStr;
 use std::fs;
 use std::fs::File;
@@ -218,12 +220,14 @@ impl App {
         match amp {
             Amp::Up => {
                 if vol_now < 1.15 {
-                    self.music_player.lock().unwrap().set_volume(vol_now + 0.05)
+                    self.music_player.lock().unwrap().set_volume(vol_now + 0.05);
+                    self.volume += 0.05;
                 }
             }
             Amp::Down => {
                 if vol_now > 0.15 {
-                    self.music_player.lock().unwrap().set_volume(vol_now - 0.04)
+                    self.music_player.lock().unwrap().set_volume(vol_now - 0.04);
+                    self.volume -= 0.04;
                 }
             }
         }
@@ -250,6 +254,7 @@ impl App {
         if self.paused {
             return;
         }
+
         self.visual_action_indicator = Some(Indicator::Scrubbed);
         let percent = ((pos as f64 / 10.0) * self.length.as_secs() as f64).round();
         self.music_player.lock().unwrap().pause();

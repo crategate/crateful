@@ -29,7 +29,7 @@ impl Widget for &App {
                 "Sorting Tracks in folder \r\n{}",
                 self.incoming.to_str().unwrap()
             ))
-            .title_style(Style::new().gray().bold())
+            .title_style(Style::new().white().bold())
             .border_type(BorderType::Rounded);
         let pop_per = Layout::vertical([Constraint::Percentage(80)]).margin(5);
         let new_pop: [Rect; 1] = pop_per.areas(area);
@@ -80,8 +80,8 @@ impl Widget for &App {
         }
 
         Paragraph::new(show_list)
-            .fg(Color::LightBlue)
-            .bg(Color::Black)
+            .fg(Color::Gray)
+            .bg(Color::DarkGray)
             .block(block)
             .alignment(Alignment::Center)
             .render(list, buf);
