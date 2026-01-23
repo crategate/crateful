@@ -175,7 +175,7 @@ impl Widget for Instructs {
             .title_bottom("how to scrub")
             .title_alignment(Alignment::Center);
         Paragraph::new(format!(
-            "use numbers\r\n1-9 to seek\r\nthrough the track\r\n \r\narrows (or j & l)\r\nfor 2sec\r\nscrubs"
+            "use numbers\r\n1-9 to seek\r\nthrough the track\r\n \r\narrows (or h & l)\r\nfor 2sec\r\nscrubs"
         ))
         .block(scrub_block)
         .centered()
