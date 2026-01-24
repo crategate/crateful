@@ -126,7 +126,7 @@ impl App {
         if self.incoming.exists() {
             let point = self.music_player.lock().unwrap().get_pos().as_secs() as f64;
             let percent = (point / self.length.as_secs() as f64) * 100.0;
-            // self.progress = percent as u16;
+            if 100.0 > percent && percent > 0.0 {
             self.progress = percent;
             self.format_time = format!(
                 "{}:{:0>2} out of {}:{:0>2}",
@@ -135,6 +135,7 @@ impl App {
                 self.length.as_secs() / 60,
                 self.length.as_secs() % 60
             )
+            }
         }
     }
 
@@ -253,8 +254,7 @@ impl App {
     pub fn seek(&mut self, pos: u64) {
         if self.paused {
             return;
-        }
-
+        } 
         self.visual_action_indicator = Some(Indicator::Scrubbed);
         let percent = ((pos as f64 / 10.0) * self.length.as_secs() as f64).round();
         self.music_player.lock().unwrap().pause();
