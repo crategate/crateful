@@ -145,13 +145,13 @@ impl App {
             mpsc::Sender<Option<Indicator>>,
             mpsc::Receiver<Option<Indicator>>,
         ) = mpsc::channel();
-        let handle: task::JoinHandle<()> = task::spawn_blocking(async move || {
+        let handle: task::JoinHandle<()> = task::spawn_blocking(move || {
             thread::sleep(Duration::from_millis(timout));
             let no_indicator: Option<Indicator> = None;
             tx.send(no_indicator).unwrap();
         });
-        handle.join().unwrap().await;
-        self.visual_action_indicator = rx.try_recv().unwrap();
+        //  handle.join().unwrap().await;
+        self.visual_action_indicator = rx.recv().unwrap();
     }
 
     /// Set running to false to quit the application.

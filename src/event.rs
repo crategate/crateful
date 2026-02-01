@@ -118,6 +118,7 @@ impl EventHandler {
             AppEvent::Seek(_num) => timeout = 200,
             AppEvent::SkipBack | AppEvent::SkipForward => timeout = 200,
             AppEvent::DeleteTrack => timeout = 400,
+            AppEvent::Down | AppEvent::Up => timeout = 0,
             _ => timeout = 300,
         }
         self.sender
