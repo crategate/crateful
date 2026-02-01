@@ -1,6 +1,6 @@
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
-use rodio::{Decoder, OutputStream, Sink};
 use rodio::source::{SineWave, Source};
+use rodio::{Decoder, OutputStream, Sink};
 
 use std::ffi::OsStr;
 use std::fs;
@@ -22,6 +22,7 @@ use crate::event::Amp;
 use crate::event::AppEvent;
 use ratatui_explorer::Input;
 use std::sync::mpsc;
+use tokio::task;
 
 pub trait FileExtension {
     fn has_extension<S: AsRef<str>>(&self, extensions: &[S]) -> bool;
@@ -127,14 +128,14 @@ impl App {
             let point = self.music_player.lock().unwrap().get_pos().as_secs() as f64;
             let percent = (point / self.length.as_secs() as f64) * 100.0;
             if 100.0 > percent && percent > 0.0 {
-            self.progress = percent;
-            self.format_time = format!(
-                "{}:{:0>2} out of {}:{:0>2}",
-                (point as u64 / 60),
-                (point as u64 % 60),
-                self.length.as_secs() / 60,
-                self.length.as_secs() % 60
-            )
+                self.progress = percent;
+                self.format_time = format!(
+                    "{}:{:0>2} out of {}:{:0>2}",
+                    (point as u64 / 60),
+                    (point as u64 % 60),
+                    self.length.as_secs() / 60,
+                    self.length.as_secs() % 60
+                )
             }
         }
     }
@@ -144,7 +145,7 @@ impl App {
             mpsc::Sender<Option<Indicator>>,
             mpsc::Receiver<Option<Indicator>>,
         ) = mpsc::channel();
-        let handle = thread::spawn(async move || {
+        let handle: task::JoinHandle<()> = task::spawn_blocking(async move || {
             thread::sleep(Duration::from_millis(timout));
             let no_indicator: Option<Indicator> = None;
             tx.send(no_indicator).unwrap();
@@ -254,7 +255,7 @@ impl App {
     pub fn seek(&mut self, pos: u64) {
         if self.paused {
             return;
-        } 
+        }
         self.visual_action_indicator = Some(Indicator::Scrubbed);
         let percent = ((pos as f64 / 10.0) * self.length.as_secs() as f64).round();
         self.music_player.lock().unwrap().pause();
