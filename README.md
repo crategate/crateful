@@ -25,7 +25,8 @@ Press backspace to delete a track. The next track starts immediately. There's no
 
 Press escape to exit Crateful.
 
-<img width="2654" height="1646" alt="cute-tui" src="https://github.com/user-attachments/assets/08ce79a9-8802-4983-a721-97dfc616bf56" />
+<img width="2654" height="1646" alt="cute-tui" src="https://github.com/user-attachments/assets/55d4cb74-4666-44d5-b9c6-c056a53eb8c2" />
+
 
 ## Volume
 Adjust the volume with the up/down arrow keys (or j for up, k for down).
