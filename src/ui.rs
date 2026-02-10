@@ -114,7 +114,7 @@ impl Widget for &App {
             PauseMode::SaveSelect(_save_path) => {
                 self.explorer
                     .widget()
-                    .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
+                    .render_ref(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
 
                 Paragraph::new(
                     "Pick a Folder to store saved tracks. \r\n Use arrow keys (or hjkl) to navigate the explorer. 
@@ -128,7 +128,7 @@ impl Widget for &App {
             PauseMode::IncomingSelect => {
                 self.explorer
                     .widget()
-                    .render(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
+                    .render_ref(inner_menu[2].offset(Offset { x: 0, y: 0 }), buf);
                 Paragraph::new(
                     "Select a folder to sort! \r\n\r\nUse arrow keys (or hjkl) \r\n to navigate the explorer. 
                          \r\nLeft (or h) goes to the parent directory.
