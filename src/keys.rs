@@ -21,7 +21,7 @@ use crate::env::Envs;
 use crate::event::Amp;
 use crate::event::AppEvent;
 use ratatui_explorer::Input;
-use std::sync::mpsc;
+use std::sync::{Arc, mpsc};
 use tokio::task;
 
 pub trait FileExtension {

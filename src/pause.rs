@@ -6,7 +6,7 @@ use ratatui::{
     layout::{Constraint, Layout, Offset, Rect},
     style::{Style, Stylize},
     text::{Line, Text},
-    widgets::{Block, Borders, Clear, List, ListState, Paragraph, StatefulWidgetRef, Widget},
+    widgets::{Block, Borders, Clear, List, ListState, Paragraph, Widget},
 };
 use std::path::PathBuf;
 
@@ -61,11 +61,7 @@ impl Widget for Popup<'_> {
             .block(Block::bordered().title("options (arrows/jk, Enter)"))
             .highlight_style(Style::new().light_green())
             .highlight_symbol(">>")
-            .render_ref(
-                inner_menu[0].offset(Offset { x: 0, y: 0 }),
-                buf,
-                &mut self.pause_menu,
-            );
+            .render(inner_menu[0].offset(Offset { x: 0, y: 0 }), buf);
 
         //Paragraph::new(home_test).render(inner_menu[1].offset(Offset { x: 4, y: 0 }), buf);
         if let Some(proj_dirs) = ProjectDirs::from("", "", "crateful") {

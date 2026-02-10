@@ -83,8 +83,8 @@ impl Default for App {
             Envs::read_env_var(String::from("SAVE_PATH_G")).unwrap_or_else(|_a| String::from(""));
 
         let explorer_theme = Theme::default()
-            .with_highlight_item_style(Style::default().fg(Color::Red))
-            .with_dir_style(Style::default().fg(Color::Cyan))
+            //   .with_highlight_item_style(Style::default().fg(Color::Red))
+            //  .with_dir_style(Style::default().fg(Color::Cyan))
             .with_highlight_symbol("> ".into());
 
         Self {
