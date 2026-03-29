@@ -6,13 +6,13 @@ This app streamlines the process.
 
 ## When First Opening Crateful
 
-You will be prompted to select the folder of music to sort. Read the instructions to navigate the file explorer (it's easy!). The first track will start playing immediately.
+You will be prompted to select a folder of music to sort. Read the instructions to navigate the file explorer. The first track will start playing immediately.
 
 Next, you need to asign where to save your "keepers". Press 'a' and you'll have another file explorer menu. 
 
 While a track is playing, pressing 'a' will now save that track to the folder selected. Next track starts right away (no backsies).
 
-You can also assign folders to the 'd' and 'g' keys. So one folder for metal tracks, one for jazz, one for EDM - however you want.
+You can also assign folders to the 'd' and 'g' keys. So one folder for metal tracks, one for jazz, one for EDM - however you like.
 
 Pressing spacebar will bring up the pause menu, where you can re-assign all these folders.
 
