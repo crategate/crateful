@@ -6,17 +6,13 @@ use ratatui::{
     style::{Color, Style, Stylize},
     widgets::{Block, BorderType, FrameExt, Gauge, Padding, Paragraph, Widget, WidgetRef, Wrap},
 };
-
-use ratatui_explorer::{FileExplorer, Theme};
-
-use crossterm::terminal;
+pub mod instructs;
+pub mod pause;
+pub mod volume;
 
 use crate::app::App;
 use crate::app::Indicator;
 use crate::app::PauseMode;
-use crate::instructs;
-use crate::pause;
-use crate::volume;
 
 impl Widget for &App {
     fn render(self, area: Rect, buf: &mut Buffer) {
@@ -34,6 +30,7 @@ impl Widget for &App {
                 self.incoming.to_str().unwrap()
             ))
             .title_style(Style::new().white().bold())
+            .title_bottom("Press b to browse SoulSeek")
             .border_type(BorderType::Rounded);
         let pop_per = Layout::vertical([Constraint::Percentage(80)]).margin(5);
         let new_pop: [Rect; 1] = pop_per.areas(area);

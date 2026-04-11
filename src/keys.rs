@@ -83,6 +83,7 @@ impl App {
                     _ => {}
                 },
                 PauseMode::NotPaused => match key_event.code {
+                    KeyCode::Char('b') => self.events.send(AppEvent::BrowseMode),
                     KeyCode::Char('1') => self.events.send(AppEvent::Seek(1)),
                     KeyCode::Char('2') => self.events.send(AppEvent::Seek(2)),
                     KeyCode::Char('3') => self.events.send(AppEvent::Seek(3)),

@@ -49,6 +49,7 @@ pub enum AppEvent {
     Down,
     Select,
     AcceptError,
+    BrowseMode,
 }
 
 /// Terminal event handler.

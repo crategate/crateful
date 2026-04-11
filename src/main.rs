@@ -2,13 +2,11 @@ use crate::app::App;
 use cli_log::*;
 
 pub mod app;
+pub mod browse;
 pub mod env;
 pub mod event;
-pub mod instructs;
 pub mod keys;
-pub mod pause;
 pub mod ui;
-pub mod volume;
 
 #[tokio::main]
 async fn main() -> color_eyre::Result<()> {

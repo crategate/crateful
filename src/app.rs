@@ -157,6 +157,7 @@ impl App {
                     AppEvent::Down => self.down(),
                     AppEvent::Select => self.select(),
                     AppEvent::AcceptError => self.accept_erorr(),
+                    AppEvent::BrowseMode => self.start_browse_mode(),
                 },
             }
         }
