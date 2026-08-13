@@ -34,12 +34,13 @@ pub struct App {
     pub explorer_index: usize,
     pub explorer_items: Vec<std::fs::DirEntry>,
     pub visual_action_indicator: Option<Indicator>,
+    /// When the current visual indicator should be cleared. Checked on each tick.
+    pub indicator_deadline: Option<std::time::Instant>,
     pub length: Duration,
     pub format_time: String,
     pub progress: f64,
     pub music_player: Arc<Mutex<rodio::Sink>>,
     pub stream: rodio::OutputStream,
-    pub volume: f32,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -71,7 +72,7 @@ impl Default for App {
     fn default() -> Self {
         let stream =
             rodio::OutputStreamBuilder::open_default_stream().expect("open default audio stream");
-        let sink = rodio::Sink::connect_new(&stream.mixer());
+        let sink = rodio::Sink::connect_new(stream.mixer());
 
         let incoming_from_env = Envs::read_env_var(String::from("INCOMING_PATH"))
             .unwrap_or_else(|_a| String::from("home/"));
@@ -85,7 +86,7 @@ impl Default for App {
         let explorer_theme = Theme::default()
             .with_highlight_item_style(Style::default().fg(Color::Red))
             .with_dir_style(Style::default().fg(Color::Cyan))
-            .with_highlight_symbol("> ".into());
+            .with_highlight_symbol("> ");
 
         Self {
             running: true,
@@ -113,12 +114,12 @@ impl Default for App {
             explorer_items: Vec::new(),
             explorer_index: 0,
             visual_action_indicator: None,
+            indicator_deadline: None,
             length: Duration::new(0, 0),
             format_time: String::new(),
             progress: 1.0,
             music_player: Arc::new(Mutex::new(sink)),
             stream,
-            volume: 1.0,
         }
     }
 }
@@ -130,7 +131,6 @@ impl App {
     }
     /// Run the application's main loop.
     pub async fn run(mut self, mut terminal: DefaultTerminal) -> color_eyre::Result<()> {
-        if self.track_list.len() > 0 {}
         self.load_tracks();
         self.start_playback();
         self.list_write();
@@ -138,16 +138,12 @@ impl App {
             terminal.draw(|frame| frame.render_widget(&self, frame.area()))?;
             match self.events.next().await? {
                 Event::Tick => self.tick(),
-                Event::Crossterm(event) => match event {
-                    crossterm::event::Event::Key(key_event) => self.handle_key_events(key_event)?,
-                    _ => {}
-                },
+                Event::Crossterm(event) => if let crossterm::event::Event::Key(key_event) = event { self.handle_key_events(key_event)? },
                 Event::App(app_event) => match app_event {
                     AppEvent::Seek(num) => self.seek(num),
                     AppEvent::SkipBack => self.skip_back(),
                     AppEvent::SkipForward => self.skip_forward(),
                     AppEvent::SaveTrack(which) => self.save_track(which),
-                    AppEvent::ResetIndicator(timeout) => self.reset_indicator(timeout).await,
                     AppEvent::DeleteTrack => self.delete_track(),
                     AppEvent::Pause => self.pause(),
                     AppEvent::Volume(amp) => self.volume(amp),
@@ -156,7 +152,7 @@ impl App {
                     AppEvent::Up => self.up(),
                     AppEvent::Down => self.down(),
                     AppEvent::Select => self.select(),
-                    AppEvent::AcceptError => self.accept_erorr(),
+                    AppEvent::AcceptError => self.accept_error(),
                 },
             }
         }

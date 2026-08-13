@@ -47,17 +47,14 @@ impl Widget for Instructs {
             Constraint::Percentage(20),
         ]);
 
-        match self.last_action {
-            Some(indicator) => match indicator {
-                Indicator::SavedA => self.offset_indicator[0] = -1,
-                Indicator::SavedD => self.offset_indicator[1] = -1,
-                Indicator::SavedG => self.offset_indicator[2] = -1,
-                Indicator::Scrubbed => self.offset_indicator[3] = -1,
-                Indicator::Volume => (),
-                Indicator::Deleted => self.offset_indicator[4] = -1,
-            },
-            None => (),
-        }
+        if let Some(indicator) = self.last_action { match indicator {
+            Indicator::SavedA => self.offset_indicator[0] = -1,
+            Indicator::SavedD => self.offset_indicator[1] = -1,
+            Indicator::SavedG => self.offset_indicator[2] = -1,
+            Indicator::Scrubbed => self.offset_indicator[3] = -1,
+            Indicator::Volume => (),
+            Indicator::Deleted => self.offset_indicator[4] = -1,
+        } }
 
         let [save_a, save_d, save_g, scrub, delete] = controls_split.areas(area);
 
@@ -66,10 +63,10 @@ impl Widget for Instructs {
             .title_bottom("'a' save")
             .title_alignment(Alignment::Center);
         fn folder_select_substitute(which_save_path: String) -> String {
-            return format!(
+            format!(
                 "Press {:?}\r\nto select a\r\nfolder to save to\r\nfor this button",
                 which_save_path
-            );
+            )
         }
         Paragraph::new(
             if self
@@ -174,9 +171,7 @@ impl Widget for Instructs {
             .border_type(BorderType::Rounded)
             .title_bottom("how to scrub")
             .title_alignment(Alignment::Center);
-        Paragraph::new(format!(
-            "use numbers\r\n1-9 to seek\r\nthrough the track\r\n \r\narrows (or h & l)\r\nfor 2sec\r\nscrubs"
-        ))
+        Paragraph::new("use numbers\r\n1-9 to seek\r\nthrough the track\r\n \r\narrows (or h & l)\r\nfor 2sec\r\nscrubs".to_string())
         .block(scrub_block)
         .centered()
         .fg(Color::White)
@@ -193,7 +188,7 @@ impl Widget for Instructs {
             .border_type(BorderType::Rounded)
             .title_bottom("delete")
             .title_alignment(Alignment::Center);
-        Paragraph::new(format!("press backspace\r\nto delete\r\nthis track"))
+        Paragraph::new("press backspace\r\nto delete\r\nthis track".to_string())
             .block(delete_block)
             .centered()
             .fg(Color::White)

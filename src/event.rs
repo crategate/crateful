@@ -3,7 +3,7 @@ use color_eyre::eyre::OptionExt;
 use futures::{FutureExt, StreamExt};
 use ratatui::crossterm::event::Event as CrosstermEvent;
 use std::time::Duration;
-use tokio::{runtime::Builder, sync::mpsc, task};
+use tokio::sync::mpsc;
 
 /// The frequency at which tick events are emitted.
 const TICK_FPS: f64 = 30.0;
@@ -40,7 +40,6 @@ pub enum AppEvent {
     SkipForward,
     SaveTrack(SavePath),
     Volume(Amp),
-    ResetIndicator(u64),
     DeleteTrack,
     Pause,
     SetPauseMode,
@@ -84,45 +83,14 @@ impl EventHandler {
             .await
             .ok_or_eyre("Failed to receive event")
     }
-    pub async fn ventsend(&mut self, app_event: AppEvent) {
-        let _ = self.sender.send(Event::App(app_event));
-        tokio::join!(self.setsend(app_event));
-    }
-
-    pub async fn setsend(&mut self, app_event: AppEvent) {
-        let timeout: u64;
-        match app_event {
-            AppEvent::Volume(_amp) => timeout = 500,
-            AppEvent::Seek(_num) => timeout = 200,
-            AppEvent::SkipBack | AppEvent::SkipForward => timeout = 200,
-            AppEvent::DeleteTrack => timeout = 400,
-            _ => timeout = 300,
-        }
-        self.sender
-            .send(Event::App(AppEvent::ResetIndicator(timeout)));
-    }
     /// Queue an app event to be sent to the event receiver.
     ///
     /// This is useful for sending events to the event handler which will be processed by the next
     /// iteration of the application's event loop.
     pub fn send(&mut self, app_event: AppEvent) {
-        // Ignore the result as the reciever cannot be dropped while this struct still has a
+        // Ignore the result as the receiver cannot be dropped while this struct still has a
         // reference to it
-        // let rt = Builder::new_multi_thread().enable_all().build().unwrap();
-        // rt.block_on(self.ventsend(app_event));
-
         let _ = self.sender.send(Event::App(app_event));
-        let timeout: u64;
-        match app_event {
-            AppEvent::Volume(_amp) => timeout = 500,
-            AppEvent::Seek(_num) => timeout = 200,
-            AppEvent::SkipBack | AppEvent::SkipForward => timeout = 200,
-            AppEvent::DeleteTrack => timeout = 400,
-            AppEvent::Down | AppEvent::Up => timeout = 0,
-            _ => timeout = 300,
-        }
-        self.sender
-            .send(Event::App(AppEvent::ResetIndicator(timeout)));
     }
 }
 
