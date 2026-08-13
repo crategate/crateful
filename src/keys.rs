@@ -1,13 +1,13 @@
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
-use rodio::source::{SineWave, Source};
-use rodio::{Decoder, OutputStream, Sink};
+use rodio::source::Source;
+use rodio::Decoder;
 
 use std::ffi::OsStr;
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
 use std::io::Cursor;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::time::Duration;
 use std::time::Instant;
 use walkdir::WalkDir;
@@ -28,7 +28,7 @@ pub trait FileExtension {
 
 impl<P: AsRef<Path>> FileExtension for P {
     fn has_extension<S: AsRef<str>>(&self, extensions: &[S]) -> bool {
-        if let Some(ref extension) = self.as_ref().extension().and_then(OsStr::to_str) {
+        if let Some(extension) = self.as_ref().extension().and_then(OsStr::to_str) {
             return extensions
                 .iter()
                 .any(|x| x.as_ref().eq_ignore_ascii_case(extension));
@@ -123,25 +123,29 @@ impl App {
     /// needs to be updated at a fixed frame rate. E.g. polling a server, updating an animation.
     pub fn tick(&mut self) {
         // Clear the visual action indicator once its deadline has passed.
-        if let Some(deadline) = self.indicator_deadline {
-            if Instant::now() >= deadline {
+        if let Some(deadline) = self.indicator_deadline
+            && Instant::now() >= deadline {
                 self.visual_action_indicator = None;
                 self.indicator_deadline = None;
             }
+        // Skip the progress update when no track with a known length is loaded.
+        // (This also replaces the old `incoming.exists()` stat on every tick:
+        // an unset incoming folder means length stays zero.)
+        let secs = self.length.as_secs();
+        if secs == 0 {
+            return;
         }
-        if self.incoming.exists() {
-            let point = self.music_player.lock().unwrap().get_pos().as_secs() as f64;
-            let percent = (point / self.length.as_secs() as f64) * 100.0;
-            if 100.0 > percent && percent > 0.0 {
-                self.progress = percent;
-                self.format_time = format!(
-                    "{}:{:0>2} out of {}:{:0>2}",
-                    (point as u64 / 60),
-                    (point as u64 % 60),
-                    self.length.as_secs() / 60,
-                    self.length.as_secs() % 60
-                )
-            }
+        let point = self.music_player.lock().unwrap().get_pos().as_secs() as f64;
+        let percent = (point / secs as f64) * 100.0;
+        if 100.0 > percent && percent > 0.0 {
+            self.progress = percent;
+            self.format_time = format!(
+                "{}:{:0>2} out of {}:{:0>2}",
+                (point as u64 / 60),
+                (point as u64 % 60),
+                secs / 60,
+                secs % 60
+            )
         }
     }
 
@@ -155,10 +159,6 @@ impl App {
 
     /// Set running to false to quit the application.
     pub fn quit(&mut self) {
-        // check the env, delete the file if the user somehow didn't assign a "to sort" folder
-        if !self.incoming.exists() {
-            Envs::destroy_config();
-        }
         self.running = false;
     }
 
@@ -192,26 +192,43 @@ impl App {
     }
 
     pub fn start_playback(&mut self) {
-        //self.load_tracks();
+        // Skip over tracks that can't be opened or decoded instead of crashing.
+        // Removing them keeps `index` pointing at the next playable track.
+        let mut removed_bad_track = false;
+        while let Some(path) = self.track_list.get(self.index) {
+            let Ok(file) = File::open(path) else {
+                self.track_list.remove(self.index);
+                removed_bad_track = true;
+                continue;
+            };
+            match Decoder::try_from(BufReader::new(file)) {
+                Ok(source) => {
+                    self.length = source.total_duration().unwrap_or(Duration::ZERO);
+                    self.music_player.lock().unwrap().append(source);
+                    self.playing = path.clone();
+                    self.music_player.lock().unwrap().play();
+                    if removed_bad_track {
+                        self.list_write();
+                    }
+                    return;
+                }
+                Err(_) => {
+                    self.track_list.remove(self.index);
+                    removed_bad_track = true;
+                }
+            }
+        }
+        // No playable tracks left: keep the sink alive with a silent file.
         let blank_bytes = include_bytes!("../blank.mp3");
         let blank_curs = BufReader::new(Cursor::new(blank_bytes));
-        let blank_source = Decoder::try_from(blank_curs).unwrap();
-
-        if self.track_list.len() < 1 {
-            self.music_player.lock().unwrap().append(blank_source)
-        } else {
-            let file =
-                BufReader::new(File::open(self.track_list.get(self.index).unwrap()).unwrap());
-            let source = Decoder::try_from(file).unwrap();
-
-            self.length = source
-                .total_duration()
-                .unwrap_or_else(|| Duration::from_secs(0));
-            self.music_player.lock().unwrap().append(source);
+        if let Ok(blank_source) = Decoder::try_from(blank_curs) {
+            self.music_player.lock().unwrap().append(blank_source);
         }
+        self.playing = PathBuf::new();
+        self.length = Duration::ZERO;
         self.music_player.lock().unwrap().play();
-        if self.track_list.len() > 0 {
-            self.playing = self.track_list.get(self.index).unwrap().to_path_buf();
+        if removed_bad_track {
+            self.list_write();
         }
     }
 
@@ -222,33 +239,24 @@ impl App {
             Amp::Up => {
                 if vol_now < 1.15 {
                     self.music_player.lock().unwrap().set_volume(vol_now + 0.05);
-                    self.volume += 0.05;
                 }
             }
             Amp::Down => {
                 if vol_now > 0.15 {
                     self.music_player.lock().unwrap().set_volume(vol_now - 0.04);
-                    self.volume -= 0.04;
                 }
             }
         }
     }
 
     pub fn list_write(&mut self) {
-        if self.track_list.len() > 0 {
-            self.display_list = Vec::new();
-            let _ = self
-                .track_list
-                .iter()
-                .enumerate()
-                .map(|(i, x)| {
-                    if i >= self.index {
-                        self.display_list
-                            .push(x.file_name().unwrap().to_str().unwrap().to_string())
-                    }
-                })
-                .collect::<Vec<_>>();
-        }
+        self.display_list = self
+            .track_list
+            .iter()
+            .skip(self.index)
+            .filter_map(|x| x.file_name())
+            .map(|name| name.to_string_lossy().into_owned())
+            .collect();
     }
 
     pub fn seek(&mut self, pos: u64) {
@@ -297,7 +305,7 @@ impl App {
 
     pub fn save_track(&mut self, which: SavePath) {
         // move track file. increment index. Play next track.
-        if self.paused {
+        if self.paused || self.track_list.is_empty() {
             return;
         }
         let mut newpath;
@@ -323,7 +331,7 @@ impl App {
                 SavePath::G => self.pause_menu.select(Some(3)),
             }
             self.pause_mode = PauseMode::SaveSelect(which);
-            return ();
+            return ;
         }
         newpath.push(
             self.track_list
@@ -345,7 +353,7 @@ impl App {
     }
 
     pub fn delete_track(&mut self) {
-        if self.paused {
+        if self.paused || self.track_list.is_empty() {
             return;
         }
         self.set_indicator(Indicator::Deleted, 400);
@@ -476,7 +484,7 @@ impl App {
 
     pub fn set_items(&mut self) {}
 
-    pub fn accept_erorr(&mut self) {
+    pub fn accept_error(&mut self) {
         self.pause_mode = PauseMode::MainMenu;
     }
 }

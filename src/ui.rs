@@ -4,12 +4,8 @@ use ratatui::{
     buffer::Buffer,
     layout::{Alignment, Constraint, Layout, Offset, Rect},
     style::{Color, Style, Stylize},
-    widgets::{Block, BorderType, FrameExt, Gauge, Padding, Paragraph, Widget, WidgetRef, Wrap},
+    widgets::{Block, BorderType, Gauge, Padding, Paragraph, Widget, WidgetRef, Wrap},
 };
-
-use ratatui_explorer::{FileExplorer, Theme};
-
-use crossterm::terminal;
 
 use crate::app::App;
 use crate::app::Indicator;
@@ -70,7 +66,7 @@ impl Widget for &App {
 
         let progressblock = Block::new().fg(Color::Yellow);
 
-        if self.track_list.len() > 0 {
+        if !self.track_list.is_empty() {
             Gauge::default()
                 .block(progressblock)
                 .gauge_style(Color::Yellow)
@@ -79,8 +75,9 @@ impl Widget for &App {
                 .render(progress, buf);
         }
         let mut show_list = String::new();
-        for item in self.display_list.clone() {
-            show_list.push_str(format!("{}\r\n", item).as_str())
+        for item in &self.display_list {
+            show_list.push_str(item);
+            show_list.push('\n');
         }
 
         Paragraph::new(show_list)

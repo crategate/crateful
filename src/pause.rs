@@ -28,9 +28,9 @@ pub struct Popup<'a> {
 
 impl Popup<'_> {
     pub fn show(mut self, area: Rect, app_state: &App, buf: &mut Buffer) {
-        self.pause_menu = app_state.pause_menu.clone();
+        self.pause_menu = app_state.pause_menu;
         self.pause_mode = app_state.pause_mode.clone();
-        self.explorer_index = app_state.explorer_index.clone();
+        self.explorer_index = app_state.explorer_index;
         self.explorer_path = app_state.explorer_path.clone();
         self.render(area, buf);
     }
