@@ -8,8 +8,8 @@ use std::fs::File;
 use std::io::BufReader;
 use std::io::Cursor;
 use std::path::Path;
-use std::thread;
 use std::time::Duration;
+use std::time::Instant;
 use walkdir::WalkDir;
 
 use crate::App;
@@ -21,8 +21,6 @@ use crate::env::Envs;
 use crate::event::Amp;
 use crate::event::AppEvent;
 use ratatui_explorer::Input;
-use std::sync::{Arc, mpsc};
-use tokio::task;
 
 pub trait FileExtension {
     fn has_extension<S: AsRef<str>>(&self, extensions: &[S]) -> bool;
@@ -124,6 +122,13 @@ impl App {
     /// The tick event is where you can update the state of your application with any logic that
     /// needs to be updated at a fixed frame rate. E.g. polling a server, updating an animation.
     pub fn tick(&mut self) {
+        // Clear the visual action indicator once its deadline has passed.
+        if let Some(deadline) = self.indicator_deadline {
+            if Instant::now() >= deadline {
+                self.visual_action_indicator = None;
+                self.indicator_deadline = None;
+            }
+        }
         if self.incoming.exists() {
             let point = self.music_player.lock().unwrap().get_pos().as_secs() as f64;
             let percent = (point / self.length.as_secs() as f64) * 100.0;
@@ -140,18 +145,12 @@ impl App {
         }
     }
 
-    pub async fn reset_indicator(&mut self, timout: u64) {
-        let (tx, rx): (
-            mpsc::Sender<Option<Indicator>>,
-            mpsc::Receiver<Option<Indicator>>,
-        ) = mpsc::channel();
-        let handle: task::JoinHandle<()> = task::spawn_blocking(move || {
-            thread::sleep(Duration::from_millis(timout));
-            let no_indicator: Option<Indicator> = None;
-            tx.send(no_indicator).unwrap();
-        });
-        //  handle.join().unwrap().await;
-        self.visual_action_indicator = rx.recv().unwrap();
+    /// Sets the visual action indicator and schedules it to be cleared after
+    /// `timeout_ms` milliseconds. The actual clearing happens in `tick()`, so the
+    /// event loop is never blocked waiting for the timeout to elapse.
+    pub fn set_indicator(&mut self, indicator: Indicator, timeout_ms: u64) {
+        self.visual_action_indicator = Some(indicator);
+        self.indicator_deadline = Some(Instant::now() + Duration::from_millis(timeout_ms));
     }
 
     /// Set running to false to quit the application.
@@ -218,7 +217,7 @@ impl App {
 
     pub fn volume(&mut self, amp: Amp) {
         let vol_now = self.music_player.lock().unwrap().volume();
-        self.visual_action_indicator = Some(Indicator::Volume);
+        self.set_indicator(Indicator::Volume, 500);
         match amp {
             Amp::Up => {
                 if vol_now < 1.15 {
@@ -256,7 +255,7 @@ impl App {
         if self.paused {
             return;
         }
-        self.visual_action_indicator = Some(Indicator::Scrubbed);
+        self.set_indicator(Indicator::Scrubbed, 200);
         let percent = ((pos as f64 / 10.0) * self.length.as_secs() as f64).round();
         self.music_player.lock().unwrap().pause();
         self.music_player.lock().unwrap().clear();
@@ -271,7 +270,7 @@ impl App {
         if self.paused {
             return;
         }
-        self.visual_action_indicator = Some(Indicator::Scrubbed);
+        self.set_indicator(Indicator::Scrubbed, 200);
         let current_pos = self.music_player.lock().unwrap().get_pos();
         self.music_player.lock().unwrap().pause();
         self.music_player.lock().unwrap().clear();
@@ -287,7 +286,7 @@ impl App {
         if self.paused {
             return;
         }
-        self.visual_action_indicator = Some(Indicator::Scrubbed);
+        self.set_indicator(Indicator::Scrubbed, 200);
         let current_pos = self.music_player.lock().unwrap().get_pos();
         let _ = self
             .music_player
@@ -305,15 +304,15 @@ impl App {
         match which {
             SavePath::A => {
                 newpath = self.save_path_a.as_ref().unwrap().clone();
-                self.visual_action_indicator = Some(Indicator::SavedA)
+                self.set_indicator(Indicator::SavedA, 300)
             }
             SavePath::D => {
                 newpath = self.save_path_d.as_ref().unwrap().clone();
-                self.visual_action_indicator = Some(Indicator::SavedD)
+                self.set_indicator(Indicator::SavedD, 300)
             }
             SavePath::G => {
                 newpath = self.save_path_g.as_ref().unwrap().clone();
-                self.visual_action_indicator = Some(Indicator::SavedG)
+                self.set_indicator(Indicator::SavedG, 300)
             }
         }
         if newpath.as_os_str().is_empty() {
@@ -349,7 +348,7 @@ impl App {
         if self.paused {
             return;
         }
-        self.visual_action_indicator = Some(Indicator::Deleted);
+        self.set_indicator(Indicator::Deleted, 400);
         // delete file. Increment index. Play next.
         self.music_player.lock().unwrap().clear();
         let _ = fs::remove_file(self.track_list.get(self.index).unwrap());
